@@ -1,33 +1,27 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: "Introduction"
+description: "This section contains a detailed up-to-date description for all of our available endpoints."
 ---
 
 <Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
+  We currently don't have Python or JavaScript SDK packages for usage with our
+  API.
 </Note>
 
 ## Welcome
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+Welcome to the Altur API documentation. As of today, our API is designed primarily for integration purposes and does not offer full functionality at this time. For configurations and settings, please use our web app.
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
+<Card title="Altur App" icon="browser" href="https://app.altur.io">
+  Open the Altur app on the web
 </Card>
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+To use our API, you need to authenticate your requests by adding an `Authorization` header with your secret key. Secret keys can be generated from within the [Altur app dashboard](https://app.altur.io/dashboard/api).
 
-```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+### Example Authentication Header
+
+```curl
+Authorization: Bearer YOUR_API_SECRET_KEY
 ```
