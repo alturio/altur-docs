@@ -37,11 +37,6 @@
       "icon": "book-open-cover",
       "url": "https://docs.altur.io"
     },
-    // {
-    //   "name": "Community",
-    //   "icon": "slack",
-    //   "url": "https://mintlify.com/community"
-    // },
     {
       "name": "Blog",
       "icon": "newspaper",
