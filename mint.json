@@ -64,13 +64,14 @@
       ]
     },
     {
-      "group": "API Documentation",
+      "group": "Getting Started",
       "pages": [
         "api-reference/introduction"
+        "api-reference/first-steps",
       ]
     },
     {
-      "group": "Endpoint Examples",
+      "group": "API Reference",
       "pages": [
         "api-reference/endpoint/get",
         "api-reference/endpoint/create",
