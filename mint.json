@@ -38,6 +38,11 @@
       "url": "introduction"
     },
     {
+      "name": "API Reference",
+      "icon": "square-terminal",
+      "url": "api-reference"
+    },
+    {
       "name": "Blog",
       "icon": "newspaper",
       "url": "https://altur.io/blog"
