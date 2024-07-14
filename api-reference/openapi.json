@@ -179,7 +179,8 @@
       "EndUser": {
         "required": [
           "id",
-          "display_name"
+          "display_name",
+          "integration"
         ],
         "type": "object",
         "properties": {
@@ -194,7 +195,11 @@
           },
           "integration": {
             "description": "Integration used for communication with the EndUser ('api' is default for api-based conversations)",
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "api",
+              "whatsapp"
+            ]
           },
           "integration_id": {
             "description": "EndUser's identifier within the integration (not used for api-based EndUsers)",
