@@ -69,6 +69,12 @@
         "api-reference/endusers/update",
         "api-reference/endusers/delete"
       ]
+    },
+    {
+      "group": "Threads",
+      "pages": [
+        "api-reference/threads/retrieve"
+      ]
     }
   ],
   "footerSocials": {

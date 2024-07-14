@@ -21,7 +21,7 @@
   "paths": {
     "/enduser/{id}": {
       "get": {
-        "description": "Returns all plants from the system that the user has access to",
+        "description": "Returns the EndUser corresponding to the given indentifier",
         "parameters": [
           {
             "name": "id",
@@ -172,16 +172,49 @@
           }
         }
       }
+    },
+    "/thread/{id}": {
+      "get": {
+        "description": "Returns the Thread corresponding to the given indentifier",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the Thread to return",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thread response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Thread"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
       "EndUser": {
-        "required": [
-          "id",
-          "display_name",
-          "integration"
-        ],
         "type": "object",
         "properties": {
           "id": {
@@ -194,12 +227,7 @@
             "type": "string"
           },
           "integration": {
-            "description": "Integration used for communication with the EndUser ('api' is default for api-based conversations)",
-            "type": "string",
-            "enum": [
-              "api",
-              "whatsapp"
-            ]
+            "$ref": "#/components/schemas/Integration"
           },
           "integration_id": {
             "description": "EndUser's identifier within the integration (not used for api-based EndUsers)",
@@ -209,7 +237,12 @@
             "description": "EndUser's information valuable for interactions with chatbots or human agents",
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "id",
+          "display_name",
+          "integration"
+        ]
       },
       "EndUserUpdate": {
         "type": "object",
@@ -219,6 +252,146 @@
           },
           "info": {
             "type": "string"
+          }
+        }
+      },
+      "Chatbot": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the Chatbot",
+            "type": "string",
+            "format": "uuid4"
+          },
+          "name": {
+            "description": "Name given to the Chatbot",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "Integration": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the Integration",
+            "type": "string"
+          },
+          "type": {
+            "description": "Enum representing the Integration's channel",
+            "type": "string",
+            "enum": [
+              "api",
+              "whatsapp"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "type"
+        ]
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the Tag",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name given to the Tag",
+            "type": "string"
+          },
+          "color": {
+            "description": "Color used for in-app display of Tag",
+            "type": "string",
+            "enum": [
+              "blue",
+              "green",
+              "red",
+              "pink",
+              "purple",
+              "orange",
+              "yellow"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "color"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the User",
+            "type": "string"
+          },
+          "email": {
+            "description": "User's email address",
+            "type": "string"
+          },
+          "first_name": {
+            "description": "User's first name",
+            "type": "string"
+          },
+          "last_name": {
+            "description": "User's last name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email"
+        ]
+      },
+      "Thread": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the Thread",
+            "type": "string"
+          },
+          "chatbot": {
+            "$ref": "#/components/schemas/Chatbot"
+          },
+          "enduser": {
+            "$ref": "#/components/schemas/EndUser"
+          },
+          "integration": {
+            "$ref": "#/components/schemas/Integration"
+          },
+          "updated_at": {
+            "description": "Last time the Thread was updated",
+            "type": "string",
+            "format": "date-time"
+          },
+          "active": {
+            "description": "Boolean describing if automatic responses by the Chatbot are active on this Thread",
+            "type": "boolean"
+          },
+          "blocked": {
+            "description": "Boolean describing if Thread is blocked",
+            "type": "boolean"
+          },
+          "tags": {
+            "description": "Tags assigned to Thread",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tag"
+            }
+          },
+          "assigned_to": {
+            "description": "Users assigned to Thread",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
           }
         }
       },
