@@ -229,10 +229,6 @@
           "integration": {
             "$ref": "#/components/schemas/Integration"
           },
-          "integration_id": {
-            "description": "EndUser's identifier within the integration (not used for api-based EndUsers)",
-            "type": "string"
-          },
           "info": {
             "description": "EndUser's information valuable for interactions with chatbots or human agents",
             "type": "string"
