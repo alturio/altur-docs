@@ -19,7 +19,7 @@
     }
   ],
   "paths": {
-    "/endusers/{id}": {
+    "/enduser/{id}": {
       "get": {
         "description": "Returns all plants from the system that the user has access to",
         "parameters": [
