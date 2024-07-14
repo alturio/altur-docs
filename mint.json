@@ -63,10 +63,10 @@
       ]
     },
     {
-      "group": "API Reference",
+      "group": "EndUsers",
       "pages": [
-        "api-reference/endusers/get",
-        "api-reference/endusers/put",
+        "api-reference/endusers/retrieve",
+        "api-reference/endusers/update",
         "api-reference/endusers/delete"
       ]
     }
