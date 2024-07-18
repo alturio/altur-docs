@@ -65,6 +65,7 @@
     {
       "group": "EndUsers",
       "pages": [
+        "api-reference/endusers/create",
         "api-reference/endusers/retrieve",
         "api-reference/endusers/update",
         "api-reference/endusers/delete"
