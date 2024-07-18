@@ -19,6 +19,54 @@
     }
   ],
   "paths": {
+    "/enduser": {
+      "post": {
+        "description": "Create new EndUser for your organization",
+        "requestBody": {
+          "description": "EndUser to be created",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EndUserData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "EndUser created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EndUser"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/enduser/{id}": {
       "get": {
         "description": "Returns the EndUser corresponding to the given indentifier",
@@ -77,7 +125,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EndUserUpdate"
+                "$ref": "#/components/schemas/EndUserData"
               }
             }
           }
@@ -226,8 +274,13 @@
             "description": "EndUser's display name",
             "type": "string"
           },
-          "integration": {
-            "$ref": "#/components/schemas/Integration"
+          "integration_type": {
+            "description": "Enum representing the Integration's channel",
+            "type": "string",
+            "enum": [
+              "api",
+              "whatsapp"
+            ]
           },
           "info": {
             "description": "EndUser's information valuable for interactions with chatbots or human agents",
@@ -240,13 +293,15 @@
           "integration"
         ]
       },
-      "EndUserUpdate": {
+      "EndUserData": {
         "type": "object",
         "properties": {
           "display_name": {
+            "description": "EndUser's display name",
             "type": "string"
           },
           "info": {
+            "description": "EndUser's information valuable for interactions with chatbots or human agents",
             "type": "string"
           }
         }
