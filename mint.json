@@ -66,6 +66,7 @@
       "group": "Messages",
       "pages": [
         "api-reference/messages/send"
+        "api-reference/messages/retrieve"
       ]
     },
     {
