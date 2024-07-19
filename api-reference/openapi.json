@@ -193,7 +193,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Message"
+                  "$ref": "#/components/schemas/ResponseMessage"
                 }
               }
             }
@@ -258,6 +258,79 @@
           }
         }
       }
+    },
+    "/message": {
+      "post": {
+        "description": "Sends Message to the Thread between a Chatbot and an EndUser, returns the Message created from the request, the Messages generated in response, and returns information about the Thread between the Chatbot and EndUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatbot_id": {
+                    "description": "Unique identifier of the Chatbot recieving the Message",
+                    "type": "string",
+                    "format": "uuid4"
+                  },
+                  "end_user_id": {
+                    "description": "Unique identifier of the EndUser sending the Message",
+                    "type": "string",
+                    "format": "uuid4"
+                  },
+                  "content": {
+                    "description": "Text content of the Message",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Thread response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chatbot or EndUser not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -283,7 +356,7 @@
             ]
           },
           "info": {
-            "description": "EndUser's information valuable for interactions with chatbots or human agents",
+            "description": "EndUser's information valuable for interactions with Chatbots or human agents",
             "type": "string"
           }
         },
@@ -446,6 +519,82 @@
           }
         }
       },
+      "MessageResponse": {
+        "type": "object",
+        "properties": {
+          "thread": {
+            "$ref": "#/components/schemas/Thread"
+          },
+          "messages": {
+            "description": "Array of Messages in response to prompted Message",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            }
+          },
+          "in_response_to": {
+            "$ref": "#/components/schemas/Message"
+          }
+        }
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "thread_id": {
+            "description": "Unique identifier of the Thread the Message belongs to",
+            "type": "string"
+          },
+          "type": {
+            "description": "Message type enum",
+            "type": "string",
+            "enum": [
+              "text",
+              "image",
+              "audio",
+              "video",
+              "button",
+              "template",
+              "document"
+            ]
+          },
+          "content": {
+            "description": "Message's text content",
+            "type": "string"
+          },
+          "media": {
+            "description": "Message's media content, if any (usually in form of URL)",
+            "type": "string"
+          },
+          "sent_by": {
+            "description": "Author of this message",
+            "type": "string",
+            "enum": [
+              "AI",
+              "EU",
+              "SYS"
+            ]
+          },
+          "sent_by_user": {
+            "description": "Altur user id (if Message was sent manually by an in-app user)",
+            "type": "string"
+          },
+          "sent_at": {
+            "description": "Datetime from when the Message was sent",
+            "type": "string",
+            "format": "date-time"
+          },
+          "read": {
+            "description": "Boolean describing if the Message is considered as read",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "thread_id",
+          "type",
+          "sent_by",
+          "sent_at"
+        ]
+      },
       "Error": {
         "required": [
           "error",
@@ -462,7 +611,7 @@
           }
         }
       },
-      "Message": {
+      "ResponseMessage": {
         "type": "object",
         "properties": {
           "message": {
