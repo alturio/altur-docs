@@ -22,7 +22,7 @@
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
+    "name": "Open App",
     "url": "https://app.altur.io"
   },
   "tabs": [
