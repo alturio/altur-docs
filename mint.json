@@ -27,6 +27,10 @@
   },
   "tabs": [
     {
+      "name": "Documentation",
+      "url": "documentation"
+    },
+    {
       "name": "API Reference",
       "url": "api-reference"
     }
@@ -35,7 +39,7 @@
     {
       "name": "Documentation",
       "icon": "book-open-cover",
-      "url": "introduction"
+      "url": "documentation"
     },
     {
       "name": "API Reference",
@@ -52,7 +56,7 @@
     {
       "group": "Get Started",
       "pages": [
-        "introduction"
+        "documentation/introduction"
       ]
     },
     {
