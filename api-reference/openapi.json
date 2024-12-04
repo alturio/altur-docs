@@ -393,7 +393,7 @@
         }
       }
     },
-    "/calls/{id}/recording": {
+    "/call/{id}/recording": {
       "get": {
         "description": "Access the recording of a Call in form of a file stream",
         "parameters": [
