@@ -67,6 +67,12 @@
       ]
     },
     {
+      "group": "Calls",
+      "pages": [
+        "api-reference/calls/retrieve-recording",
+      ]
+    },
+    {
       "group": "Messages",
       "pages": [
         "api-reference/messages/send",
