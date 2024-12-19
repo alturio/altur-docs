@@ -1,11 +1,13 @@
 ---
-title: "Webhook Overview"
-description: ""
+title: "Overview"
+description: "Recieve real-time updates from Altur directly to your backend or CRM."
 ---
 
-## What are Webhooks?
+## The Basics
 
 Webhooks allow you to receive real-time notifications about events in the Altur platform. When a specific event occurs (e.g., the end of a call), Altur sends an HTTP POST request with event-specific data to your configured endpoint. This enables seamless integration with your backend systems or CRM to ensure they stay up-to-date.
+
+---
 
 ## How Webhooks Work
 
@@ -18,3 +20,56 @@ Webhooks allow you to receive real-time notifications about events in the Altur 
 3. **Acknowledge Delivery**  
     Your endpoint should respond with a `200 OK` status code to confirm successful receipt. If the request fails or times out, Altur retries the delivery up to 5 times using an exponential backoff strategy.
 
+---
+
+## Event Types
+
+Webhooks can be triggered by the following event types:
+
+### `on_call_end`
+Triggered at the end of a call, this webhook sends detailed information about:
+- The call status, duration, and answered party.
+- The assistant (AI or human) managing the call.
+- The end user, including extracted data from interactions.
+- The call transcript and recording URL.
+
+This event is particularly useful for:
+- Updating your CRM with call status.
+- Analyzing conversations through transcripts.
+- Logging key user interactions.
+
+---
+
+## Retry Policy
+
+To ensure reliable delivery, Altur employs a retry mechanism for failed webhook requests. If your endpoint does not respond with a `200 OK` status code, the following retry policy is applied:
+
+- **Retry Attempts**: 5
+- **Retry Strategy**: Exponential backoff
+  - Initial Retry: 2 seconds after the first failure.
+  - Maximum Retry Delay: 30 seconds between retries.
+
+If all retries fail, the webhook event will not be delivered. It is recommended to ensure that your endpoint is reliable and can process requests promptly.
+
+---
+
+## Example Workflow
+
+Here’s a typical workflow for handling webhooks:
+
+1. **Set Up Your Endpoint**: Create an API endpoint in your backend, such as `/webhooks/altur/on_call_end`.
+2. **Parse Incoming Data**: Process the JSON payload sent by Altur.
+3. **Validate Authenticity**: Use the `X-Signature` header to verify the request's authenticity.
+4. **Respond Promptly**: Return a `200 OK` status to acknowledge receipt.
+5. **Handle Retries**: Ensure your system can handle retries in case of temporary failures.
+
+---
+
+## Best Practices
+
+- **Secure Your Endpoint**: Verify webhook authenticity using HMAC signatures.
+- **Log Events**: Log incoming webhook requests for debugging and auditing.
+- **Test Thoroughly**: Use the Altur dashboard to simulate webhook events and verify your integration.
+- **Optimize Performance**: Ensure your endpoint responds within 10 seconds to avoid timeouts.
+
+---
