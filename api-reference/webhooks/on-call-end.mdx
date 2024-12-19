@@ -1,0 +1,145 @@
+---
+title: 'On Call End'
+description: "Triggered at the end of a call to provide detailed Call and End User information."
+---
+
+# `on_call_end` Webhook
+
+The `on_call_end` webhook is triggered at the conclusion of a call in the Altur platform. This webhook provides detailed information about the call, the assistant involved, and the end user. It is designed to help you keep your backend or CRM updated with the latest call data.
+
+## Event Details
+
+- **Trigger**: Automatically triggered at the end of a call.
+- **Purpose**: To update your backend or CRM with call status, transcript, recording URL, and user information.
+
+## Request Details
+
+- **HTTP Method**: `POST`
+- **Content Type**: `application/json`
+- **Endpoint**: The URL you configure in your webhook integration settings.
+- **Authentication**: Includes the `X-Altur-Signature` header for HMAC verification.
+
+---
+title: "on_call_end Webhook"
+description: "Triggered at the end of a call to provide detailed call and user information."
+---
+
+# `on_call_end` Webhook
+
+The `on_call_end` webhook is triggered at the conclusion of a call in the Altur platform. This webhook provides detailed information about the call, the assistant involved, and the end user. It is designed to help you keep your backend or CRM updated with the latest call data.
+
+---
+
+## Event Details
+
+- **Trigger**: Automatically triggered at the end of a call.
+- **Purpose**: To update your backend or CRM with call status, transcript, recording URL, and user information.
+
+---
+
+## Request Details
+
+- **HTTP Method**: `POST`
+- **Content Type**: `application/json`
+- **Endpoint**: The URL you configure in your webhook integration settings.
+- **Authentication**: Includes the `X-Altur-Signature` header for HMAC verification.
+
+---
+
+## Payload Example
+
+Here’s an example of the payload sent with the `on_call_end` event:
+
+```json
+{
+  "type": "on_call_end",
+  "id": "abc123",
+  "status": "completed",
+  "answered_by": "client",
+  "transcript": [
+    {
+      "sent_by": "assistant",
+      "sent_at": "2024-12-19T15:00:00Z",
+      "content": "Hello, this is your assistant. How can I help you today?"
+    },
+    {
+      "sent_by": "user",
+      "sent_at": "2024-12-19T15:00:10Z",
+      "content": "I want to discuss my outstanding balance."
+    }
+  ],
+  "recording_url": "https://backend.altur.io/api/v1.0/call/abc123/recording",
+  "assistant": {
+    "id": "assistant_123",
+    "nickname": "DebtCollectorBot",
+    "name": "Debt Collector Assistant"
+  },
+  "end_user": {
+    "id": "enduser_456",
+    "status": "interested",
+    "display_name": "John Doe",
+    "phone_number": "+1234567890",
+    "context": {
+      "account_id": "987654",
+      "outstanding_balance": 150.75
+    },
+    "extracted_data": {
+      "Account Number": "987654",
+      "Due Date": "2024-12-31"
+    }
+  }
+}
+```
+
+## Root Fields
+| Field           | Type     | Description                                     |
+|------------------|----------|-------------------------------------------------|
+| `type`          | `string` | Event type (`on_call_end`).                     |
+| `id`            | `string` | Unique identifier for the call.                |
+| `status`        | `string` | Status of the call (e.g., `completed`).         |
+| `answered_by`   | `string` | Indicates who answered the call (`client` or `assistant`). |
+| `transcript`    | `array`  | List of messages exchanged during the call.     |
+| `recording_url` | `string` | URL to download the call recording.             |
+
+## Assistant Object
+| Field      | Type     | Description                           |
+|------------|----------|---------------------------------------|
+| `id`       | `string` | Unique identifier for the assistant. |
+| `nickname` | `string` | Assistant's nickname.                |
+| `name`     | `string` | Assistant's full name.               |
+
+## End User Object
+| Field            | Type     | Description                                      |
+|-------------------|----------|--------------------------------------------------|
+| `id`             | `string` | Unique identifier for the end user.             |
+| `status`         | `string` | Current status of the user (e.g., `interested`).|
+| `display_name`   | `string` | Display name of the user.                       |
+| `phone_number`   | `string` | User's phone number.                            |
+| `context`        | `object` | Additional user-specific information.           |
+| `extracted_data` | `object` | Key-value pairs of extracted data.              |
+
+## Response Expectations
+
+Your endpoint should return a 200 OK status code to confirm receipt of the webhook. Failure to do so will result in retries as per the Retry Policy.
+
+## Retry Policy
+
+If your endpoint fails to respond or returns an error, Altur retries the webhook delivery up to 5 times with exponential backoff:
+- Retry Attempts: 5
+- Initial Retry Delay: 2 seconds
+- Maximum Delay: 30 seconds
+
+## Security
+
+Each request includes an HMAC signature in the X-Altur-Signature header. Use this signature to verify the authenticity of the request. Refer to the Webhook Overview for details on validating webhook requests.
+
+## Example Use Cases
+
+1. **CRM Integration**
+Use the on_call_end webhook to update call logs and user interaction data in your CRM system.
+
+2. **Analytics**
+Process transcripts and user status to generate insights or trigger follow-up actions.
+
+3. **Data Enrichment**
+Automatically store extracted data, like account numbers or due dates, in your system for further use.

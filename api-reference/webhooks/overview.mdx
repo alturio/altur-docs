@@ -27,8 +27,7 @@ To ensure secure communication and verify the authenticity of webhook requests, 
 - **HMAC Generation**: Altur generates an HMAC SHA-256 hash using the shared secret and the request payload. This hash is included in the `X-Altur-Signature` header.
 - **Validation**: Your endpoint must validate the signature using the same shared secret.
 
-### Validation Function Example (Python)
-```python
+```python Validation Function Example
 import hmac
 import hashlib
 
@@ -41,8 +40,7 @@ def is_valid_signature(secret, payload, signature):
     return hmac.compare_digest(computed_signature, signature)
 ```
 
-### Example Usage (Python)
-```python
+```python Example Usage
 payload = '{"type": "on_call_end" "status": "ended"}' # Raw request payload
 signature = "provided-signature-from-header" # X-Altur-Signature header
 shared_secret = "your-shared-secret-key" # Shared secret key
