@@ -17,8 +17,8 @@
   },
   "topbarLinks": [
     {
-      "name": "Support",
-      "url": "mailto:pedro@altur.io"
+      "name": "Blog",
+      "url": "https://altur.io/blog"
     }
   ],
   "topbarCtaButton": {
@@ -33,23 +33,6 @@
     {
       "name": "API Reference",
       "url": "api-reference"
-    }
-  ],
-  "anchors": [
-    {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "documentation"
-    },
-    {
-      "name": "API Reference",
-      "icon": "square-terminal",
-      "url": "api-reference"
-    },
-    {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://altur.io/blog"
     }
   ],
   "navigation": [
@@ -67,31 +50,42 @@
       ]
     },
     {
-      "group": "Calls",
+      "group": "API Endpoints",
       "pages": [
-        "api-reference/calls/retrieve-recording"
+        {
+          "group": "Calls",
+          "pages": [
+            "api-reference/calls/retrieve-recording"
+          ]
+        },
+        {
+          "group": "Messages",
+          "pages": [
+            "api-reference/messages/send",
+            "api-reference/messages/retrieve"
+          ]
+        },
+        {
+          "group": "Threads",
+          "pages": [
+            "api-reference/threads/retrieve"
+          ]
+        },
+        {
+          "group": "EndUsers",
+          "pages": [
+            "api-reference/endusers/create",
+            "api-reference/endusers/retrieve",
+            "api-reference/endusers/update",
+            "api-reference/endusers/delete"
+          ]
+        }
       ]
     },
     {
-      "group": "Messages",
+      "group": "Webhooks",
       "pages": [
-        "api-reference/messages/send",
-        "api-reference/messages/retrieve"
-      ]
-    },
-    {
-      "group": "Threads",
-      "pages": [
-        "api-reference/threads/retrieve"
-      ]
-    },
-    {
-      "group": "EndUsers",
-      "pages": [
-        "api-reference/endusers/create",
-        "api-reference/endusers/retrieve",
-        "api-reference/endusers/update",
-        "api-reference/endusers/delete"
+        "api-reference/webhooks/overview"
       ]
     }
   ],
