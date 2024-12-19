@@ -18,11 +18,54 @@ Webhooks allow you to receive real-time notifications about events in the Altur 
 3. **Acknowledge Delivery**  
     Your endpoint should respond with a `200 OK` status code to confirm successful receipt. If the request fails or times out, Altur retries the delivery up to 5 times using an exponential backoff strategy.
 
+## Security
+
+To ensure secure communication and verify the authenticity of webhook requests, Altur includes an HMAC signature in the `X-Altur-Signature` header for every request.
+
+### How It Works
+- **Shared Secret**: Each webhook integration is configured with a unique shared secret key.
+- **HMAC Generation**: Altur generates an HMAC SHA-256 hash using the shared secret and the request payload. This hash is included in the `X-Altur-Signature` header.
+- **Validation**: Your endpoint must validate the signature using the same shared secret.
+
+### Validation Example (Python)
+```python
+import hmac
+import hashlib
+
+def is_valid_signature(secret, payload, signature):
+    computed_signature = hmac.new(
+        key=secret.encode('utf-8'),
+        msg=payload.encode('utf-8'),
+        digestmod=hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(computed_signature, signature)
+
+# Example usage:
+payload = '{"type": "on_call_end", ...}'  # The raw request payload
+signature = "provided-signature-from-header"
+shared_secret = "your-shared-secret-key"
+
+if is_valid_signature(shared_secret, payload, signature):
+    print("Valid webhook request!")
+else:
+    print("Invalid webhook request!")
+```
+
+### Headers Sent with Webhook
+- `Content-Type`: `application/json`
+- `X-Altur-Signature`: HMAC SHA-256 hash of the payload
+
+### Why This Matters
+
+This mechanism ensures:
+- The request is sent by Altur.
+- The payload is not tampered with during transmission.
+
 ## Event Types
 
 Webhooks can be triggered by the following event types:
 
-- `on_call_end`: Triggered at the end of a call, this webhook sends detailed information about the call and basic information on the assistant and enduser.
+- `on_call_end`: Triggered at the end of a call, this webhook sends detailed information about the call and basic information about the assistant and enduser.
 
 ## Retry Policy
 
