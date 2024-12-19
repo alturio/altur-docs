@@ -1,9 +1,9 @@
 ---
-title: 'On Call End'
+title: 'on_call_end'
 description: "Triggered at the end of a call to provide detailed Call and End User information."
 ---
 
-# `on_call_end` Webhook
+## About This Event
 
 The `on_call_end` webhook is triggered at the conclusion of a call in the Altur platform. This webhook provides detailed information about the call, the assistant involved, and the end user. It is designed to help you keep your backend or CRM updated with the latest call data.
 
@@ -18,33 +18,6 @@ The `on_call_end` webhook is triggered at the conclusion of a call in the Altur 
 - **Content Type**: `application/json`
 - **Endpoint**: The URL you configure in your webhook integration settings.
 - **Authentication**: Includes the `X-Altur-Signature` header for HMAC verification.
-
----
-title: "on_call_end Webhook"
-description: "Triggered at the end of a call to provide detailed call and user information."
----
-
-# `on_call_end` Webhook
-
-The `on_call_end` webhook is triggered at the conclusion of a call in the Altur platform. This webhook provides detailed information about the call, the assistant involved, and the end user. It is designed to help you keep your backend or CRM updated with the latest call data.
-
----
-
-## Event Details
-
-- **Trigger**: Automatically triggered at the end of a call.
-- **Purpose**: To update your backend or CRM with call status, transcript, recording URL, and user information.
-
----
-
-## Request Details
-
-- **HTTP Method**: `POST`
-- **Content Type**: `application/json`
-- **Endpoint**: The URL you configure in your webhook integration settings.
-- **Authentication**: Includes the `X-Altur-Signature` header for HMAC verification.
-
----
 
 ## Payload Example
 
@@ -93,9 +66,9 @@ Here’s an example of the payload sent with the `on_call_end` event:
 
 ## Root Fields
 | Field           | Type     | Description                                     |
-|------------------|----------|-------------------------------------------------|
+|:----------------|:---------|-------------------------------------------------|
 | `type`          | `string` | Event type (`on_call_end`).                     |
-| `id`            | `string` | Unique identifier for the call.                |
+| `id`            | `string` | Unique identifier for the call.                 |
 | `status`        | `string` | Status of the call (e.g., `completed`).         |
 | `answered_by`   | `string` | Indicates who answered the call (`client` or `assistant`). |
 | `transcript`    | `array`  | List of messages exchanged during the call.     |
@@ -103,20 +76,20 @@ Here’s an example of the payload sent with the `on_call_end` event:
 
 ## Assistant Object
 | Field      | Type     | Description                           |
-|------------|----------|---------------------------------------|
-| `id`       | `string` | Unique identifier for the assistant. |
-| `nickname` | `string` | Assistant's nickname.                |
-| `name`     | `string` | Assistant's full name.               |
+|:-----------|:---------|:--------------------------------------|
+| `id`       | `string` | Unique identifier for the assistant.  |
+| `nickname` | `string` | Assistant's nickname.                 |
+| `name`     | `string` | Assistant's full name.                |
 
 ## End User Object
 | Field            | Type     | Description                                      |
-|-------------------|----------|--------------------------------------------------|
-| `id`             | `string` | Unique identifier for the end user.             |
-| `status`         | `string` | Current status of the user (e.g., `interested`).|
-| `display_name`   | `string` | Display name of the user.                       |
-| `phone_number`   | `string` | User's phone number.                            |
-| `context`        | `object` | Additional user-specific information.           |
-| `extracted_data` | `object` | Key-value pairs of extracted data.              |
+|:-----------------|:---------|:-------------------------------------------------|
+| `id`             | `string` | Unique identifier for the end user.              |
+| `status`         | `string` | Current status of the user (e.g., `interested`). |
+| `display_name`   | `string` | Display name of the user.                        |
+| `phone_number`   | `string` | User's phone number.                             |
+| `context`        | `object` | Additional user-specific information.            |
+| `extracted_data` | `object` | Key-value pairs of extracted data.               |
 
 ## Response Expectations
 
