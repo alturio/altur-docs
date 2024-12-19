@@ -92,8 +92,6 @@
     },
     {
       "group": "Webhooks",
-      "icon": "webhook",
-      "iconType": "regular",
       "pages": [
         "api-reference/webhooks/overview",
         {
