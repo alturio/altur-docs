@@ -7,8 +7,6 @@ description: "Recieve real-time updates from Altur directly to your backend or C
 
 Webhooks allow you to receive real-time notifications about events in the Altur platform. When a specific event occurs (e.g., the end of a call), Altur sends an HTTP POST request with event-specific data to your configured endpoint. This enables seamless integration with your backend systems or CRM to ensure they stay up-to-date.
 
----
-
 ## How Webhooks Work
 
 1. **Configure Your Endpoint**  
@@ -20,25 +18,11 @@ Webhooks allow you to receive real-time notifications about events in the Altur 
 3. **Acknowledge Delivery**  
     Your endpoint should respond with a `200 OK` status code to confirm successful receipt. If the request fails or times out, Altur retries the delivery up to 5 times using an exponential backoff strategy.
 
----
-
 ## Event Types
 
 Webhooks can be triggered by the following event types:
 
-### `on_call_end`
-Triggered at the end of a call, this webhook sends detailed information about:
-- The call status, duration, and answered party.
-- The assistant (AI or human) managing the call.
-- The end user, including extracted data from interactions.
-- The call transcript and recording URL.
-
-This event is particularly useful for:
-- Updating your CRM with call status.
-- Analyzing conversations through transcripts.
-- Logging key user interactions.
-
----
+- `on_call_end`: Triggered at the end of a call, this webhook sends detailed information about the call and basic information on the assistant and enduser.
 
 ## Retry Policy
 
@@ -51,8 +35,6 @@ To ensure reliable delivery, Altur employs a retry mechanism for failed webhook 
 
 If all retries fail, the webhook event will not be delivered. It is recommended to ensure that your endpoint is reliable and can process requests promptly.
 
----
-
 ## Example Workflow
 
 Here’s a typical workflow for handling webhooks:
@@ -63,13 +45,9 @@ Here’s a typical workflow for handling webhooks:
 4. **Respond Promptly**: Return a `200 OK` status to acknowledge receipt.
 5. **Handle Retries**: Ensure your system can handle retries in case of temporary failures.
 
----
-
 ## Best Practices
 
 - **Secure Your Endpoint**: Verify webhook authenticity using HMAC signatures.
 - **Log Events**: Log incoming webhook requests for debugging and auditing.
 - **Test Thoroughly**: Use the Altur dashboard to simulate webhook events and verify your integration.
 - **Optimize Performance**: Ensure your endpoint responds within 10 seconds to avoid timeouts.
-
----
