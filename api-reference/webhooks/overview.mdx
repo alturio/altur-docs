@@ -41,7 +41,7 @@ def is_valid_signature(secret, payload, signature):
     return hmac.compare_digest(computed_signature, signature)
 ```
 
-### Example Validation Usage (Python)
+### Example Usage (Python)
 ```python
 payload = '{"type": "on_call_end" "status": "ended"}' # Raw request payload
 signature = "provided-signature-from-header" # X-Altur-Signature header

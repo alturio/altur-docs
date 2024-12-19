@@ -85,7 +85,13 @@
     {
       "group": "Webhooks",
       "pages": [
-        "api-reference/webhooks/overview"
+        "api-reference/webhooks/overview",
+        {
+          "group": "Events",
+          "pages": [
+            "api-reference/webhooks/on-call-end"
+          ]
+        }
       ]
     }
   ],
