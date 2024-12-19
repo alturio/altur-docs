@@ -54,6 +54,8 @@
       "pages": [
         {
           "group": "Calls",
+          "icon": "phone",
+          "iconType": "regular",
           "pages": [
             "api-reference/calls/retrieve-recording"
           ]
