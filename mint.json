@@ -62,6 +62,8 @@
         },
         {
           "group": "Messages",
+          "icon": "message",
+          "iconType": "regular",
           "pages": [
             "api-reference/messages/send",
             "api-reference/messages/retrieve"
@@ -69,12 +71,16 @@
         },
         {
           "group": "Threads",
+          "icon": "messages",
+          "iconType": "regular",
           "pages": [
             "api-reference/threads/retrieve"
           ]
         },
         {
           "group": "EndUsers",
+          "icon": "user",
+          "iconType": "regular",
           "pages": [
             "api-reference/endusers/create",
             "api-reference/endusers/retrieve",
@@ -86,10 +92,14 @@
     },
     {
       "group": "Webhooks",
+      "icon": "webhook",
+      "iconType": "regular",
       "pages": [
         "api-reference/webhooks/overview",
         {
           "group": "Events",
+          "icon": "bolt",
+          "iconType": "regular",
           "pages": [
             "api-reference/webhooks/on-call-end"
           ]
