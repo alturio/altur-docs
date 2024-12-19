@@ -1,4 +1,20 @@
 ---
 title: "Webhook Overview"
-description: "Webhooks allow you to receive real-time notifications about events in the Altur platform. When a specific event occurs (e.g., the end of a call), Altur sends an HTTP POST request with event-specific data to your configured endpoint. This enables seamless integration with your backend systems or CRM to ensure they stay up-to-date."
+description: ""
 ---
+
+## What are Webhooks?
+
+Webhooks allow you to receive real-time notifications about events in the Altur platform. When a specific event occurs (e.g., the end of a call), Altur sends an HTTP POST request with event-specific data to your configured endpoint. This enables seamless integration with your backend systems or CRM to ensure they stay up-to-date.
+
+## How Webhooks Work
+
+1. **Configure Your Endpoint**  
+    You can configure your webhook URL in the Altur platform. This URL will receive POST requests when specific events are triggered.
+
+2. **Receive Notifications**  
+    When an event occurs, Altur sends a POST request to your endpoint containing the event's details in a structured JSON format.
+
+3. **Acknowledge Delivery**  
+    Your endpoint should respond with a `200 OK` status code to confirm successful receipt. If the request fails or times out, Altur retries the delivery up to 5 times using an exponential backoff strategy.
+
