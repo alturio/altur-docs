@@ -27,7 +27,7 @@ To ensure secure communication and verify the authenticity of webhook requests, 
 - **HMAC Generation**: Altur generates an HMAC SHA-256 hash using the shared secret and the request payload. This hash is included in the `X-Altur-Signature` header.
 - **Validation**: Your endpoint must validate the signature using the same shared secret.
 
-### Validation Example (Python)
+### Validation Function Example (Python)
 ```python
 import hmac
 import hashlib
@@ -35,15 +35,17 @@ import hashlib
 def is_valid_signature(secret, payload, signature):
     computed_signature = hmac.new(
         key=secret.encode('utf-8'),
-        msg=payload.encode('utf-8'),
+        msg=str(payload).encode('utf-8'),
         digestmod=hashlib.sha256
     ).hexdigest()
     return hmac.compare_digest(computed_signature, signature)
+```
 
-# Example usage:
-payload = '{"type": "on_call_end", ...}'  # The raw request payload
-signature = "provided-signature-from-header"
-shared_secret = "your-shared-secret-key"
+### Example Validation Usage (Python)
+```python
+payload = '{"type": "on_call_end" "status": "ended"}' # Raw request payload
+signature = "provided-signature-from-header" # X-Altur-Signature header
+shared_secret = "your-shared-secret-key" # Shared secret key
 
 if is_valid_signature(shared_secret, payload, signature):
     print("Valid webhook request!")
@@ -82,9 +84,9 @@ If all retries fail, the webhook event will not be delivered. It is recommended 
 
 Here’s a typical workflow for handling webhooks:
 
-1. **Set Up Your Endpoint**: Create an API endpoint in your backend, such as `/webhooks/altur/on_call_end`.
+1. **Set Up Your Endpoint**: Create an API endpoint in your backend, such as `/webhooks/altur/on-call-end`.
 2. **Parse Incoming Data**: Process the JSON payload sent by Altur.
-3. **Validate Authenticity**: Use the `X-Signature` header to verify the request's authenticity.
+3. **Validate Authenticity**: Use the `X-Altur-Signature` header to verify the request's authenticity.
 4. **Respond Promptly**: Return a `200 OK` status to acknowledge receipt.
 5. **Handle Retries**: Ensure your system can handle retries in case of temporary failures.
 
