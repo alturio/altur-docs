@@ -16,7 +16,10 @@
     }
   },
   "background": {
-    "style": "windows"
+    "style": "grid"
+  },
+  "topbar": {
+    "style": "gradient"
   },
   "topbarLinks": [
     {
