@@ -5,7 +5,7 @@ description: "Triggered at the end of a call to provide detailed Call and End Us
 
 ## About This Event
 
-The `on_call_end` webhook is triggered at the conclusion of a call in the Altur platform. This webhook provides detailed information about the call, the assistant involved, and the end user. It is designed to help you keep your backend or CRM updated with the latest call data.
+The `on_call_end` webhook is triggered at the conclusion of a call in the Altur platform. This webhook provides detailed information about the call, the assistant involved, and the end user. Use this webhook to keep your backend or CRM updated with the latest call data.
 
 ## Event Details
 
@@ -38,7 +38,7 @@ Here’s an example of the payload sent with the `on_call_end` event:
     {
       "sent_by": "user",
       "sent_at": "2024-12-19T15:00:10Z",
-      "content": "Yes, who is this?."
+      "content": "Yes, who is this?"
     }
   ],
   "recording_url": "https://api.altur.io/api/v1.0/call/cll_gBoLtd02pUI50QwXkFjB/recording",
@@ -66,8 +66,8 @@ Here’s an example of the payload sent with the `on_call_end` event:
 | Field           | Type     | Description                                                                                                     |
 |:----------------|:---------|:----------------------------------------------------------------------------------------------------------------|
 | `type`          | `string` | Event type (`on_call_end`).                                                                                     |
-| `id`            | `string` | Unique identifier for the call.                                                                                 |
-| `status`        | `string` | Status of the call enum value (e.g., `completed`).                                                              |
+| `id`            | `string`   | Unique identifier for the call.                                                                                 |
+| `status`        | `string` | Status of the call enum value (e.g., `ended`).                                                              |
 | `answered_by`   | `string` | Indicates who answered the call (`human`, `machine` or `unknown`).                                              |
 | `transcript`    | `array`  | Call transcript object.                                                                                         |
 | `recording_url` | `string` | URL to [download](https://docs.altur.io/api-reference/calls/retrieve-recording) the call recording.             |
@@ -75,18 +75,18 @@ Here’s an example of the payload sent with the `on_call_end` event:
 ## Assistant Object
 | Field      | Type     | Description                           |
 |:-----------|:---------|:--------------------------------------|
-| `id`       | `string` | Unique identifier for the assistant.  |
+| `id`       | `uuid` | Unique identifier for the assistant.  |
 | `nickname` | `string` | Assistant's nickname.                 |
 | `name`     | `string` | Assistant's name.                     |
 
 ## End User Object
 | Field            | Type     | Description                                                 |
 |:-----------------|:---------|:------------------------------------------------------------|
-| `id`             | `string` | Unique identifier for the end user.                         |
+| `id`             | `uuid` | Unique identifier for the end user.                         |
 | `status`         | `string` | Current status of the user enum value (e.g., `converted`).  |
 | `display_name`   | `string` | Display name of the user.                                   |
-| `phone_number`   | `string` | User's phone number.                                        |
-| `context`        | `object` | Additional user-specific information.                       |
+| `phone_number`   | `string` | User's phone number (E.164 format).                                        |
+| `context`        | `string` | Additional user-specific information.                       |
 | `extracted_data` | `object` | Key-value pairs of extracted data.                          |
 
 ## Response Expectations
