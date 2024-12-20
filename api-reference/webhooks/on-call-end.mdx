@@ -62,7 +62,7 @@ Here’s an example of the payload sent with the `on_call_end` event:
 }
 ```
 
-## Root Fields
+### Root Fields
 | Field           | Type     | Description                                                                                                     |
 |:----------------|:---------|:----------------------------------------------------------------------------------------------------------------|
 | `type`          | `string` | Event type (`on_call_end`).                                                                                     |
@@ -72,14 +72,14 @@ Here’s an example of the payload sent with the `on_call_end` event:
 | `transcript`    | `array`  | Call transcript object.                                                                                         |
 | `recording_url` | `string` | URL to [download](https://docs.altur.io/api-reference/calls/retrieve-recording) the call recording.             |
 
-## Assistant Object
+### Assistant Object
 | Field      | Type     | Description                           |
 |:-----------|:---------|:--------------------------------------|
 | `id`       | `uuid` | Unique identifier for the assistant.  |
 | `nickname` | `string` | Assistant's nickname.                 |
 | `name`     | `string` | Assistant's name.                     |
 
-## End User Object
+### End User Object
 | Field            | Type     | Description                                                 |
 |:-----------------|:---------|:------------------------------------------------------------|
 | `id`             | `uuid` | Unique identifier for the end user.                         |
