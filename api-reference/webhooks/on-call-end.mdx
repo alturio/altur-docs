@@ -1,5 +1,5 @@
 ---
-title: 'on_call_end'
+title: "on_call_end"
 description: "Triggered at the end of a call to provide detailed Call and End User information."
 ---
 
@@ -63,54 +63,53 @@ Here’s an example of the payload sent with the `on_call_end` event:
 ```
 
 ### Root Fields
-| Field           | Type     | Description                                                                                                     |
-|:----------------|:---------|:----------------------------------------------------------------------------------------------------------------|
-| `type`          | `string` | Event type (`on_call_end`).                                                                                     |
-| `id`            | `string`   | Unique identifier for the call.                                                                                 |
-| `status`        | `string` | Status of the call enum value (e.g., `ended`).                                                              |
-| `answered_by`   | `string` | Indicates who answered the call (`human`, `machine` or `unknown`).                                              |
-| `transcript`    | `array`  | Call transcript object.                                                                                         |
-| `recording_url` | `string` | URL to [download](https://docs.altur.io/api-reference/calls/retrieve-recording) the call recording.             |
+
+| Field           | Type     | Description                                                                                         |
+| :-------------- | :------- | :-------------------------------------------------------------------------------------------------- |
+| `type`          | `string` | Event type (`on_call_end`).                                                                         |
+| `id`            | `string` | Unique identifier for the call.                                                                     |
+| `status`        | `string` | Status of the call enum value (e.g., `ended`).                                                      |
+| `answered_by`   | `string` | Indicates who answered the call (`human`, `machine` or `unknown`).                                  |
+| `transcript`    | `array`  | Call transcript object.                                                                             |
+| `recording_url` | `string` | URL to [download](https://docs.altur.io/api-reference/calls/retrieve-recording) the call recording. |
 
 ### Assistant Object
-| Field      | Type     | Description                           |
-|:-----------|:---------|:--------------------------------------|
-| `id`       | `uuid` | Unique identifier for the assistant.  |
-| `nickname` | `string` | Assistant's nickname.                 |
-| `name`     | `string` | Assistant's name.                     |
+
+| Field      | Type     | Description                          |
+| :--------- | :------- | :----------------------------------- |
+| `id`       | `uuid`   | Unique identifier for the assistant. |
+| `nickname` | `string` | Assistant's nickname.                |
+| `name`     | `string` | Assistant's name.                    |
 
 ### End User Object
-| Field            | Type     | Description                                                 |
-|:-----------------|:---------|:------------------------------------------------------------|
-| `id`             | `uuid` | Unique identifier for the end user.                         |
-| `status`         | `string` | Current status of the user enum value (e.g., `converted`).  |
-| `display_name`   | `string` | Display name of the user.                                   |
-| `phone_number`   | `string` | User's phone number (E.164 format).                                        |
-| `context`        | `string` | Additional user-specific information.                       |
-| `extracted_data` | `object` | Key-value pairs of extracted data.                          |
+
+| Field            | Type     | Description                                                |
+| :--------------- | :------- | :--------------------------------------------------------- |
+| `id`             | `uuid`   | Unique identifier for the end user.                        |
+| `status`         | `string` | Current status of the user enum value (e.g., `converted`). |
+| `display_name`   | `string` | Display name of the user.                                  |
+| `phone_number`   | `string` | User's phone number (E.164 format).                        |
+| `context`        | `string` | Additional user-specific information.                      |
+| `extracted_data` | `object` | Key-value pairs of extracted data.                         |
 
 ## Response Expectations
 
-Your endpoint should return a `200 OK` status code to confirm receipt of the webhook. Failure to do so will result in retries as per the Retry Policy.
-
-## Retry Policy
-
-If your endpoint fails to respond or returns an error, Altur retries the webhook delivery up to 5 times with exponential backoff:
-- Retry Attempts: 5
-- Initial Retry Delay: 2 seconds
-- Maximum Delay: 30 seconds
+Your endpoint should return a 200 OK status code to confirm receipt of the webhook. For information on retry behavior in case of failures, see the [Retry Policy](https://docs.altur.io/api-reference/webhooks/overview#delivery-retry-policy) in the Webhook Overview.
 
 ## Security
 
-Each request includes an HMAC signature in the `X-Altur-Signature` header. Use this signature to verify the authenticity of the request. Refer to the [Webhook Overview](https://docs.altur.io/api-reference/webhooks/overview#security) for details on validating webhook requests.
+Each request includes an HMAC signature in the `X-Altur-Signature` header. Refer to the [Webhook Overview](https://docs.altur.io/api-reference/webhooks/overview#securing-your-webhooks) for instructions on validating webhook requests.
 
 ## Example Use Cases
 
 1. **CRM Integration**
-Use the `on_call_end` webhook to update call logs and user interaction data in your CRM system.
+
+   Use the `on_call_end` webhook to update call logs and user interaction data in your CRM system.
 
 2. **Analytics**
-Process transcripts and user status to generate insights or trigger follow-up actions.
+
+   Process transcripts and user status to generate insights or trigger follow-up actions.
 
 3. **Data Enrichment**
-Automatically store extracted data, like account numbers or due dates, in your system for further use.
+
+   Automatically store extracted data, like account numbers or due dates, in your system for further use.
