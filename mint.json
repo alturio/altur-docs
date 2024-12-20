@@ -111,5 +111,15 @@
   "footerSocials": {
     "github": "https://github.com/alturio",
     "linkedin": "https://www.linkedin.com/company/alturio"
-  }
+  },
+  "versions": [
+    {
+      "name": "English",
+      "locale": "en"
+    },
+    {
+      "name": "Español",
+      "locale": "es"
+    }
+  ]
 }
