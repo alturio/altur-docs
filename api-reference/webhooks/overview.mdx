@@ -42,7 +42,7 @@ import hashlib
 def is_valid_signature(secret, payload, signature):
     computed_signature = hmac.new(
         key=secret.encode('utf-8'),
-        msg=str(payload).encode('utf-8'),
+        msg=payload.encode('utf-8'),
         digestmod=hashlib.sha256
     ).hexdigest()
     return hmac.compare_digest(computed_signature, signature)
