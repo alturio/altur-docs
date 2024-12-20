@@ -4,18 +4,18 @@ Welcome to the **Altur Docs** repository! This is the official documentation for
 
 Our documentation is built using [Mintlify](https://mintlify.com) to provide a clean, user-friendly, and interactive experience for developers and non-technical users alike.
 
-## 🌟 Features
+## Features
 
 - **Comprehensive Guides**: Step-by-step instructions to help you integrate and utilize Altur effectively.
 - **API Reference**: Detailed information about our API endpoints for developers.
 - **Event Webhooks**: Learn how to handle real-time event notifications in your systems.
 - **Advanced Features**: Explore topics like HMAC authentication, retry policies, and omnichannel integration.
 
-## 🚀 Get Started
+## Get Started
 
 To explore the documentation, visit: [https://docs.altur.io](https://docs.altur.io)
 
-## 📝 Contributing
+## Contributing
 
 We welcome suggestions, bug reports, and pull requests! Even though this is primarily managed internally, we’re excited to hear from you.
 
@@ -34,11 +34,11 @@ We welcome suggestions, bug reports, and pull requests! Even though this is prim
    ```
 5. Open a pull request to the `main` branch.
 
-## 📄 License
+## License
 
 This documentation is provided under the [MIT License](https://mit-license.org/). Feel free to use it as a reference for your own projects.
 
-## 📫 Contact
+## Contact
 
 For questions or support, please contact us at [devs@altur.io](mailto:devs@altur.io).
 
