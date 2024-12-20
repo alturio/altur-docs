@@ -85,23 +85,29 @@ If all retries fail, the webhook event will not be delivered. It is recommended 
 Here’s a typical workflow for handling webhooks effectively:
 
 1. **Set Up Your Endpoint**
+
     Create an API endpoint in your backend, such as `/webhooks/altur/on-call-end`. Ensure the endpoint is publicly accessible and configured to accept POST requests with a `Content-Type` of `application/json`.
 
 2. **Parse Incoming Data**
+
     Extract and process the JSON payload sent by Altur. Ensure your code handles possible issues, such as malformed payloads or missing fields, to prevent runtime errors.
 
 3. **Validate Request Authenticity**
+
     Use the `X-Altur-Signature` header to verify the authenticity of the request. This involves:
     - Recomputing the HMAC signature using the shared secret and payload.
     - Comparing it with the signature provided in the header.
 
 4. **Respond Promptly**
+
     Return a `200 OK` status code to acknowledge successful receipt. Aim to respond within 10 seconds to avoid timeouts or unnecessary retries by Altur.
 
 5. **Log Events for Debugging**
+
     Log the incoming request and processing steps to ensure traceability. This is particularly useful for debugging issues with payloads or retries.
 
 6. **Handle Retries Gracefully**
+
     Design your system to handle retries in case of temporary failures. Ensure your endpoint is idempotent so processing the same event multiple times does not create duplicate actions (e.g., duplicate database entries or API calls).
 
 ## Best Practices
