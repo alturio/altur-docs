@@ -15,9 +15,6 @@
       "dark": "#0D1117"
     }
   },
-  "background": {
-    "style": "grid"
-  },
   "topbar": {
     "style": "gradient"
   },
