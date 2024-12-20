@@ -4,8 +4,6 @@ Welcome to the **Altur Docs** repository! This is the official documentation for
 
 Our documentation is built using [Mintlify](https://mintlify.com) to provide a clean, user-friendly, and interactive experience for developers and non-technical users alike.
 
----
-
 ## 🌟 Features
 
 - **Comprehensive Guides**: Step-by-step instructions to help you integrate and utilize Altur effectively.
@@ -13,13 +11,9 @@ Our documentation is built using [Mintlify](https://mintlify.com) to provide a c
 - **Event Webhooks**: Learn how to handle real-time event notifications in your systems.
 - **Advanced Features**: Explore topics like HMAC authentication, retry policies, and omnichannel integration.
 
----
-
 ## 🚀 Get Started
 
 To explore the documentation, visit: [https://docs.altur.io](https://docs.altur.io)
-
----
 
 ## 📝 Contributing
 
