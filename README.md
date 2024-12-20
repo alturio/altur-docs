@@ -1,32 +1,51 @@
-# Mintlify Starter Kit
+# Altur Docs
 
-Click on `Use this template` to copy the Mintlify starter kit. The starter kit contains examples including
+Welcome to the **Altur Docs** repository! This is the official documentation for [Altur](https://altur.io), a platform that automates payment collections at scale with AI agents on phone and WhatsApp.
 
-- Guide pages
-- Navigation
-- Customizations
-- API Reference pages
-- Use of popular components
+Our documentation is built using [Mintlify](https://mintlify.com) to provide a clean, user-friendly, and interactive experience for developers and non-technical users alike.
 
-### Development
+---
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the documentation changes locally. To install, use the following command
+## 🌟 Features
 
-```
-npm i -g mintlify
-```
+- **Comprehensive Guides**: Step-by-step instructions to help you integrate and utilize Altur effectively.
+- **API Reference**: Detailed information about our API endpoints for developers.
+- **Event Webhooks**: Learn how to handle real-time event notifications in your systems.
+- **Advanced Features**: Explore topics like HMAC authentication, retry policies, and omnichannel integration.
 
-Run the following command at the root of your documentation (where mint.json is)
+---
 
-```
-mintlify dev
-```
+## 🚀 Get Started
 
-### Publishing Changes
+To explore the documentation, visit: [https://docs.altur.io](https://docs.altur.io)
 
-Install our Github App to auto propagate changes from your repo to your deployment. Changes will be deployed to production automatically after pushing to the default branch. Find the link to install on your dashboard. 
+---
 
-#### Troubleshooting
+## 📝 Contributing
 
-- Mintlify dev isn't running - Run `mintlify install` it'll re-install dependencies.
-- Page loads as a 404 - Make sure you are running in a folder with `mint.json`
+We welcome suggestions, bug reports, and pull requests! Even though this is primarily managed internally, we’re excited to hear from you.
+
+1. Fork the repository.
+2. Create a new branch:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. Make your changes and commit them:
+   ```bash
+   git commit -m "Add a descriptive commit message"
+   ```
+4. Push you changes:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+5. Open a pull request to the `main` branch.
+
+## 📄 License
+
+This documentation is provided under the [MIT License](https://mit-license.org/). Feel free to use it as a reference for your own projects.
+
+## 📫 Contact
+
+For questions or support, please contact us at [devs@altur.io](mailto:devs@altur.io).
+
+Thank you for visiting Altur Docs! Happy coding! 💻
