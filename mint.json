@@ -11,7 +11,7 @@
     "light": "#0066FF",
     "dark": "#0066FF",
     "background": {
-      "light": "#FFFFFF",
+      "light": "#f5f5f5",
       "dark": "#0D1117"
     }
   },
