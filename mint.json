@@ -95,7 +95,7 @@
       "pages": [
         "api-reference/webhooks/overview",
         {
-          "group": "Events",
+          "group": "Webhook Events",
           "icon": "bolt",
           "iconType": "regular",
           "pages": [
