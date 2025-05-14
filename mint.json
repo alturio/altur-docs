@@ -60,6 +60,7 @@
           "icon": "phone",
           "iconType": "regular",
           "pages": [
+            "api-reference/calls/retrieve",
             "api-reference/calls/retrieve-recording"
           ]
         },
