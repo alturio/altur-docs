@@ -393,6 +393,64 @@
         }
       }
     },
+    "/call/{id}": {
+      "get": {
+        "description": "Returns the Call corresponding to the given indentifier",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the Call to return",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Call response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Call"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Call not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/call/{id}/recording": {
       "get": {
         "description": "Access the recording of a Call in form of a file stream",
@@ -412,8 +470,7 @@
             "description": "File stream of the Call recording",
             "content": {
               "application/json": {
-                "schema": {
-                }
+                "schema": {}
               }
             }
           },
@@ -634,6 +691,73 @@
             "items": {
               "$ref": "#/components/schemas/User"
             }
+          }
+        }
+      },
+      "Call": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the Call",
+            "type": "string"
+          },
+          "thread": {
+            "$ref": "#/components/schemas/Thread"
+          },
+          "type": {
+            "description": "Type of the Call",
+            "type": "string",
+            "enum": [
+              "inbound",
+              "outbound"
+            ]
+          },
+          "status": {
+            "description": "Status of the Call",
+            "type": "string",
+            "enum": [
+              "created",
+              "queued",
+              "ringing",
+              "in-progress",
+              "forwarding",
+              "ended",
+              "busy",
+              "no-answer",
+              "failed"
+            ]
+          },
+          "answered_by": {
+            "description": "Who or what answered the Call",
+            "type": "string",
+            "enum": [
+              "human",
+              "machine",
+              "unknown"
+            ]
+          },
+          "created_at": {
+            "description": "Datetime from when the Call was created",
+            "type": "string",
+            "format": "date-time"
+          },
+          "started_at": {
+            "description": "Datetime from when the Call was started",
+            "type": "string",
+            "format": "date-time"
+          },
+          "ended_at": {
+            "description": "Datetime from when the Call was ended",
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration": {
+            "description": "Duration of the Call in seconds",
+            "type": "integer"
+          },
+          "billable_duration": {
+            "description": "Billable duration of the Call in seconds",
+            "type": "integer"
           }
         }
       },
