@@ -9,12 +9,8 @@
   "favicon": "/favicon.png",
   "colors": {
     "primary": "#0066FF",
-    "light": "#0066FF",
-    "dark": "#0066FF",
-    "background": {
-      "light": "#FFFFFF",
-      "dark": "#0D1117"
-    }
+    "light": "#FFFFFF",
+    "dark": "#0D1117"
   },
   "background": {
     "style": "grid"
