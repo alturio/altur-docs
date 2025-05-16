@@ -1,0 +1,211 @@
+{
+  "$schema": "https://altur.io",
+  "name": "Altur",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#0066FF",
+    "light": "#0066FF",
+    "dark": "#0066FF",
+    "background": {
+      "light": "#FFFFFF",
+      "dark": "#0D1117"
+    }
+  },
+  "background": {
+    "style": "grid"
+  },
+  "topbarLinks": [
+    {
+      "label": "Blog",
+      "href": "https://altur.io/blog"
+    }
+  ],
+  "topbarCtaButton": {
+    "type": "button",
+    "label": "Open App",
+    "href": "https://app.altur.io"
+  },
+  "navigation": {
+    "languages": [
+      {
+        "language": "en",
+        "default": true,
+        "tabs": [
+          {
+            "tab": "Documentation",
+            "href": "documentation"
+          },
+          {
+            "tab": "API Reference",
+            "href": "api-reference"
+          }
+        ],
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "en/documentation/introduction"
+            ]
+          },
+          {
+            "group": "Getting Started",
+            "pages": [
+              "en/api-reference/introduction",
+              "en/api-reference/authentication"
+            ]
+          },
+          {
+            "group": "API Endpoints",
+            "groups": [
+              {
+                "group": "Calls",
+                "icon": "phone",
+                "iconType": "regular",
+                "pages": [
+                  "en/api-reference/calls/retrieve",
+                  "en/api-reference/calls/retrieve-recording"
+                ]
+              },
+              {
+                "group": "Messages",
+                "icon": "message",
+                "iconType": "regular",
+                "pages": [
+                  "en/api-reference/messages/send",
+                  "en/api-reference/messages/retrieve"
+                ]
+              },
+              {
+                "group": "Threads",
+                "icon": "messages",
+                "iconType": "regular",
+                "pages": [
+                  "en/api-reference/threads/retrieve"
+                ]
+              },
+              {
+                "group": "EndUsers",
+                "icon": "user",
+                "iconType": "regular",
+                "pages": [
+                  "en/api-reference/endusers/create",
+                  "en/api-reference/endusers/retrieve",
+                  "en/api-reference/endusers/update",
+                  "en/api-reference/endusers/delete"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "en/api-reference/webhooks/overview",
+              {
+                "group": "Webhook Events",
+                "icon": "bolt",
+                "iconType": "regular",
+                "pages": [
+                  "en/api-reference/webhooks/on-call-end"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "es",
+        "tabs": [
+          {
+            "tab": "Documentación",
+            "href": "documentation"
+          },
+          {
+            "tab": "Referencia API",
+            "href": "api-reference"
+          }
+        ],
+        "groups": [
+          {
+            "group": "Comenzar",
+            "pages": [
+              "es/documentation/introduction"
+            ]
+          },
+          {
+            "group": "Iniciando",
+            "pages": [
+              "es/api-reference/introduction",
+              "es/api-reference/authentication"
+            ]
+          },
+          {
+            "group": "Puntos de API",
+            "groups": [
+              {
+                "group": "Llamadas",
+                "icon": "phone",
+                "iconType": "regular",
+                "pages": [
+                  "es/api-reference/calls/retrieve",
+                  "es/api-reference/calls/retrieve-recording"
+                ]
+              },
+              {
+                "group": "Mensajes",
+                "icon": "message",
+                "iconType": "regular",
+                "pages": [
+                  "es/api-reference/messages/send",
+                  "es/api-reference/messages/retrieve"
+                ]
+              },
+              {
+                "group": "Hilos",
+                "icon": "messages",
+                "iconType": "regular",
+                "pages": [
+                  "es/api-reference/threads/retrieve"
+                ]
+              },
+              {
+                "group": "Usuarios",
+                "icon": "user",
+                "iconType": "regular",
+                "pages": [
+                  "es/api-reference/endusers/create",
+                  "es/api-reference/endusers/retrieve",
+                  "es/api-reference/endusers/update",
+                  "es/api-reference/endusers/delete"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "es/api-reference/webhooks/overview",
+              {
+                "group": "Eventos de Webhook",
+                "icon": "bolt",
+                "iconType": "regular",
+                "pages": [
+                  "es/api-reference/webhooks/on-call-end"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/alturio",
+      "linkedin": "https://www.linkedin.com/company/alturio"
+    }
+  }
+}

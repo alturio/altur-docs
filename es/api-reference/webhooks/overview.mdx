@@ -1,0 +1,140 @@
+---
+title: "Webhooks Overview"
+icon: "webhook"
+iconType: "regular"
+description: "Recieve real-time updates from Altur directly to your backend or CRM."
+---
+
+## Introduction to Webhooks
+
+Webhooks allow you to receive real-time notifications about events in your Altur organization. When a specific event occurs (e.g., the end of a call), Altur sends an HTTP POST request with event-specific data to your configured endpoint. This enables seamless integration with your backend systems or CRM, ensuring they remain up-to-date.
+
+## How Webhooks Work
+
+1. **Configure Your Endpoint**  
+    You can configure your webhook URL in the Altur platform. This URL will receive POST requests when specific events are triggered.
+
+2. **Receive Notifications**  
+    When an event occurs, Altur sends a POST request with the event's details in a structured JSON format to your endpoint.
+
+3. **Acknowledge Delivery**  
+    Your endpoint should respond with a `200 OK` status code to confirm successful receipt. If the request fails or times out, Altur retries the delivery up to 5 times with an exponential backoff strategy.
+
+## Event Types
+
+Webhooks can be triggered by the following event types:
+
+- [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end): Triggered at the end of a call, this webhook sends detailed information about the call along with basic information about the assistant and the end user.
+
+## Securing Your Webhooks
+
+To ensure secure communication and verify the authenticity of webhook requests, Altur includes an HMAC signature in the `X-Altur-Signature` header for every request.
+
+### How It Works
+- **Shared Secret**: Each webhook integration is configured with a unique shared secret key.
+- **HMAC Generation**: Altur generates an HMAC SHA-256 hash using the shared secret and the request payload. This hash is included in the `X-Altur-Signature` header.
+- **Validation**: Your endpoint must validate the signature using the same shared secret.
+
+```python Validation Function Example
+import hmac
+import hashlib
+
+def is_valid_signature(secret, payload, signature):
+    computed_signature = hmac.new(
+        key=secret.encode('utf-8'),
+        msg=payload.encode('utf-8'),
+        digestmod=hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(computed_signature, signature)
+```
+
+```python Example Usage
+payload = '{"type": "on_call_end", "status": "ended"}' # Raw request payload
+signature = "provided-signature-from-header" # X-Altur-Signature header
+shared_secret = "your-shared-secret-key" # Shared secret key
+
+if is_valid_signature(shared_secret, payload, signature):
+    print("Valid webhook request!")
+else:
+    print("Invalid webhook request!")
+```
+
+### Headers Sent with Webhook
+- `Content-Type`: `application/json`
+- `X-Altur-Signature`: HMAC SHA-256 hash of the payload
+
+### Why This Matters
+
+This mechanism ensures:
+- The request originates from Altur.
+- The payload has not been tampered with during transmission.
+
+## Delivery Retry Policy
+
+To ensure reliable delivery, Altur employs a retry mechanism for failed webhook requests. If your endpoint does not respond with a `200 OK` status code, the following retry policy is applied:
+
+- **Retry Attempts**: 5
+- **Retry Strategy**: Exponential backoff
+  - Initial Retry: 2 seconds after the first failure.
+  - Maximum Retry Delay: 30 seconds between retries.
+
+If all retries fail, the webhook event will not be delivered. It is recommended to ensure that your endpoint is reliable and can process requests promptly.
+
+## Example Workflow
+
+Here’s a typical workflow for handling webhooks effectively:
+
+1. **Set Up Your Endpoint**
+
+    Create an API endpoint in your backend, such as `/webhooks/altur/on-call-end`. Ensure the endpoint is publicly accessible and configured to accept POST requests with a `Content-Type` of `application/json`.
+
+2. **Parse Incoming Data**
+
+    Extract and process the JSON payload sent by Altur. Ensure your code handles possible issues, such as malformed payloads or missing fields, to prevent runtime errors.
+
+3. **Validate Request Authenticity**
+
+    Use the `X-Altur-Signature` header to verify the authenticity of the request. This involves:
+    - Recomputing the HMAC signature using the shared secret and payload.
+    - Comparing it with the signature provided in the header.
+
+4. **Respond Promptly**
+
+    Return a `200 OK` status code to acknowledge successful receipt. Aim to respond within 10 seconds to avoid timeouts or unnecessary retries by Altur.
+
+5. **Log Events for Debugging**
+
+    Log the incoming request and processing steps to ensure traceability. This is particularly useful for debugging issues with payloads or retries.
+
+6. **Handle Retries Gracefully**
+
+    Design your system to handle retries in case of temporary failures. Ensure your endpoint is idempotent so processing the same event multiple times does not create duplicate actions (e.g., duplicate database entries or API calls).
+
+## Best Practices
+
+1. **Secure Your Endpoint**  
+   - **Authenticate Requests**: Verify webhook authenticity using HMAC signatures. Always use a secure and unique shared secret for each integration.  
+   - **Restrict Access**: Use IP whitelisting or firewalls to allow requests only from Altur's servers.  
+   - **Encrypt Communication**: Ensure your webhook endpoint uses HTTPS to encrypt data in transit.
+
+2. **Log Events**  
+   - **Record Everything**: Log all incoming webhook requests, including timestamps, headers, payloads, and responses.  
+   - **Monitor Failures**: Implement alerts for repeated failures or invalid requests to quickly address issues.  
+   - **Enable Debugging**: Retain logs for a reasonable period to aid in debugging or auditing as necessary.
+
+3. **Test Thoroughly**  
+   - **Simulate Events**: Use the Altur dashboard to simulate webhook events and confirm your endpoint handles them correctly.  
+   - **Handle Edge Cases**: Test scenarios like malformed payloads, large payloads, or missing fields to ensure robustness.  
+   - **Use Staging Environments**: Set up a dedicated staging endpoint for safe testing without affecting production systems.
+
+4. **Optimize Performance**  
+   - **Respond Quickly**: Ensure your endpoint responds within 10 seconds to avoid timeouts. If processing takes longer, return a `200 OK` and handle the task asynchronously.  
+   - **Minimize Processing**: Perform lightweight validation and queuing at the webhook level, offloading heavy processing to background workers.  
+   - **Use Caching**: Cache static responses for redundant requests when appropriate.
+
+5. **Ensure Idempotency**  
+   - **Avoid Duplicate Actions**: Design your system to handle retries without causing duplicate operations (e.g., database inserts or API calls). Use unique event identifiers from Altur for this purpose.
+
+6. **Communicate Failures**  
+   - **Return Meaningful Status Codes**: Respond with appropriate HTTP status codes to help diagnose issues (e.g., `400` for invalid requests or `500` for server errors).  
+   - **Log and Notify**: Log failures and consider notifying your team if critical retries are exhausted.

@@ -1,0 +1,874 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Altur API",
+    "description": "An API aimed to allow third-party developers to interact with the Altur platform through a RESTful interface.",
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.altur.io/api/v1.0"
+    }
+  ],
+  "security": [
+    {
+      "apiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/enduser": {
+      "post": {
+        "description": "Create new EndUser for your organization",
+        "requestBody": {
+          "description": "EndUser to be created",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EndUserData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "EndUser created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EndUser"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enduser/{id}": {
+      "get": {
+        "description": "Returns the EndUser corresponding to the given indentifier",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the EndUser to return",
+            "schema": {
+              "type": "string",
+              "format": "uuid4"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "EndUser response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EndUser"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Updates the details of an EndUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the EndUser to update",
+            "schema": {
+              "type": "string",
+              "format": "uuid4"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "EndUser object that needs to be updated",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EndUserData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "EndUser updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EndUser"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EndUser not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Deletes an EndUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the EndUser to delete",
+            "schema": {
+              "type": "string",
+              "format": "uuid4"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "EndUser deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "EndUser not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/thread/{id}": {
+      "get": {
+        "description": "Returns the Thread corresponding to the given indentifier",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the Thread to return",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thread response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Thread"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/message": {
+      "post": {
+        "description": "Sends Message to the Thread between a Chatbot and an EndUser, returns the Message created from the request, the Messages generated in response, and returns information about the Thread between the Chatbot and EndUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatbot_id": {
+                    "description": "Unique identifier of the Chatbot recieving the Message",
+                    "type": "string",
+                    "format": "uuid4"
+                  },
+                  "end_user_id": {
+                    "description": "Unique identifier of the EndUser sending the Message",
+                    "type": "string",
+                    "format": "uuid4"
+                  },
+                  "content": {
+                    "description": "Text content of the Message",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Thread response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chatbot or EndUser not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/message/{thread_id}": {
+      "get": {
+        "description": "Get a all Messages in a Thread, ordered from oldest to most recently sent",
+        "parameters": [
+          {
+            "name": "thread_id",
+            "in": "path",
+            "description": "The identifier of the Thread to fetch",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array containing all Messages in the Thread",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Thread not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/call/{id}": {
+      "get": {
+        "description": "Returns the Call corresponding to the given indentifier",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the Call to return",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Call response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Call"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Call not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/call/{id}/recording": {
+      "get": {
+        "description": "Access the recording of a Call in form of a file stream",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the Call to fetch",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File stream of the Call recording",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Call not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EndUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the EndUser",
+            "type": "string",
+            "format": "uuid4"
+          },
+          "display_name": {
+            "description": "EndUser's display name",
+            "type": "string"
+          },
+          "integration_type": {
+            "description": "Enum representing the Integration's channel",
+            "type": "string",
+            "enum": [
+              "api",
+              "whatsapp"
+            ]
+          },
+          "info": {
+            "description": "EndUser's information valuable for interactions with Chatbots or human agents",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "display_name",
+          "integration"
+        ]
+      },
+      "EndUserData": {
+        "type": "object",
+        "properties": {
+          "display_name": {
+            "description": "EndUser's display name",
+            "type": "string"
+          },
+          "info": {
+            "description": "EndUser's information valuable for interactions with chatbots or human agents",
+            "type": "string"
+          }
+        }
+      },
+      "Chatbot": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the Chatbot",
+            "type": "string",
+            "format": "uuid4"
+          },
+          "name": {
+            "description": "Name given to the Chatbot",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "Integration": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the Integration",
+            "type": "string"
+          },
+          "type": {
+            "description": "Enum representing the Integration's channel",
+            "type": "string",
+            "enum": [
+              "api",
+              "whatsapp"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "type"
+        ]
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the Tag",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name given to the Tag",
+            "type": "string"
+          },
+          "color": {
+            "description": "Color used for in-app display of Tag",
+            "type": "string",
+            "enum": [
+              "blue",
+              "green",
+              "red",
+              "pink",
+              "purple",
+              "orange",
+              "yellow"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "color"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the User",
+            "type": "string"
+          },
+          "email": {
+            "description": "User's email address",
+            "type": "string"
+          },
+          "first_name": {
+            "description": "User's first name",
+            "type": "string"
+          },
+          "last_name": {
+            "description": "User's last name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email"
+        ]
+      },
+      "Thread": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the Thread",
+            "type": "string"
+          },
+          "chatbot": {
+            "$ref": "#/components/schemas/Chatbot"
+          },
+          "enduser": {
+            "$ref": "#/components/schemas/EndUser"
+          },
+          "integration": {
+            "$ref": "#/components/schemas/Integration"
+          },
+          "updated_at": {
+            "description": "Last time the Thread was updated",
+            "type": "string",
+            "format": "date-time"
+          },
+          "active": {
+            "description": "Boolean describing if automatic responses by the Chatbot are active on this Thread",
+            "type": "boolean"
+          },
+          "blocked": {
+            "description": "Boolean describing if Thread is blocked",
+            "type": "boolean"
+          },
+          "tags": {
+            "description": "Tags assigned to Thread",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tag"
+            }
+          },
+          "assigned_to": {
+            "description": "Users assigned to Thread",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "Call": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the Call",
+            "type": "string"
+          },
+          "thread": {
+            "$ref": "#/components/schemas/Thread"
+          },
+          "type": {
+            "description": "Type of the Call",
+            "type": "string",
+            "enum": [
+              "inbound",
+              "outbound"
+            ]
+          },
+          "status": {
+            "description": "Status of the Call",
+            "type": "string",
+            "enum": [
+              "created",
+              "queued",
+              "ringing",
+              "in-progress",
+              "forwarding",
+              "ended",
+              "busy",
+              "no-answer",
+              "failed"
+            ]
+          },
+          "answered_by": {
+            "description": "Who or what answered the Call",
+            "type": "string",
+            "enum": [
+              "human",
+              "machine",
+              "unknown"
+            ]
+          },
+          "created_at": {
+            "description": "Datetime from when the Call was created",
+            "type": "string",
+            "format": "date-time"
+          },
+          "started_at": {
+            "description": "Datetime from when the Call was started",
+            "type": "string",
+            "format": "date-time"
+          },
+          "ended_at": {
+            "description": "Datetime from when the Call was ended",
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration": {
+            "description": "Duration of the Call in seconds",
+            "type": "integer"
+          },
+          "billable_duration": {
+            "description": "Billable duration of the Call in seconds",
+            "type": "integer"
+          }
+        }
+      },
+      "MessageResponse": {
+        "type": "object",
+        "properties": {
+          "thread": {
+            "$ref": "#/components/schemas/Thread"
+          },
+          "messages": {
+            "description": "Array of Messages in response to prompted Message",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            }
+          },
+          "in_response_to": {
+            "$ref": "#/components/schemas/Message"
+          }
+        }
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "thread_id": {
+            "description": "Unique identifier of the Thread the Message belongs to",
+            "type": "string"
+          },
+          "type": {
+            "description": "Message type enum",
+            "type": "string",
+            "enum": [
+              "text",
+              "image",
+              "audio",
+              "video",
+              "button",
+              "template",
+              "document"
+            ]
+          },
+          "content": {
+            "description": "Message's text content",
+            "type": "string"
+          },
+          "media": {
+            "description": "Message's media content, if any (usually in form of URL)",
+            "type": "string"
+          },
+          "sent_by": {
+            "description": "Author of this message",
+            "type": "string",
+            "enum": [
+              "AI",
+              "EU",
+              "SYS"
+            ]
+          },
+          "sent_by_user": {
+            "description": "Altur user id (if Message was sent manually by an in-app user)",
+            "type": "string"
+          },
+          "sent_at": {
+            "description": "Datetime from when the Message was sent",
+            "type": "string",
+            "format": "date-time"
+          },
+          "read": {
+            "description": "Boolean describing if the Message is considered as read",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "thread_id",
+          "type",
+          "sent_by",
+          "sent_at"
+        ]
+      },
+      "Error": {
+        "required": [
+          "error",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ResponseMessage": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Add `api-key YOUR_API_SECRET_KEY` as the value of the `Authorization` header."
+      }
+    }
+  }
+}

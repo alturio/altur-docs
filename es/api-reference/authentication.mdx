@@ -1,0 +1,64 @@
+---
+title: "Authentication"
+description: "Authenticate requests to the Altur API using a valid API key for your organization."
+---
+
+## Base URL
+
+The Altur API is built on REST principles and requires HTTPS for all requests, ensuring data security, integrity, and privacy. HTTP requests are not supported.
+
+### API Base URL
+
+```plaintext
+https://api.altur.io/api/v1.0
+```
+
+## Authentication
+
+All requests to the Altur API must include a valid API key to authenticate your organization. Follow the steps below to generate and use your API key.
+
+### Steps to Generate an API Key
+
+<Steps>
+  <Step title="Log In to Your Account">
+    Log in to your Altur account using your credentials.
+  </Step>
+  <Step title="Access the API Dashboard">
+    Navigate to the [API Keys](https://app.altur.io/dashboard/api) section in your dashboard.
+  </Step>
+  <Step title="Generate an API Key">
+    Click "Generate API Key" to create a new key. Copy it and save it securely, as it will not be displayed again.
+  </Step>
+</Steps>
+
+## Using Your API Key
+
+Include the following `Authorization` header in your requests to authenticate:
+
+```plaintext
+Authorization: api-key YOUR_API_SECRET_KEY
+```
+
+### Example Request
+
+Here's an example of an authenticated `GET` request:
+
+```curl
+curl -X GET "https://api.altur.io/api/v1.0/example-endpoint" \
+-H "Authorization: api-key YOUR_API_SECRET_KEY" \
+-H "Content-Type: application/json"
+```
+
+## Best Practices for API Keys
+
+1. **Keep Your Key Secure**
+
+Store your API key in a secure environment, such as environment variables or a secrets manager. Avoid hardcoding keys directly into your application.
+
+2. **Rotate Keys Regularly**
+
+Periodically regenerate your API key to minimize the risk of misuse. Update all systems that use the key to the new value.
+
+3. **Restrict Access**
+
+Assign keys only to trusted systems and personnel. If you suspect your key has been compromised, revoke it immediately and generate a new one.
