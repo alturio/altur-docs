@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "name": "Altur",
-  "theme": "mint",
+  "theme": "maple",
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
