@@ -1,6 +1,7 @@
 {
   "$schema": "https://altur.io",
   "name": "Altur",
+  "theme": "mint",
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
