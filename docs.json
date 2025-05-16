@@ -35,6 +35,86 @@
   "navigation": {
     "languages": [
       {
+        "language": "es",
+        "default": true,
+        "tabs": [
+          {
+            "tab": "Documentación",
+            "groups": [
+              {
+                "group": "Introducción",
+                "pages": [
+                  "es/documentation/introduction"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Referencia de API",
+            "groups": [
+              {
+                "group": "Introducción",
+                "pages": [
+                  "es/api-reference/introduction",
+                  "es/api-reference/authentication"
+                ]
+              },
+              {
+                "group": "Endpoints de API",
+                "pages": [
+                  {
+                    "group": "Llamadas",
+                    "icon": "phone",
+                    "pages": [
+                      "es/api-reference/calls/retrieve",
+                      "es/api-reference/calls/retrieve-recording"
+                    ]
+                  },
+                  {
+                    "group": "Mensajes",
+                    "icon": "message",
+                    "pages": [
+                      "es/api-reference/messages/send",
+                      "es/api-reference/messages/retrieve"
+                    ]
+                  },
+                  {
+                    "group": "Threads",
+                    "icon": "messages",
+                    "pages": [
+                      "es/api-reference/threads/retrieve"
+                    ]
+                  },
+                  {
+                    "group": "EndUsers",
+                    "icon": "user",
+                    "pages": [
+                      "es/api-reference/endusers/create",
+                      "es/api-reference/endusers/retrieve",
+                      "es/api-reference/endusers/update",
+                      "es/api-reference/endusers/delete"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Webhooks",
+                "pages": [
+                  "es/api-reference/webhooks/overview",
+                  {
+                    "group": "Eventos de Webhook",
+                    "icon": "bolt",
+                    "pages": [
+                      "es/api-reference/webhooks/on-call-end"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
         "language": "en",
         "tabs": [
           {
