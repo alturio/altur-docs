@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "name": "Altur",
-  "theme": "maple",
+  "theme": "mint",
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
@@ -9,11 +9,15 @@
   "favicon": "/favicon.png",
   "colors": {
     "primary": "#0066FF",
-    "light": "#FFFFFF",
-    "dark": "#0D1117"
+    "light": "#0066FF",
+    "dark": "#0066FF"
   },
   "background": {
-    "decoration": "grid"
+    "decoration": "grid",
+    "color": {
+      "light": "#FFFFFF",
+      "dark": "#0D1117"
+    }
   },
   "navbar": {
     "links": [
