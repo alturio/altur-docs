@@ -9,8 +9,8 @@ Las campañas en Altur te permiten automatizar llamadas y mensajes salientes a g
 
 Una **campaña** es un flujo de trabajo independiente que toma una lista de contactos y:
 
-1. Llama o envía mensajes a cada contacto a través del agente de IA seleccionado  
-2. Rastrea el estado de entrega y reintenta en caso de buzón o fallos  
+1. Llama o envía mensajes a cada contacto a través del agente de IA seleccionado
+2. Rastrea el estado de entrega y reintenta en caso de buzón o fallos
 3. Aplica filtros y repeticiones automáticas hasta que se cumplan las condiciones
 
 ## ¿Por Qué Usar Campañas?
@@ -52,13 +52,12 @@ En la pantalla de creación de campaña, completa los siguientes campos de la in
 
 Tu archivo CSV debe incluir las siguientes **columnas**:
 
-| Columna          | Tipo    | Requerido | Descripción                                          |
-| ---------------- | ------- | --------- | ---------------------------------------------------- |
-| `name`           | string  | Sí        | Nombre del contacto (usado para personalización)     |
-| `contact`        | string  | Sí        | Número en formato E.164                              |
-| `context`        | string  | Sí        | Texto libre o JSON con contexto para el agente       |
-| `id`             | string  | No        | ID interno para referencia cruzada                   |
-| `altur.voice_id` | string  | No        | Opcional: sobrescribe el ID generado de transacción  |
+| Columna   | Tipo   | Requerido | Descripción                                      |
+| --------- | ------ | --------- | ------------------------------------------------ |
+| `name`    | string | Sí        | Nombre del contacto (usado para personalización) |
+| `contact` | string | Sí        | Número en formato E.164                          |
+| `context` | string | Sí        | Texto libre o JSON con contexto para el agente   |
+| `id`      | string | No        | ID interno para referencia cruzada               |
 
 ## Iniciar tu Campaña
 
@@ -66,12 +65,12 @@ Una vez que tu campaña esté configurada y hayas subido el CSV:
 
 1. **Revisa** la pantalla de resumen para confirmar la configuración y cantidad de contactos.
 2. **Haz clic en "Iniciar Campaña"** para comenzar con las llamadas o envíos según el horario.
-3. **Monitorea el Progreso** en tiempo real desde el Panel de Campaña:  
+3. **Monitorea el Progreso** en tiempo real desde el Panel de Campaña:
    - Visualiza número de interacciones.
    - Rastrea fallos, buzones de voz y vueltas de reintento.
-4. **Descarga los Resultados** al finalizar:  
+4. **Descarga los Resultados** al finalizar:
    - Exporta un CSV completo con datos extraídos, resultados de gestión y estados.
    - Aplica filtros (ej. convertidos, no contactados) para afinar tus listas de seguimiento.
-5. **Repetir o Archivar**:  
+5. **Repetir o Archivar**:
    - Si tu campaña usa vueltas, los ciclos se ejecutarán automáticamente.
    - De lo contrario, puedes volver a subir un CSV filtrado o archivar la campaña al terminar.
