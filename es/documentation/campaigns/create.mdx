@@ -1,77 +1,77 @@
 ---
-title: "Creating Campaigns"
-description: "Learn how to create efficient collections and sales campaigns with Altur."
+title: "Creación de Campañas"
+description: "Aprende a crear campañas eficientes de cobranza y ventas con Altur."
 ---
 
-Altur campaigns let you automate outbound calls and messages at scale for debt collection, sales, and more. Define your target audience, schedule, and retry rules once—and let our AI agents do the rest.
+Las campañas en Altur te permiten automatizar llamadas y mensajes salientes a gran escala para cobranza, ventas y más. Define una vez tu audiencia objetivo, horario y reglas de reintento—y deja que nuestros agentes de IA hagan el resto.
 
-## What Is a Campaign?
+## ¿Qué es una Campaña?
 
-A **campaign** is a standalone workflow that takes a list of contacts and:
+Una **campaña** es un flujo de trabajo independiente que toma una lista de contactos y:
 
-1. Calls or messages each contact via your chosen AI agent
-2. Tracks delivery status, retries on voicemail or failures
-3. Applies filters and loops automatically until conditions are met
+1. Llama o envía mensajes a cada contacto a través del agente de IA seleccionado  
+2. Rastrea el estado de entrega y reintenta en caso de buzón o fallos  
+3. Aplica filtros y repeticiones automáticas hasta que se cumplan las condiciones
 
-## Why Use Campaigns?
+## ¿Por Qué Usar Campañas?
 
-- **Scale**: Handle thousands of contacts with minimal setup.
-- **Consistency**: Ensure each contact experiences the same AI-driven script.
-- **Efficiency**: Automatic retries and loop cycles reduce manual intervention.
-- **Insights**: Download detailed reports on call outcomes and agent interactions.
+- **Escalabilidad**: Atiende miles de contactos con una configuración mínima.
+- **Consistencia**: Cada contacto vive el mismo flujo guiado por IA.
+- **Eficiencia**: Reintentos automáticos y vueltas en ciclo reducen trabajo manual.
+- **Información**: Descarga reportes detallados sobre resultados y comportamiento de agentes.
 
-## Setting Up a Campaign
+## Configuración de una Campaña
 
-On the campaign creation screen, complete the following UI fields:
+En la pantalla de creación de campaña, completa los siguientes campos de la interfaz:
 
-- **Name**: a short, descriptive title for your campaign.
-- **Description**: explain the campaign’s goal or any key details.
-- **Assistant**: choose the AI agent configured with the right context.
-- **Integration**: select Phone Call or WhatsApp as the delivery channel.
-- **Time Zone**: set the local time zone for scheduling your calls/messages.
+- **Nombre**: título breve y descriptivo para tu campaña.
+- **Descripción**: explica el objetivo o detalles clave de la campaña.
+- **Asistente**: selecciona el agente de IA configurado con el contexto adecuado.
+- **Integración**: elige entre Llamada Telefónica o WhatsApp como canal de entrega.
+- **Zona Horaria**: define la zona horaria local para programar llamadas o mensajes.
 
-**WhatsApp‑only fields** (visible when WhatsApp is selected):
+**Campos solo para WhatsApp** (visibles cuando se selecciona WhatsApp):
 
-- **Message Templates**: pick one or two prebuilt templates for your messages.
-- **Template Image**: upload an image if your template includes a HEADER image.
-- **Daily Message Limit**: cap the total messages sent per day.
+- **Plantillas de Mensaje**: selecciona una o dos plantillas prediseñadas.
+- **Imagen de Plantilla**: sube una imagen si tu plantilla incluye encabezado visual.
+- **Límite Diario de Mensajes**: define el máximo de mensajes por día.
 
-**Phone Call‑only fields** (visible when Phone Call is selected):
+**Campos solo para Llamada Telefónica** (visibles cuando se selecciona este canal):
 
-- **Initial Message**: enter the first line the AI agent will speak.
-- **Retries**: define how many extra attempts after failures or voicemail.
-- **Auto‑cycle**: toggle to automatically rerun the campaign on a schedule.
-  - **Max Cycles per Day**: how many loops can run in a single calendar day.
-  - **Cooldown Minutes**: wait time between each campaign loop.
-  - **Exclude Statuses**: outcomes that should not be retried in the next loop.
-  - **Exclude Tags**: tags indicating contacts to skip in future loops.
+- **Mensaje Inicial**: primera línea que dirá el agente de IA.
+- **Reintentos**: número de intentos adicionales tras fallos o buzón de voz.
+- **Vueltas**: activa esta opción para repetir la campaña automáticamente.
+  - **Máx. Vueltas por Día**: cantidad de repeticiones en un mismo día.
+  - **Minutos de Enfriamiento**: tiempo de espera entre cada vuelta.
+  - **Excluir Estados**: resultados que no deben reintentarse.
+  - **Excluir Etiquetas**: etiquetas que indican contactos a omitir en futuros vueltas.
 
-> Fields appear or hide dynamically based on the chosen channel or when Auto‑cycle is turned on.
+> Los campos aparecen u ocultan automáticamente según el canal o si vueltas están activadas.
 
-## Preparing Your CSV
+## Preparación del Archivo CSV
 
-Your CSV file must include the following **columns**:
+Tu archivo CSV debe incluir las siguientes **columnas**:
 
-| Column           | Type   | Required | Description                                       |
-| ---------------- | ------ | -------- | ------------------------------------------------- |
-| `name`           | string | Yes      | Contact’s first name (used in personalization)    |
-| `contact`        | string | Yes      | Phone number in E.164 format                      |
-| `context`        | string | Yes      | JSON string or free text providing agent context  |
-| `id`             | string | No       | Your internal identifier for cross-referencing    |
-| `altur.voice_id` | string | No       | Optional: override generated voice transaction ID |
+| Columna          | Tipo    | Requerido | Descripción                                          |
+| ---------------- | ------- | --------- | ---------------------------------------------------- |
+| `name`           | string  | Sí        | Nombre del contacto (usado para personalización)     |
+| `contact`        | string  | Sí        | Número en formato E.164                              |
+| `context`        | string  | Sí        | Texto libre o JSON con contexto para el agente       |
+| `id`             | string  | No        | ID interno para referencia cruzada                   |
+| `altur.voice_id` | string  | No        | Opcional: sobrescribe el ID generado de transacción  |
 
-## Starting Your Campaign
+## Iniciar tu Campaña
 
-Once your campaign is configured and your CSV is uploaded:
+Una vez que tu campaña esté configurada y hayas subido el CSV:
 
-1. **Review** the summary screen to confirm your settings and contact count.
-2. **Click "Start Campaign"** to begin dial-outs or message sends according to your schedule.
-3. **Monitor Progress** in real time via the Campaign Dashboard:
-   - View numbers of interactions.
-   - Track failures, voicemails, and retry cycles.
-4. **Download Results** after completion:
-   - Export full CSV of outcomes, including timestamps and statuses.
-   - Apply filters (e.g., converted, unreachable) to refine your follow-up lists.
-5. **Repeat or Archive**:
-   - For phone-call campaigns with Auto‑cycle, the system will handle loops automatically.
-   - Otherwise, you can re-upload a filtered CSV or archive the campaign when done.
+1. **Revisa** la pantalla de resumen para confirmar la configuración y cantidad de contactos.
+2. **Haz clic en "Iniciar Campaña"** para comenzar con las llamadas o envíos según el horario.
+3. **Monitorea el Progreso** en tiempo real desde el Panel de Campaña:  
+   - Visualiza número de interacciones.
+   - Rastrea fallos, buzones de voz y vueltas de reintento.
+4. **Descarga los Resultados** al finalizar:  
+   - Exporta un CSV completo con datos extraídos, resultados de gestión y estados.
+   - Aplica filtros (ej. convertidos, no contactados) para afinar tus listas de seguimiento.
+5. **Repetir o Archivar**:  
+   - Si tu campaña usa vueltas, los ciclos se ejecutarán automáticamente.
+   - De lo contrario, puedes volver a subir un CSV filtrado o archivar la campaña al terminar.
