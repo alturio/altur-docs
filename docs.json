@@ -46,6 +46,12 @@
                 "pages": [
                   "es/documentation/introduction"
                 ]
+              },
+              {
+                "group": "Campañas",
+                "pages": [
+                  "es/documentation/campaigns/create"
+                ]
               }
             ]
           },
@@ -124,6 +130,12 @@
                 "group": "Get Started",
                 "pages": [
                   "en/documentation/introduction"
+                ]
+              },
+              {
+                "group": "Campaigns",
+                "pages": [
+                  "en/documentation/campaigns/create"
                 ]
               }
             ]

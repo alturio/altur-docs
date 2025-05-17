@@ -1,0 +1,77 @@
+---
+title: "Creación de Campañas"
+description: "Aprende a crear campañas eficientes de cobranza y ventas con Altur."
+---
+
+Las campañas en Altur te permiten automatizar llamadas y mensajes salientes a gran escala para cobranza, ventas y más. Define una vez tu audiencia objetivo, horario y reglas de reintento—y deja que nuestros agentes de IA hagan el resto.
+
+## ¿Qué es una Campaña?
+
+Una **campaña** es un flujo de trabajo independiente que toma una lista de contactos y:
+
+1. Llama o envía mensajes a cada contacto a través del agente de IA seleccionado  
+2. Rastrea el estado de entrega y reintenta en caso de buzón o fallos  
+3. Aplica filtros y repeticiones automáticas hasta que se cumplan las condiciones
+
+## ¿Por Qué Usar Campañas?
+
+- **Escalabilidad**: Atiende miles de contactos con una configuración mínima.
+- **Consistencia**: Cada contacto vive el mismo flujo guiado por IA.
+- **Eficiencia**: Reintentos automáticos y vueltas en ciclo reducen trabajo manual.
+- **Información**: Descarga reportes detallados sobre resultados y comportamiento de agentes.
+
+## Configuración de una Campaña
+
+En la pantalla de creación de campaña, completa los siguientes campos de la interfaz:
+
+- **Nombre**: título breve y descriptivo para tu campaña.
+- **Descripción**: explica el objetivo o detalles clave de la campaña.
+- **Asistente**: selecciona el agente de IA configurado con el contexto adecuado.
+- **Integración**: elige entre Llamada Telefónica o WhatsApp como canal de entrega.
+- **Zona Horaria**: define la zona horaria local para programar llamadas o mensajes.
+
+**Campos solo para WhatsApp** (visibles cuando se selecciona WhatsApp):
+
+- **Plantillas de Mensaje**: selecciona una o dos plantillas prediseñadas.
+- **Imagen de Plantilla**: sube una imagen si tu plantilla incluye encabezado visual.
+- **Límite Diario de Mensajes**: define el máximo de mensajes por día.
+
+**Campos solo para Llamada Telefónica** (visibles cuando se selecciona este canal):
+
+- **Mensaje Inicial**: primera línea que dirá el agente de IA.
+- **Reintentos**: número de intentos adicionales tras fallos o buzón de voz.
+- **Vueltas**: activa esta opción para repetir la campaña automáticamente.
+  - **Máx. Vueltas por Día**: cantidad de repeticiones en un mismo día.
+  - **Minutos de Enfriamiento**: tiempo de espera entre cada vuelta.
+  - **Excluir Estados**: resultados que no deben reintentarse.
+  - **Excluir Etiquetas**: etiquetas que indican contactos a omitir en futuros vueltas.
+
+> Los campos aparecen u ocultan automáticamente según el canal o si vueltas están activadas.
+
+## Preparación del Archivo CSV
+
+Tu archivo CSV debe incluir las siguientes **columnas**:
+
+| Columna          | Tipo    | Requerido | Descripción                                          |
+| ---------------- | ------- | --------- | ---------------------------------------------------- |
+| `name`           | string  | Sí        | Nombre del contacto (usado para personalización)     |
+| `contact`        | string  | Sí        | Número en formato E.164                              |
+| `context`        | string  | Sí        | Texto libre o JSON con contexto para el agente       |
+| `id`             | string  | No        | ID interno para referencia cruzada                   |
+| `altur.voice_id` | string  | No        | Opcional: sobrescribe el ID generado de transacción  |
+
+## Iniciar tu Campaña
+
+Una vez que tu campaña esté configurada y hayas subido el CSV:
+
+1. **Revisa** la pantalla de resumen para confirmar la configuración y cantidad de contactos.
+2. **Haz clic en "Iniciar Campaña"** para comenzar con las llamadas o envíos según el horario.
+3. **Monitorea el Progreso** en tiempo real desde el Panel de Campaña:  
+   - Visualiza número de interacciones.
+   - Rastrea fallos, buzones de voz y vueltas de reintento.
+4. **Descarga los Resultados** al finalizar:  
+   - Exporta un CSV completo con datos extraídos, resultados de gestión y estados.
+   - Aplica filtros (ej. convertidos, no contactados) para afinar tus listas de seguimiento.
+5. **Repetir o Archivar**:  
+   - Si tu campaña usa vueltas, los ciclos se ejecutarán automáticamente.
+   - De lo contrario, puedes volver a subir un CSV filtrado o archivar la campaña al terminar.

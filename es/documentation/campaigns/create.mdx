@@ -1,0 +1,77 @@
+---
+title: "Creating Campaigns"
+description: "Learn how to create efficient collections and sales campaigns with Altur."
+---
+
+Altur campaigns let you automate outbound calls and messages at scale for debt collection, sales, and more. Define your target audience, schedule, and retry rules once—and let our AI agents do the rest.
+
+## What Is a Campaign?
+
+A **campaign** is a standalone workflow that takes a list of contacts and:
+
+1. Calls or messages each contact via your chosen AI agent
+2. Tracks delivery status, retries on voicemail or failures
+3. Applies filters and loops automatically until conditions are met
+
+## Why Use Campaigns?
+
+- **Scale**: Handle thousands of contacts with minimal setup.
+- **Consistency**: Ensure each contact experiences the same AI-driven script.
+- **Efficiency**: Automatic retries and loop cycles reduce manual intervention.
+- **Insights**: Download detailed reports on call outcomes and agent interactions.
+
+## Setting Up a Campaign
+
+On the campaign creation screen, complete the following UI fields:
+
+- **Name**: a short, descriptive title for your campaign.
+- **Description**: explain the campaign’s goal or any key details.
+- **Assistant**: choose the AI agent configured with the right context.
+- **Integration**: select Phone Call or WhatsApp as the delivery channel.
+- **Time Zone**: set the local time zone for scheduling your calls/messages.
+
+**WhatsApp‑only fields** (visible when WhatsApp is selected):
+
+- **Message Templates**: pick one or two prebuilt templates for your messages.
+- **Template Image**: upload an image if your template includes a HEADER image.
+- **Daily Message Limit**: cap the total messages sent per day.
+
+**Phone Call‑only fields** (visible when Phone Call is selected):
+
+- **Initial Message**: enter the first line the AI agent will speak.
+- **Retries**: define how many extra attempts after failures or voicemail.
+- **Auto‑cycle**: toggle to automatically rerun the campaign on a schedule.
+  - **Max Cycles per Day**: how many loops can run in a single calendar day.
+  - **Cooldown Minutes**: wait time between each campaign loop.
+  - **Exclude Statuses**: outcomes that should not be retried in the next loop.
+  - **Exclude Tags**: tags indicating contacts to skip in future loops.
+
+> Fields appear or hide dynamically based on the chosen channel or when Auto‑cycle is turned on.
+
+## Preparing Your CSV
+
+Your CSV file must include the following **columns**:
+
+| Column           | Type   | Required | Description                                       |
+| ---------------- | ------ | -------- | ------------------------------------------------- |
+| `name`           | string | Yes      | Contact’s first name (used in personalization)    |
+| `contact`        | string | Yes      | Phone number in E.164 format                      |
+| `context`        | string | Yes      | JSON string or free text providing agent context  |
+| `id`             | string | No       | Your internal identifier for cross-referencing    |
+| `altur.voice_id` | string | No       | Optional: override generated voice transaction ID |
+
+## Starting Your Campaign
+
+Once your campaign is configured and your CSV is uploaded:
+
+1. **Review** the summary screen to confirm your settings and contact count.
+2. **Click "Start Campaign"** to begin dial-outs or message sends according to your schedule.
+3. **Monitor Progress** in real time via the Campaign Dashboard:
+   - View numbers of interactions.
+   - Track failures, voicemails, and retry cycles.
+4. **Download Results** after completion:
+   - Export full CSV of outcomes, including timestamps and statuses.
+   - Apply filters (e.g., converted, unreachable) to refine your follow-up lists.
+5. **Repeat or Archive**:
+   - For phone-call campaigns with Auto‑cycle, the system will handle loops automatically.
+   - Otherwise, you can re-upload a filtered CSV or archive the campaign when done.
