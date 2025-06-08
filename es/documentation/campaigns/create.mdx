@@ -5,7 +5,7 @@ description: "Aprende a crear campañas eficientes de cobranza y ventas con Altu
 
 Las campañas son una funcionalidad clave de Altur que permite iniciar conversaciones a gran escala de manera automática, sin sacrificar la personalización en cada interacción.
 
-## Tipo de Campaña
+## Tipos de campañas
 
 Actualmente, Altur ofrece dos canales para campañas: **Llamadas** y **WhatsApp**.
 
@@ -26,48 +26,70 @@ Sigue estos pasos para crear una nueva campaña en Altur:
 2. **Completa los campos básicos:**
    - **Nombre de la campaña:** Escribe un nombre corto y descriptivo.
    - **Descripción:** Agrega detalles sobre el objetivo de la campaña (para uso interno).
-
 3. **Selecciona un agente:** Elige el **agente** configurado previamente para esta campaña. Este **agente** será el encargado de gestionar las conversaciones.
-
 4. **Selecciona una integración:** Selecciona la línea telefónica o número de WhatsApp desde donde se enviarán los mensajes o llamadas.
 
 <Note>
   Si vas a usar WhatsApp, asegúrate de que la cuenta y el número estén configurados e integrados a Altur correctamente.
 </Note>
 
-
-5. **Define la zona horaria** Selecciona la zona horaria correspondiente a tus contactos. Por defecto, se selecciona **America/Mexico_City**.
-
-6. **Mensaje inicial (Llamadas):** Escribe el mensaje inicial, esta frase será lo primero que dirá el Agente al conectar la llamada.
-
-7. **Plantilla (WhatsApp):** Selecciona la plantilla (WhatsApp), elige una o dos plantillas de mensaje aprobadas. Si la plantilla seleccionada contiene un encabezado con imagen, se habilitará el campo para subirla. Asegúrate de que coincida con el contenido aprobado por Meta.
-
-8. **Configura los reintentos:** Define cuántas veces se debe **reintentar** enviar un mensaje o realizar una llamada en caso de que el contacto no responda o se haya alcanzado buzón de voz.
-
-9. **(Opcional) Configura las vueltas (Llamadas):** Opcionalmente, habilita vueltas en la campaña. Permite que la campaña se repita automáticamente si quedan contactos por convertir. Si activas esta opción, podrás configurar:
+ 5. **Define la zona horaria** Selecciona la zona horaria correspondiente a tus contactos. Por defecto, se selecciona **America/Mexico_City**.
+ 6. **Mensaje inicial (Llamadas):** Escribe el mensaje inicial, esta frase será lo primero que dirá el Agente al conectar la llamada.
+ 7. **Plantilla (WhatsApp):** Selecciona la plantilla (WhatsApp), elige una o dos plantillas de mensaje aprobadas. Si la plantilla seleccionada contiene un encabezado con imagen, se habilitará el campo para subirla. Asegúrate de que coincida con el contenido aprobado por Meta.
+ 8. **Configura los reintentos:** Define cuántas veces se debe **reintentar** enviar un mensaje o realizar una llamada en caso de que el contacto no responda o se haya alcanzado buzón de voz.
+ 9. **(Opcional) Configura las vueltas (Llamadas):** Opcionalmente, habilita vueltas en la campaña. Permite que la campaña se repita automáticamente si quedan contactos por convertir. Si activas esta opción, podrás configurar:
     - Número máximo de vueltas al día
     - Tiempo de espera entre vueltas (en minutos)
     - Filtros de estatus (e.g. evitar volver a contactar a personas que ya contestaron)
     - Filtros de etiquetas (como contactos marcados como número incorrecto)
-
 10. **Configura límite de envíos diarios (WhatsApp):** Indica cuántos mensajes pueden enviarse al día. Esto evita saturar la integración o exceder límites impuestos por WhatsApp.
-
 11. **Guarda la campaña:** Haz click en **Guardar** para crear la nueva campaña con la configuración establecida.
 
 <Check>
   ¡Listo\! Has creado una nueva campaña.
 </Check>
 
-## Preparación del Archivo CSV
+## Carga de contactos
 
-Tu archivo CSV debe incluir las siguientes **columnas**:
+Para ejecutar una campaña es necesario cargar una lista de contactos. Altur soporta archivos en formato `.csv` codificados en UTF-8 o similares.
 
-| Columna   | Tipo   | Requerido | Descripción                                      |
-| --------- | ------ | --------- | ------------------------------------------------ |
-| `name`    | string | Sí        | Nombre del contacto (usado para personalización) |
-| `contact` | string | Sí        | Número en formato E.164                          |
-| `context` | string | Sí        | Texto libre o JSON con contexto para el agente   |
-| `id`      | string | No        | ID interno para referencia cruzada               |
+### 📄 Estructura del archivo de contactos
+
+El archivo debe incluir las siguientes columnas **obligatorias**:
+
+| Columna   | Descripción                                                                                                                             |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `contact` | Número de teléfono en cualquier formato (Altur lo convierte automáticamente a formato internacional e164).                              |
+| `name`    | Nombre del contacto, usado para el contexto de la conversación y personalizar los mensajes.                                             |
+| `context` | Información adicional que el agente puede usar en la conversación (por ejemplo: detalles de oferta, monto a pagar, fecha límite, etc.). |
+
+Además, es posible incluir estas columnas **opcionales**:
+
+| Columna                   | Descripción                                                                                                                              |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                      | Identificador único de tu sistema. Altur lo almacenará como referencia interna.                                                          |
+| `override_agent_name`     | Nombre personalizado del agente para este contacto (sobrescribe el nombre por defecto del agente).                                       |
+| `override_agent_voice_id` | ID de la voz que se usará exclusivamente para este contacto. Solo disponible para campañas por llamada. Debe coincidir con un ID válido. |
+
+<Warning>
+  Si un número de teléfono no es válido o ya existe en la campaña, será ignorado automáticamente.
+</Warning>
+
+### 🧪 Ejemplo de archivo válido
+
+```contacts.csv
+contact,name,context,id,override_agent_name,override_agent_voice_id
++5215555551234,Juan Pérez,"Monto: $1,500. Fecha: 5 de junio",123,Inés,voz_fem
++5215555555678,Ana Gómez,"Monto: $900. Fecha: 7 de junio",124,Andres,voz_mal
++5215555559012,Carlos Ruiz,"Monto: $2,300. Fecha: 6 de junio",125,Inés,voz_fem
+```
+
+### ✅ Buenas prácticas
+
+- Usa coma (,) como delimitador, default de la configuración de tu editor de CSV (Excel, Google Sheets, etc).
+- Evita caracteres especiales en el encabezado de columnas.
+- Revisa que no haya espacios en blanco al inicio o final de los valores.
+- Válida la información de tus contactos antes de subirlos a una campaña.
 
 ## Iniciar tu Campaña
 
