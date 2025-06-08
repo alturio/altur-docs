@@ -3,50 +3,60 @@ title: "Creación de Campañas"
 description: "Aprende a crear campañas eficientes de cobranza y ventas con Altur."
 ---
 
-Las campañas en Altur te permiten automatizar llamadas y mensajes salientes a gran escala para cobranza, ventas y más. Define una vez tu audiencia objetivo, horario y reglas de reintento y deja que nuestros agentes de IA hagan el resto.
+Las campañas son una funcionalidad clave de Altur que permite iniciar conversaciones a gran escala de manera automática, sin sacrificar la personalización en cada interacción.
 
-## ¿Qué es una Campaña?
+## Tipo de Campaña
 
-Una **campaña** es un flujo de trabajo independiente que toma una lista de contactos y:
+Actualmente, Altur ofrece dos canales para campañas: **Llamadas** y **WhatsApp**.
 
-1. Llama o envía mensajes a cada contacto a través del agente de IA seleccionado
-2. Rastrea el estado de entrega y reintenta en caso de buzón o fallos
-3. Aplica filtros y repeticiones automáticas hasta que se cumplan las condiciones
+<Warning>
+  Recomendamos utilizar campañas de **WhatsApp** únicamente cuando tu base de contactos haya dado su consentimiento previo para recibir mensajes de tu empresa. Esto se debe a las estrictas regulaciones sobre el envío de mensajes outbound masivos, cuyo incumplimiento puede derivar en sanciones o bloqueos de tu cuenta.
+</Warning>
 
-## ¿Por Qué Usar Campañas?
+## Configuración de una campaña
 
-- **Escalabilidad**: Atiende miles de contactos con una configuración mínima.
-- **Consistencia**: Cada contacto vive el mismo flujo guiado por IA.
-- **Eficiencia**: Reintentos automáticos y vueltas en ciclo reducen trabajo manual.
-- **Información**: Descarga reportes detallados sobre resultados y comportamiento de agentes.
+Sigue estos pasos para crear una nueva campaña en Altur:
 
-## Configuración de una Campaña
+1. **Accede a la vista de campañas:** Dirígete a la sección de **Campañas** que encontrarás en la barra lateral izquierda y haz click en **Nueva Campaña** en la esquina superior derecha.
 
-En la pantalla de creación de campaña, completa los siguientes campos de la interfaz:
+<Note>
+  Si no tienes alguna de estas opciones, solicita con el administrador de tu organización los permisos necesarios.
+</Note>
 
-- **Nombre**: título breve y descriptivo para tu campaña.
-- **Descripción**: explica el objetivo o detalles clave de la campaña.
-- **Asistente**: selecciona el agente de IA configurado con el contexto adecuado.
-- **Integración**: elige entre Llamada Telefónica o WhatsApp como canal de entrega.
-- **Zona Horaria**: define la zona horaria local para programar llamadas o mensajes.
+2. **Completa los campos básicos:**
+   - **Nombre de la campaña:** Escribe un nombre corto y descriptivo.
+   - **Descripción:** Agrega detalles sobre el objetivo de la campaña (para uso interno).
 
-**Campos solo para WhatsApp** (visibles cuando se selecciona WhatsApp):
+3. **Selecciona un agente:** Elige el **agente** configurado previamente para esta campaña. Este **agente** será el encargado de gestionar las conversaciones.
 
-- **Plantillas de Mensaje**: selecciona una o dos plantillas prediseñadas.
-- **Imagen de Plantilla**: sube una imagen si tu plantilla incluye encabezado visual.
-- **Límite Diario de Mensajes**: define el máximo de mensajes por día.
+4. **Selecciona una integración:** Selecciona la línea telefónica o número de WhatsApp desde donde se enviarán los mensajes o llamadas.
 
-**Campos solo para Llamada Telefónica** (visibles cuando se selecciona este canal):
+<Note>
+  Si vas a usar WhatsApp, asegúrate de que la cuenta y el número estén configurados e integrados a Altur correctamente.
+</Note>
 
-- **Mensaje Inicial**: primera línea que dirá el agente de IA.
-- **Reintentos**: número de intentos adicionales tras fallos o buzón de voz.
-- **Vueltas**: activa esta opción para repetir la campaña automáticamente.
-  - **Máx. Vueltas por Día**: cantidad de repeticiones en un mismo día.
-  - **Minutos de Enfriamiento**: tiempo de espera entre cada vuelta.
-  - **Excluir Estados**: resultados que no deben reintentarse.
-  - **Excluir Etiquetas**: etiquetas que indican contactos a omitir en futuros vueltas.
 
-> Los campos aparecen u ocultan automáticamente según el canal o si vueltas están activadas.
+5. **Define la zona horaria** Selecciona la zona horaria correspondiente a tus contactos. Por defecto, se selecciona **America/Mexico_City**.
+
+6. **Mensaje inicial (Llamadas):** Escribe el mensaje inicial, esta frase será lo primero que dirá el Agente al conectar la llamada.
+
+7. **Plantilla (WhatsApp):** Selecciona la plantilla (WhatsApp), elige una o dos plantillas de mensaje aprobadas. Si la plantilla seleccionada contiene un encabezado con imagen, se habilitará el campo para subirla. Asegúrate de que coincida con el contenido aprobado por Meta.
+
+8. **Configura los reintentos:** Define cuántas veces se debe **reintentar** enviar un mensaje o realizar una llamada en caso de que el contacto no responda o se haya alcanzado buzón de voz.
+
+9. **(Opcional) Configura las vueltas (Llamadas):** Opcionalmente, habilita vueltas en la campaña. Permite que la campaña se repita automáticamente si quedan contactos por convertir. Si activas esta opción, podrás configurar:
+    - Número máximo de vueltas al día
+    - Tiempo de espera entre vueltas (en minutos)
+    - Filtros de estatus (e.g. evitar volver a contactar a personas que ya contestaron)
+    - Filtros de etiquetas (como contactos marcados como número incorrecto)
+
+10. **Configura límite de envíos diarios (WhatsApp):** Indica cuántos mensajes pueden enviarse al día. Esto evita saturar la integración o exceder límites impuestos por WhatsApp.
+
+11. **Guarda la campaña:** Haz click en **Guardar** para crear la nueva campaña con la configuración establecida.
+
+<Check>
+  ¡Listo\! Has creado una nueva campaña.
+</Check>
 
 ## Preparación del Archivo CSV
 
