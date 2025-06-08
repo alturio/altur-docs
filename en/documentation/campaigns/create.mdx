@@ -1,76 +1,136 @@
 ---
-title: "Creating Campaigns"
-description: "Learn how to create efficient collections and sales campaigns with Altur."
+title: "Campaign Creation"
+description: "Learn how to create efficient sales and collection campaigns with Altur."
 ---
 
-Altur campaigns let you automate outbound calls and messages at scale for debt collection, sales, and more. Define your target audience, schedule, and retry rules once—and let our AI agents do the rest.
+Campaigns are a core feature of Altur. They allow you to automatically launch large-scale conversations without sacrificing personalization in each interaction.
 
-## What Is a Campaign?
+## Types of Campaigns
 
-A **campaign** is a standalone workflow that takes a list of contacts and:
+Altur currently supports two channels for campaigns: **Phone Calls** and **WhatsApp**.
 
-1. Calls or messages each contact via your chosen AI agent
-2. Tracks delivery status, retries on voicemail or failures
-3. Applies filters and loops automatically until conditions are met
+<Warning>
+  We recommend using **WhatsApp campaigns** only when your contact list has previously given consent to receive messages from your company. This is due to strict regulations around high-volume outbound messaging, and non-compliance may result in account sanctions or blocks.
+</Warning>
 
-## Why Use Campaigns?
+## Configuring a Campaign
 
-- **Scale**: Handle thousands of contacts with minimal setup.
-- **Consistency**: Ensure each contact experiences the same AI-driven script.
-- **Efficiency**: Automatic retries and loop cycles reduce manual intervention.
-- **Insights**: Download detailed reports on call outcomes and agent interactions.
+Follow these steps to create a new campaign in Altur:
 
-## Setting Up a Campaign
+1. **Go to the Campaigns section:** Navigate to the **Campaigns** section on the left sidebar and click **New Campaign** in the top-right corner.
 
-On the campaign creation screen, complete the following UI fields:
+<Note>
+  If you don't see these options, ask your organization’s administrator to grant you the necessary permissions.
+</Note>
 
-- **Name**: a short, descriptive title for your campaign.
-- **Description**: explain the campaign’s goal or any key details.
-- **Assistant**: choose the AI agent configured with the right context.
-- **Integration**: select Phone Call or WhatsApp as the delivery channel.
-- **Time Zone**: set the local time zone for scheduling your calls/messages.
+2. **Fill in the basic fields:**
+   - **Campaign name:** Choose a short, descriptive name.
+   - **Description:** Add internal details or the goal of the campaign.
+3. **Select an agent:** Choose the pre-configured **agent** that will handle the conversations for this campaign.
+4. **Select an integration:** Pick the phone number or WhatsApp line from which messages or calls will be sent.
 
-**WhatsApp‑only fields** (visible when WhatsApp is selected):
+<Note>
+  If you're using WhatsApp, make sure the account and number are properly configured and integrated with Altur.
+</Note>
 
-- **Message Templates**: pick one or two prebuilt templates for your messages.
-- **Template Image**: upload an image if your template includes a HEADER image.
-- **Daily Message Limit**: cap the total messages sent per day.
+ 5. **Set the time zone:** Choose the time zone of your contact base. By default, it is set to **America/Mexico_City**.
+ 6. **Initial message (Phone Calls):** Enter the initial message that the agent will say when the call connects.
+ 7. **Template (WhatsApp):** Select one or two pre-approved WhatsApp message templates.\
+    If the selected template contains an image header, an image upload field will be enabled. Make sure the image matches Meta's approved content.
+ 8. **Configure retries:** Set how many times the system will attempt to contact a customer in case of no response or voicemail.
+ 9. **(Optional) Configure retry loops (Phone Calls only):** You can enable automatic loops so the campaign retries contacting unconverted leads. When enabled, you can configure:
+    - Max number of loops per day
+    - Cooldown time between loops (in minutes)
+    - Status filters (e.g. skip users who already answered)
+    - Tag filters (e.g. skip numbers marked as invalid)
+10. **Set daily send limits (WhatsApp):** Define how many messages can be sent per day. This helps avoid saturating the integration or exceeding WhatsApp limits.
+11. **Save the campaign:** Click **Save** to create the new campaign with your configuration.
 
-**Phone Call‑only fields** (visible when Phone Call is selected):
+<Check>
+  Done\! Your campaign has been created.
+</Check>
 
-- **Initial Message**: enter the first line the AI agent will speak.
-- **Retries**: define how many extra attempts after failures or voicemail.
-- **Auto‑cycle**: toggle to automatically rerun the campaign on a schedule.
-  - **Max Cycles per Day**: how many loops can run in a single calendar day.
-  - **Cooldown Minutes**: wait time between each campaign loop.
-  - **Exclude Statuses**: outcomes that should not be retried in the next loop.
-  - **Exclude Tags**: tags indicating contacts to skip in future loops.
+<Info>
+  Once saved, the campaign will remain in **“pending”** state until you upload your contact list.
+</Info>
 
-> Fields appear or hide dynamically based on the chosen channel or when Auto‑cycle is turned on.
+## Uploading Contacts
 
-## Preparing Your CSV
+To run a campaign, you need to upload a list of contacts. Altur supports `.csv` files encoded in UTF-8 or similar formats.
 
-Your CSV file must include the following **columns**:
+### 📄 CSV File Structure
 
-| Column    | Type   | Required | Description                                      |
-| --------- | ------ | -------- | ------------------------------------------------ |
-| `name`    | string | Yes      | Contact’s first name (used in personalization)   |
-| `contact` | string | Yes      | Phone number in E.164 format                     |
-| `context` | string | Yes      | JSON string or free text providing agent context |
-| `id`      | string | No       | Your internal identifier for cross-referencing   |
+Your file must include the following **required** columns:
 
-## Starting Your Campaign
+| Column    | Description                                                                                                        |
+| :-------- | :----------------------------------------------------------------------------------------------------------------- |
+| `contact` | Phone number in any format. Altur will automatically convert it to international E.164 format.                     |
+| `name`    | The contact's name, used to personalize the conversation.                                                          |
+| `context` | Additional information the agent can use in the conversation (e.g. offer details, payment amount, due date, etc.). |
 
-Once your campaign is configured and your CSV is uploaded:
+You may also include these **optional** columns:
 
-1. **Review** the summary screen to confirm your settings and contact count.
-2. **Click "Start Campaign"** to begin dial-outs or message sends according to your schedule.
-3. **Monitor Progress** in real time via the Campaign Dashboard:
-   - View numbers of interactions.
-   - Track failures, voicemails, and retry cycles.
-4. **Download Results** after completion:
-   - Export full CSV of outcomes, including timestamps and statuses.
-   - Apply filters (e.g., converted, unreachable) to refine your follow-up lists.
-5. **Repeat or Archive**:
-   - For phone-call campaigns with Auto‑cycle, the system will handle loops automatically.
-   - Otherwise, you can re-upload a filtered CSV or archive the campaign when done.
+| Column                    | Description                                                                                                             |
+| :------------------------ | :---------------------------------------------------------------------------------------------------------------------- |
+| `id`                      | A unique identifier from your system. Altur will store it for internal reference.                                       |
+| `override_agent_name`     | A custom name for the agent when speaking to this contact (overrides the default agent name).                           |
+| `override_agent_voice_id` | The voice ID to be used specifically for this contact. Only available for phone campaigns. Must match a valid voice ID. |
+
+<Warning>
+  Invalid phone numbers or contacts that already exist in the campaign will be skipped automatically.
+</Warning>
+
+### 🧪 Example of a valid file
+
+```contacts.csv
+contact,name,context,id,override_agent_name,override_agent_voice_id
++5215555551234,Juan Pérez,"Amount: $1,500. Due: June 5",123,Inés,female_voice
++5215555555678,Ana Gómez,"Amount: $900. Due: June 7",124,Andres,male_voice
++5215555559012,Carlos Ruiz,"Amount: $2,300. Due: June 6",125,Inés,female_voice
+```
+
+### ✅ Best Practices
+
+- Use a comma (`,`) as a delimiter, which is the default in most CSV editors (Excel, Google Sheets, etc.).
+- Avoid special characters in the column headers.
+- Make sure there are no leading or trailing spaces in the values.
+- Validate your contact data before uploading it.
+
+ \<Note\> If your CSV contains more than 10,000 contacts, we recommend splitting it into smaller files to ensure smooth processing. \</Note\> 
+
+## Launching the Campaign
+
+Once the campaign is fully configured and the contact list has been uploaded:
+
+### ✅ Final Review
+
+- Review the **campaign summary** to confirm the configuration, time zone, and number of contacts.
+- Ensure everything looks good before proceeding.
+
+### 🚀 Launch
+
+- Click **Start Campaign** to begin sending calls or messages according to the configured schedule.
+
+### 📊 Real-Time Monitoring
+
+From the campaign dashboard you can:
+
+- View the total number of interactions.
+- Track failed attempts, voicemails, retries, and converted contacts.
+- Monitor the overall progress of the campaign.
+
+### 📁 Exporting Results
+
+- During or after the campaign, you can **export a CSV file** containing:
+  - Contact handling results
+  - Details of calls or messages sent
+  - Extracted data from interactions
+
+This helps you analyze campaign performance or create follow-up lists.
+
+### 🔁 Repeat or Archive
+
+- If the campaign uses **loops**, they will run automatically according to your settings.
+- If not, you can:
+  - **Repeat the campaign** by uploading a filtered CSV (e.g. only non-converted contacts).
+  - **Archive the campaign** if no further actions are needed.
