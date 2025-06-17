@@ -25,10 +25,17 @@ Here’s an example of the payload sent with the `on_call_end` event:
 
 ```json
 {
-  "type": "on_call_end",
+  "event_type": "on_call_end",
   "id": "cll_gBoLtd02pUI50QwXkFjB",
+  "type": "outbound",
   "status": "ended",
   "answered_by": "human",
+  "created_at": "2024-12-19T15:00:10Z",
+  "started_at": "2024-12-19T15:00:10Z",
+  "ended_at": "2024-12-19T15:00:10Z",
+  "duration": 45,
+  "billed_duration": 45,
+  "recording_url": "https://api.altur.io/api/v1.0/call/cll_gBoLtd02pUI50QwXkFjB/recording",
   "transcript": [
     {
       "sent_by": "assistant",
@@ -41,7 +48,6 @@ Here’s an example of the payload sent with the `on_call_end` event:
       "content": "Yes, who is this?"
     }
   ],
-  "recording_url": "https://api.altur.io/api/v1.0/call/cll_gBoLtd02pUI50QwXkFjB/recording",
   "assistant": {
     "id": "6cy951e6-9877-4d7c-88d7-56b4948d3cce",
     "nickname": "DebtCollectorBot",
@@ -55,23 +61,30 @@ Here’s an example of the payload sent with the `on_call_end` event:
     "context": "Customer data...",
     "extracted_data": {
       "Payment Amount": "1200",
-      "Payment Date": "2024-12-26"
+      "Payment Date": "2024-12-26",
       "Payment Medium": "app"
-    }
+    },
+	"tags": ["payment_promise", "call_later"]
   }
 }
 ```
 
 ### Root Fields
 
-| Field           | Type     | Description                                                                                         |
-| :-------------- | :------- | :-------------------------------------------------------------------------------------------------- |
-| `type`          | `string` | Event type (`on_call_end`).                                                                         |
-| `id`            | `string` | Unique identifier for the call.                                                                     |
-| `status`        | `string` | Status of the call enum value (e.g., `ended`).                                                      |
-| `answered_by`   | `string` | Indicates who answered the call (`human`, `machine` or `unknown`).                                  |
-| `transcript`    | `array`  | Call transcript object.                                                                             |
-| `recording_url` | `string` | URL to [download](https://docs.altur.io/api-reference/calls/retrieve-recording) the call recording. |
+| Field             | Type       | Description                                                                                         |
+| :---------------- | :--------- | :-------------------------------------------------------------------------------------------------- |
+| `event_type`      | `string`   | Event type (`on_call_end`).                                                                         |
+| `id`              | `string`   | Unique identifier for the call.                                                                     |
+| `type`            | `string`   | Call type (`outbound`or `inbound`).                                                                 |
+| `status`          | `string`   | Status of the call enum value (e.g., `ended`).                                                      |
+| `answered_by`     | `string`   | Indicates who answered the call (`human`, `machine` or `unknown`).                                  |
+| `created_at`      | `datetime` | ISO formatted date time of when the call was created.                                               |
+| `started_at`      | `datetime` | ISO formatted date time of when the call started.                                                   |
+| `ended_at`        | `datetime` | ISO formatted date time of when the call ended.                                                     |
+| `duration`        | `int`      | Call duration in seconds.                                                                           |
+| `billed_duration` | `int`      | Billed call duration in seconds.                                                                    |
+| `recording_url`   | `string`   | URL to [download](https://docs.altur.io/api-reference/calls/retrieve-recording) the call recording. |
+| `transcript`      | `array`    | Call transcript object.                                                                             |
 
 ### Assistant Object
 
@@ -83,14 +96,15 @@ Here’s an example of the payload sent with the `on_call_end` event:
 
 ### End User Object
 
-| Field            | Type     | Description                                                |
-| :--------------- | :------- | :--------------------------------------------------------- |
-| `id`             | `uuid`   | Unique identifier for the end user.                        |
-| `status`         | `string` | Current status of the user enum value (e.g., `converted`). |
-| `display_name`   | `string` | Display name of the user.                                  |
-| `phone_number`   | `string` | User's phone number (E.164 format).                        |
-| `context`        | `string` | Additional user-specific information.                      |
-| `extracted_data` | `object` | Key-value pairs of extracted data.                         |
+| Field            | Type     | Description                                                                                    |
+| :--------------- | :------- | :--------------------------------------------------------------------------------------------- |
+| `id`             | `uuid`   | Unique identifier for the end user.                                                            |
+| `status`         | `string` | Current status of the user enum value (e.g., `converted`).                                     |
+| `display_name`   | `string` | Display name of the user.                                                                      |
+| `phone_number`   | `string` | User's phone number (E.164 format).                                                            |
+| `context`        | `string` | Additional user-specific information.                                                          |
+| `extracted_data` | `object` | Key-value pairs of extracted data.                                                             |
+| `tags`           | `array`  | Array of tag names corresponding to tags assigned to the last campaign user or current thread. |
 
 ## Response Expectations
 
@@ -105,11 +119,9 @@ Each request includes an HMAC signature in the `X-Altur-Signature` header. Refer
 1. **CRM Integration**
 
    Use the `on_call_end` webhook to update call logs and user interaction data in your CRM system.
-
 2. **Analytics**
 
    Process transcripts and user status to generate insights or trigger follow-up actions.
-
 3. **Data Enrichment**
 
    Automatically store extracted data, like account numbers or due dates, in your system for further use.
