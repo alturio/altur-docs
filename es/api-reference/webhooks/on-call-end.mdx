@@ -29,6 +29,8 @@ Here’s an example of the payload sent with the `on_call_end` event:
   "id": "cll_gBoLtd02pUI50QwXkFjB",
   "type": "outbound",
   "status": "ended",
+  "phone_number_from": "+000000000000",
+  "phone_number_to": "+000000000000",
   "answered_by": "human",
   "created_at": "2024-12-19T15:00:10Z",
   "started_at": "2024-12-19T15:00:10Z",
@@ -71,20 +73,22 @@ Here’s an example of the payload sent with the `on_call_end` event:
 
 ### Root Fields
 
-| Field             | Type       | Description                                                                                         |
-| :---------------- | :--------- | :-------------------------------------------------------------------------------------------------- |
-| `event_type`      | `string`   | Event type (`on_call_end`).                                                                         |
-| `id`              | `string`   | Unique identifier for the call.                                                                     |
-| `type`            | `string`   | Call type (`outbound`or `inbound`).                                                                 |
-| `status`          | `string`   | Status of the call enum value (e.g., `ended`).                                                      |
-| `answered_by`     | `string`   | Indicates who answered the call (`human`, `machine` or `unknown`).                                  |
-| `created_at`      | `datetime` | ISO formatted date time of when the call was created.                                               |
-| `started_at`      | `datetime` | ISO formatted date time of when the call started.                                                   |
-| `ended_at`        | `datetime` | ISO formatted date time of when the call ended.                                                     |
-| `duration`        | `int`      | Call duration in seconds.                                                                           |
-| `billed_duration` | `int`      | Billed call duration in seconds.                                                                    |
-| `recording_url`   | `string`   | URL to [download](https://docs.altur.io/api-reference/calls/retrieve-recording) the call recording. |
-| `transcript`      | `array`    | Call transcript object.                                                                             |
+| Field               | Type       | Description                                                                                         |
+| :------------------ | :--------- | :-------------------------------------------------------------------------------------------------- |
+| `event_type`        | `string`   | Event type (`on_call_end`).                                                                         |
+| `id`                | `string`   | Unique identifier for the call.                                                                     |
+| `type`              | `string`   | Call type (`outbound`or `inbound`).                                                                 |
+| `status`            | `string`   | Status of the call enum value (e.g., `ended`).                                                      |
+| `phone_number_from` | `string`   | E.164 formatted number.                                                                             |
+| `phone_number_to`   | `string`   | E.164 formatted number.                                                                             |
+| `answered_by`       | `string`   | Indicates who answered the call (`human`, `machine` or `unknown`).                                  |
+| `created_at`        | `datetime` | ISO formatted date time of when the call was created.                                               |
+| `started_at`        | `datetime` | ISO formatted date time of when the call started.                                                   |
+| `ended_at`          | `datetime` | ISO formatted date time of when the call ended.                                                     |
+| `duration`          | `int`      | Call duration in seconds.                                                                           |
+| `billed_duration`   | `int`      | Billed call duration in seconds.                                                                    |
+| `recording_url`     | `string`   | URL to [download](https://docs.altur.io/api-reference/calls/retrieve-recording) the call recording. |
+| `transcript`        | `array`    | Call transcript object.                                                                             |
 
 ### Assistant Object
 
