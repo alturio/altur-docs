@@ -72,7 +72,7 @@ def is_valid_signature(secret: str, payload: Union[str, dict], signature: str) -
     return hmac.compare_digest(signature, expected_signature)
 ```
 
-```javascript validate.js
+```javascript JavaScript
 const crypto = require("crypto");
 
 function isValidSignature(secret, payload, signature) {
@@ -109,7 +109,7 @@ const signature = req.headers["x-altur-signature"];
 const isValid = isValidSignature(yourSecret, req.body, signature);
 ```
 
-```php validate.php
+```php PHP
 function isValidSignature($secret, $payload, $signature) {
     /*
      * Validate Altur webhook signature.
