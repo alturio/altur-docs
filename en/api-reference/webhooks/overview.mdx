@@ -12,13 +12,13 @@ Webhooks allow you to receive real-time notifications about events in your Altur
 ## How Webhooks Work
 
 1. **Configure Your Endpoint**  
-    You can configure your webhook URL in the Altur platform. This URL will receive POST requests when specific events are triggered.
+   You can configure your webhook URL in the Altur platform. This URL will receive POST requests when specific events are triggered.
 
 2. **Receive Notifications**  
-    When an event occurs, Altur sends a POST request with the event's details in a structured JSON format to your endpoint.
+   When an event occurs, Altur sends a POST request with the event's details in a structured JSON format to your endpoint.
 
 3. **Acknowledge Delivery**  
-    Your endpoint should respond with a `200 OK` status code to confirm successful receipt. If the request fails or times out, Altur retries the delivery up to 5 times with an exponential backoff strategy.
+   Your endpoint should respond with a `200 OK` status code to confirm successful receipt. If the request fails or times out, Altur retries the delivery up to 5 times with an exponential backoff strategy.
 
 ## Event Types
 
@@ -31,27 +31,136 @@ Webhooks can be triggered by the following event types:
 To ensure secure communication and verify the authenticity of webhook requests, Altur includes an HMAC signature in the `X-Altur-Signature` header for every request.
 
 ### How It Works
-- **Shared Secret**: Each webhook integration is configured with a unique shared secret key.
-- **HMAC Generation**: Altur generates an HMAC SHA-256 hash using the shared secret and the request payload. This hash is included in the `X-Altur-Signature` header.
-- **Validation**: Your endpoint must validate the signature using the same shared secret.
 
-```python Validation Function Example
+- **Shared Secret**: Each webhook integration is configured with a unique base64-encoded shared secret key.
+- **HMAC Generation**: Altur generates an HMAC SHA-256 hash using the base64-decoded shared secret and the JSON request payload (serialized without spaces). This hash is base64-encoded and included in the `X-Altur-Signature` header.
+- **Validation**: Your endpoint must validate the signature using the same shared secret and JSON serialization format.
+
+### Validation Function Example
+
+<CodeGroup>
+
+```python Python
+import json
+import base64
 import hmac
 import hashlib
 
-def is_valid_signature(secret, payload, signature):
-    computed_signature = hmac.new(
-        key=secret.encode('utf-8'),
-        msg=payload.encode('utf-8'),
-        digestmod=hashlib.sha256
-    ).hexdigest()
-    return hmac.compare_digest(computed_signature, signature)
+def is_valid_signature(secret: str, payload: Union[str, dict], signature: str) -> bool:
+    """
+    Validate Altur webhook signature.
+
+    Args:
+        secret: Base64-encoded shared secret key
+        payload: Request payload (dict or JSON string)
+        signature: Base64-encoded signature from X-Altur-Signature header
+    """
+    # Convert payload to consistent JSON format (compact, no spaces)
+    if isinstance(payload, dict):
+        payload_bytes = json.dumps(payload, separators=(',', ':')).encode('utf-8')
+    else:
+        payload_bytes = payload.encode('utf-8')
+
+    # Decode the base64 secret
+    secret_bytes = base64.b64decode(secret)
+
+    # Generate expected signature
+    expected_signature = base64.b64encode(
+        hmac.new(secret_bytes, payload_bytes, hashlib.sha256).digest()
+    ).decode()
+
+    return hmac.compare_digest(signature, expected_signature)
 ```
 
-```python Example Usage
-payload = '{"type": "on_call_end", "status": "ended"}' # Raw request payload
+```javascript validate.js
+const crypto = require("crypto");
+
+function isValidSignature(secret, payload, signature) {
+  /**
+   * Validate Altur webhook signature.
+   *
+   * @param {string} secret - Base64-encoded shared secret key
+   * @param {object|string} payload - Request payload (object or JSON string)
+   * @param {string} signature - Base64-encoded signature from X-Altur-Signature header
+   */
+
+  // Convert payload to consistent JSON format (compact, no spaces)
+  const payloadString =
+    typeof payload === "string" ? payload : JSON.stringify(payload);
+
+  // Decode base64 secret
+  const secretBuffer = Buffer.from(secret, "base64");
+
+  // Generate expected signature
+  const expectedSignature = crypto
+    .createHmac("sha256", secretBuffer)
+    .update(payloadString)
+    .digest("base64");
+
+  // Compare signatures using timing-safe comparison
+  return crypto.timingSafeEqual(
+    Buffer.from(signature, "base64"),
+    Buffer.from(expectedSignature, "base64")
+  );
+}
+
+// Usage example
+const signature = req.headers["x-altur-signature"];
+const isValid = isValidSignature(yourSecret, req.body, signature);
+```
+
+```php validate.php
+function isValidSignature($secret, $payload, $signature) {
+    /*
+     * Validate Altur webhook signature.
+     *
+     * @param string $secret Base64-encoded shared secret key
+     * @param array|string $payload Request payload (array or JSON string)
+     * @param string $signature Base64-encoded signature from X-Altur-Signature header
+     */
+
+    // Convert payload to consistent JSON format (compact, no spaces)
+    $payloadString = is_string($payload)
+        ? $payload
+        : json_encode($payload, JSON_UNESCAPED_SLASHES);
+
+    // Decode base64 secret
+    $secretBytes = base64_decode($secret);
+
+    // Generate expected signature
+    $expectedSignature = base64_encode(
+        hash_hmac('sha256', $payloadString, $secretBytes, true)
+    );
+
+    // Compare signatures using timing-safe comparison
+    return hash_equals($signature, $expectedSignature);
+}
+
+// Usage example
+$signature = $_SERVER['HTTP_X_ALTUR_SIGNATURE'];
+$isValid = isValidSignature($yourSecret, json_decode(file_get_contents('php://input'), true), $signature);
+```
+
+</CodeGroup>
+
+### Usage Example
+
+```python Example 1: Using parsed JSON dict (recommended)
+import json
+request_body = request.get_json()  # Parsed JSON from your web framework
+signature = request.headers.get('X-Altur-Signature')
+shared_secret = "your-base64-encoded-shared-secret"
+
+if is_valid_signature(shared_secret, request_body, signature):
+    print("Valid webhook request!")
+else:
+    print("Invalid webhook request!")
+```
+
+```python Example 2: Using raw JSON string
+payload = '{"type":"on_call_end","status":"ended"}' # Raw request payload (compact JSON)
 signature = "provided-signature-from-header" # X-Altur-Signature header
-shared_secret = "your-shared-secret-key" # Shared secret key
+shared_secret = "your-base64-encoded-shared-secret" # Base64-encoded shared secret
 
 if is_valid_signature(shared_secret, payload, signature):
     print("Valid webhook request!")
@@ -60,12 +169,14 @@ else:
 ```
 
 ### Headers Sent with Webhook
+
 - `Content-Type`: `application/json`
-- `X-Altur-Signature`: HMAC SHA-256 hash of the payload
+- `X-Altur-Signature`: Base64-encoded HMAC SHA-256 hash of the compact JSON payload
 
 ### Why This Matters
 
 This mechanism ensures:
+
 - The request originates from Altur.
 - The payload has not been tampered with during transmission.
 
@@ -86,55 +197,113 @@ Here’s a typical workflow for handling webhooks effectively:
 
 1. **Set Up Your Endpoint**
 
-    Create an API endpoint in your backend, such as `/webhooks/altur/on-call-end`. Ensure the endpoint is publicly accessible and configured to accept POST requests with a `Content-Type` of `application/json`.
+   Create an API endpoint in your backend, such as `/webhooks/altur/on-call-end`. Ensure the endpoint is publicly accessible and configured to accept POST requests with a `Content-Type` of `application/json`.
 
 2. **Parse Incoming Data**
 
-    Extract and process the JSON payload sent by Altur. Ensure your code handles possible issues, such as malformed payloads or missing fields, to prevent runtime errors.
+   Extract and process the JSON payload sent by Altur. Ensure your code handles possible issues, such as malformed payloads or missing fields, to prevent runtime errors.
 
 3. **Validate Request Authenticity**
 
-    Use the `X-Altur-Signature` header to verify the authenticity of the request. This involves:
-    - Recomputing the HMAC signature using the shared secret and payload.
-    - Comparing it with the signature provided in the header.
+   Use the `X-Altur-Signature` header to verify the authenticity of the request. This involves:
+
+   - Recomputing the HMAC signature using the shared secret and payload.
+   - Comparing it with the signature provided in the header.
 
 4. **Respond Promptly**
 
-    Return a `200 OK` status code to acknowledge successful receipt. Aim to respond within 10 seconds to avoid timeouts or unnecessary retries by Altur.
+   Return a `200 OK` status code to acknowledge successful receipt. Aim to respond within 10 seconds to avoid timeouts or unnecessary retries by Altur.
 
 5. **Log Events for Debugging**
 
-    Log the incoming request and processing steps to ensure traceability. This is particularly useful for debugging issues with payloads or retries.
+   Log the incoming request and processing steps to ensure traceability. This is particularly useful for debugging issues with payloads or retries.
 
 6. **Handle Retries Gracefully**
 
-    Design your system to handle retries in case of temporary failures. Ensure your endpoint is idempotent so processing the same event multiple times does not create duplicate actions (e.g., duplicate database entries or API calls).
+   Design your system to handle retries in case of temporary failures. Ensure your endpoint is idempotent so processing the same event multiple times does not create duplicate actions (e.g., duplicate database entries or API calls).
 
 ## Best Practices
 
-1. **Secure Your Endpoint**  
-   - **Authenticate Requests**: Verify webhook authenticity using HMAC signatures. Always use a secure and unique shared secret for each integration.  
-   - **Restrict Access**: Use IP whitelisting or firewalls to allow requests only from Altur's servers.  
+1. **Secure Your Endpoint**
+
+   - **Authenticate Requests**: Verify webhook authenticity using HMAC signatures. Always use a secure and unique shared secret for each integration.
+   - **Restrict Access**: Use IP whitelisting or firewalls to allow requests only from Altur's servers.
    - **Encrypt Communication**: Ensure your webhook endpoint uses HTTPS to encrypt data in transit.
 
-2. **Log Events**  
-   - **Record Everything**: Log all incoming webhook requests, including timestamps, headers, payloads, and responses.  
-   - **Monitor Failures**: Implement alerts for repeated failures or invalid requests to quickly address issues.  
+2. **Log Events**
+
+   - **Record Everything**: Log all incoming webhook requests, including timestamps, headers, payloads, and responses.
+   - **Monitor Failures**: Implement alerts for repeated failures or invalid requests to quickly address issues.
    - **Enable Debugging**: Retain logs for a reasonable period to aid in debugging or auditing as necessary.
 
-3. **Test Thoroughly**  
-   - **Simulate Events**: Use the Altur dashboard to simulate webhook events and confirm your endpoint handles them correctly.  
-   - **Handle Edge Cases**: Test scenarios like malformed payloads, large payloads, or missing fields to ensure robustness.  
+3. **Test Thoroughly**
+
+   - **Simulate Events**: Use the Altur dashboard to simulate webhook events and confirm your endpoint handles them correctly.
+   - **Handle Edge Cases**: Test scenarios like malformed payloads, large payloads, or missing fields to ensure robustness.
    - **Use Staging Environments**: Set up a dedicated staging endpoint for safe testing without affecting production systems.
 
-4. **Optimize Performance**  
-   - **Respond Quickly**: Ensure your endpoint responds within 10 seconds to avoid timeouts. If processing takes longer, return a `200 OK` and handle the task asynchronously.  
-   - **Minimize Processing**: Perform lightweight validation and queuing at the webhook level, offloading heavy processing to background workers.  
+4. **Optimize Performance**
+
+   - **Respond Quickly**: Ensure your endpoint responds within 10 seconds to avoid timeouts. If processing takes longer, return a `200 OK` and handle the task asynchronously.
+   - **Minimize Processing**: Perform lightweight validation and queuing at the webhook level, offloading heavy processing to background workers.
    - **Use Caching**: Cache static responses for redundant requests when appropriate.
 
-5. **Ensure Idempotency**  
+5. **Ensure Idempotency**
+
    - **Avoid Duplicate Actions**: Design your system to handle retries without causing duplicate operations (e.g., database inserts or API calls). Use unique event identifiers from Altur for this purpose.
 
-6. **Communicate Failures**  
-   - **Return Meaningful Status Codes**: Respond with appropriate HTTP status codes to help diagnose issues (e.g., `400` for invalid requests or `500` for server errors).  
+6. **Communicate Failures**
+   - **Return Meaningful Status Codes**: Respond with appropriate HTTP status codes to help diagnose issues (e.g., `400` for invalid requests or `500` for server errors).
    - **Log and Notify**: Log failures and consider notifying your team if critical retries are exhausted.
+
+## Troubleshooting Signature Validation
+
+If you're having trouble with signature validation, check these common issues:
+
+### 1. JSON Serialization Format
+
+Ensure you're using the same JSON serialization format as Altur:
+
+- **Compact format**: No spaces after colons or commas
+- **Consistent ordering**: Use the exact payload received
+
+```python
+# ✅ Correct - compact JSON
+json.dumps(data, separators=(',', ':'))
+
+# ❌ Wrong - includes spaces
+json.dumps(data)  # Results in: {"key": "value"}
+```
+
+### 2. Secret Key Format
+
+- Ensure your secret key is **base64-encoded**
+- The secret should be the same one configured in your Altur webhook integration
+
+### 3. Header Name
+
+- The signature header is `X-Altur-Signature` (case-sensitive in some frameworks)
+- Make sure you're reading the correct header
+
+### 4. Timing Attacks
+
+Always use timing-safe comparison functions:
+
+- Python: `hmac.compare_digest()`
+- Node.js: `crypto.timingSafeEqual()`
+- PHP: `hash_equals()`
+
+### 5. Testing Your Implementation
+
+You can test your signature validation with this example:
+
+```python
+# Test data
+test_payload = {"test": "data"}
+test_secret = "dGVzdC1zZWNyZXQ="  # base64 for "test-secret"
+expected_signature = "ZjM2ZTc4YWJkZDQ1ZGZlYjM4NTIwYWY1ZmY1MzFkMTk4YmM0YzJmMzU0MTJjMmE3MGZjZGY4ZDhkOTYzOWY4OA=="
+
+# This should return True
+result = is_valid_signature(test_secret, test_payload, expected_signature)
+print(f"Validation result: {result}")
+```
