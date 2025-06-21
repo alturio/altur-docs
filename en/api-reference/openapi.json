@@ -393,6 +393,98 @@
         }
       }
     },
+    "/call": {
+      "post": {
+        "description": "Starts a Call",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "agent_id": {
+                    "description": "Unique identifier of the Agent that will participate in the Call (formerly Chatbot or Assistant)",
+                    "type": "string",
+                    "format": "uuid4"
+                  },
+                  "phone_number_to": {
+                    "description": "E.164 formatted phone number of the EndUser to call",
+                    "type": "string",
+                    "format": "e164"
+                  },
+                  "end_user_display_name": {
+                    "description": "Display name of the EndUser to call",
+                    "type": "string"
+                  },
+                  "end_user_context": {
+                    "description": "Context of the EndUser to call",
+                    "type": "string"
+                  },
+                  "initial_message": {
+                    "description": "Initial message the Agent will say upon the call being answered",
+                    "type": "string"
+                  }
+                },
+                "required": ["agent_id", "phone_number_to"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Call response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Call"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Agent not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/call/{id}": {
       "get": {
         "description": "Returns the Call corresponding to the given indentifier",
@@ -525,21 +617,14 @@
           "integration_type": {
             "description": "Enum representing the Integration's channel",
             "type": "string",
-            "enum": [
-              "api",
-              "whatsapp"
-            ]
+            "enum": ["api", "whatsapp"]
           },
           "info": {
             "description": "EndUser's information valuable for interactions with Chatbots or human agents",
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "display_name",
-          "integration"
-        ]
+        "required": ["id", "display_name", "integration"]
       },
       "EndUserData": {
         "type": "object",
@@ -567,10 +652,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "name"
-        ]
+        "required": ["id", "name"]
       },
       "Integration": {
         "type": "object",
@@ -582,16 +664,10 @@
           "type": {
             "description": "Enum representing the Integration's channel",
             "type": "string",
-            "enum": [
-              "api",
-              "whatsapp"
-            ]
+            "enum": ["api", "whatsapp"]
           }
         },
-        "required": [
-          "id",
-          "type"
-        ]
+        "required": ["id", "type"]
       },
       "Tag": {
         "type": "object",
@@ -618,11 +694,7 @@
             ]
           }
         },
-        "required": [
-          "id",
-          "name",
-          "color"
-        ]
+        "required": ["id", "name", "color"]
       },
       "User": {
         "type": "object",
@@ -644,10 +716,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "email"
-        ]
+        "required": ["id", "email"]
       },
       "Thread": {
         "type": "object",
@@ -707,10 +776,7 @@
           "type": {
             "description": "Type of the Call",
             "type": "string",
-            "enum": [
-              "inbound",
-              "outbound"
-            ]
+            "enum": ["inbound", "outbound"]
           },
           "status": {
             "description": "Status of the Call",
@@ -730,11 +796,7 @@
           "answered_by": {
             "description": "Who or what answered the Call",
             "type": "string",
-            "enum": [
-              "human",
-              "machine",
-              "unknown"
-            ]
+            "enum": ["human", "machine", "unknown"]
           },
           "created_at": {
             "description": "Datetime from when the Call was created",
@@ -810,11 +872,7 @@
           "sent_by": {
             "description": "Author of this message",
             "type": "string",
-            "enum": [
-              "AI",
-              "EU",
-              "SYS"
-            ]
+            "enum": ["AI", "EU", "SYS"]
           },
           "sent_by_user": {
             "description": "Altur user id (if Message was sent manually by an in-app user)",
@@ -830,18 +888,10 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "thread_id",
-          "type",
-          "sent_by",
-          "sent_at"
-        ]
+        "required": ["thread_id", "type", "sent_by", "sent_at"]
       },
       "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
+        "required": ["error", "message"],
         "type": "object",
         "properties": {
           "error": {
