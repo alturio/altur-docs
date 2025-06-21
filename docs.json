@@ -43,15 +43,11 @@
             "groups": [
               {
                 "group": "Introducción",
-                "pages": [
-                  "es/documentation/introduction"
-                ]
+                "pages": ["es/documentation/introduction"]
               },
               {
                 "group": "Campañas",
-                "pages": [
-                  "es/documentation/campaigns/create"
-                ]
+                "pages": ["es/documentation/campaigns/create"]
               }
             ]
           },
@@ -72,6 +68,7 @@
                     "group": "Llamadas",
                     "icon": "phone",
                     "pages": [
+                      "es/api-reference/calls/start",
                       "es/api-reference/calls/retrieve",
                       "es/api-reference/calls/retrieve-recording"
                     ]
@@ -87,9 +84,7 @@
                   {
                     "group": "Threads",
                     "icon": "messages",
-                    "pages": [
-                      "es/api-reference/threads/retrieve"
-                    ]
+                    "pages": ["es/api-reference/threads/retrieve"]
                   },
                   {
                     "group": "EndUsers",
@@ -110,9 +105,7 @@
                   {
                     "group": "Eventos de Webhook",
                     "icon": "bolt",
-                    "pages": [
-                      "es/api-reference/webhooks/on-call-end"
-                    ]
+                    "pages": ["es/api-reference/webhooks/on-call-end"]
                   }
                 ]
               }
@@ -128,15 +121,11 @@
             "groups": [
               {
                 "group": "Get Started",
-                "pages": [
-                  "en/documentation/introduction"
-                ]
+                "pages": ["en/documentation/introduction"]
               },
               {
                 "group": "Campaigns",
-                "pages": [
-                  "en/documentation/campaigns/create"
-                ]
+                "pages": ["en/documentation/campaigns/create"]
               }
             ]
           },
@@ -157,6 +146,7 @@
                     "group": "Calls",
                     "icon": "phone",
                     "pages": [
+                      "en/api-reference/calls/start",
                       "en/api-reference/calls/retrieve",
                       "en/api-reference/calls/retrieve-recording"
                     ]
@@ -172,9 +162,7 @@
                   {
                     "group": "Threads",
                     "icon": "messages",
-                    "pages": [
-                      "en/api-reference/threads/retrieve"
-                    ]
+                    "pages": ["en/api-reference/threads/retrieve"]
                   },
                   {
                     "group": "EndUsers",
@@ -195,9 +183,7 @@
                   {
                     "group": "Webhook Events",
                     "icon": "bolt",
-                    "pages": [
-                      "en/api-reference/webhooks/on-call-end"
-                    ]
+                    "pages": ["en/api-reference/webhooks/on-call-end"]
                   }
                 ]
               }
