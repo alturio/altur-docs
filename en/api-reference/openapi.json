@@ -659,7 +659,7 @@
           "chatbot": {
             "$ref": "#/components/schemas/Chatbot"
           },
-          "enduser": {
+          "end_user": {
             "$ref": "#/components/schemas/EndUser"
           },
           "integration": {
