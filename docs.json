@@ -36,7 +36,6 @@
     "languages": [
       {
         "language": "es",
-        "default": true,
         "tabs": [
           {
             "tab": "Documentación",
@@ -129,6 +128,7 @@
       },
       {
         "language": "en",
+        "default": true,
         "tabs": [
           {
             "tab": "Documentation",
