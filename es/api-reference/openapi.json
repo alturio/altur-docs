@@ -26,7 +26,7 @@
           {
             "name": "agent_id",
             "in": "query",
-            "description": "Agent ID",
+            "description": "Filters the Campaigns by Agent ID of the agent assigned to the Campaign",
             "schema": {
               "type": "string"
             },
@@ -35,9 +35,17 @@
           {
             "name": "status",
             "in": "query",
-            "description": "Status",
+            "description": "Filters the Campaigns by Status of the Campaign",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "pending",
+                "ready",
+                "active",
+                "inactive",
+                "cooldown",
+                "finished"
+              ]
             },
             "required": false
           },
@@ -59,7 +67,8 @@
             "in": "query",
             "description": "Bottom date of the range to filter the Campaigns in ISO 8601 format",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "ISO 8601"
             }
           },
           {
@@ -67,7 +76,8 @@
             "in": "query",
             "description": "Top date of the range to filter the Campaigns in ISO 8601 format",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "ISO 8601"
             },
             "required": false
           },
@@ -166,9 +176,25 @@
           {
             "name": "status",
             "in": "query",
-            "description": "Status of the Campaign Contacts",
+            "description": "Filters the Campaign Contacts by Status of the Campaign Contact",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "queue",
+                "sending",
+                "sent",
+                "delivered",
+                "voicemail",
+                "read",
+                "failed",
+                "no-answer",
+                "busy",
+                "retrying",
+                "converted",
+                "acepted",
+                "rejected",
+                "unreachable"
+              ]
             },
             "required": false
           },
@@ -493,7 +519,7 @@
     },
     "/message": {
       "post": {
-        "description": "Sends Message to the Thread between a Chatbot and an EndUser, returns the Message created from the request, the Messages generated in response, and returns information about the Thread between the Chatbot and EndUser",
+        "description": "Sends Message to the Thread between a Agent and an EndUser, returns the Message created from the request, the Messages generated in response, and returns information about the Thread between the Agent and EndUser",
         "requestBody": {
           "required": true,
           "content": {
@@ -501,8 +527,8 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "chatbot_id": {
-                    "description": "Unique identifier of the Chatbot recieving the Message",
+                  "agent_id": {
+                    "description": "Unique identifier of the Agent recieving the Message",
                     "type": "string",
                     "format": "uuid4"
                   },
@@ -552,7 +578,7 @@
             }
           },
           "404": {
-            "description": "Chatbot or EndUser not found",
+            "description": "Agent or EndUser not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -636,7 +662,7 @@
                 "type": "object",
                 "properties": {
                   "agent_id": {
-                    "description": "Unique identifier of the Agent that will participate in the Call (formerly Chatbot or Assistant)",
+                    "description": "Unique identifier of the Agent that will participate in the Call (formerly Agent or Assistant)",
                     "type": "string",
                     "format": "uuid4"
                   },
@@ -844,6 +870,23 @@
   },
   "components": {
     "schemas": {
+      "Agent":{
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the Agent",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the Agent",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
       "Campaign": {
         "type": "object",
         "properties": {
@@ -864,13 +907,14 @@
             "type": "string"
           },
           "created_at": {
-            "description": "Datetime from when the Campaign was created",
+            "description": "The date and time when the Campaign was created",
             "type": "string",
             "format": "ISO 8601"
           },
           "agent": {
-            "description": "Agent of the Campaign",
-            "type": "string"
+            "description": "Agent assigned to the Campaign",
+            "type": "object",
+            "$ref": "#/components/schemas/Agent"
           },
           "scheduling": {
             "description": "Schedule of the Campaign",
@@ -894,47 +938,56 @@
             "type": "boolean"
           },
           "template": {
-            "description": "Template of the Campaign",
-            "type": "string"
+            "description": "WhatsApp Template assigned to the Campaign",
+            "type": "string",
+            "x-usage": "WhatsApp campaigns only"
           },
           "first_message": {
-            "description": "First message of the Campaign",
-            "type": "string"
+            "description": "The first message the Agent will say upon the call being answered",
+            "type": "string",
+            "x-usage": "Phone call campaigns only"
           },
           "cycle_enabled": {
-            "description": "Whether the Campaign is cycle enabled",
-            "type": "boolean"
+            "description": "Whether the Campaign will be cycled",
+            "type": "boolean",
+            "x-usage": "Phone call campaigns only"
           },
           "cycle_max_iterations": {
-            "description": "Max iterations of the Campaign",
-            "type": "integer"
+            "description": "Max times a campaign will be repeated",
+            "type": "integer",
+            "x-usage": "Phone call campaigns only"
           },
           "cycle_cooldown": {
             "description": "Cooldown of the Campaign in minutes",
-            "type": "integer"
+            "type": "integer",
+            "x-usage": "Phone call campaigns only"
           },
           "cycle_status_filters": {
             "description": "Status filters of the Campaign",
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "x-usage": "Phone call campaigns only"
             }
           },
           "cycle_tag_filters": {
             "description": "Tag filters of the Campaign",
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "x-usage": "Phone call campaigns only"
             }
           },
           "cycle_current_iteration": {
             "description": "Current iteration of the Campaign",
-            "type": "integer"
+            "type": "integer",
+            "x-usage": "Phone call campaigns only"
           },
           "last_iteration_at": {
             "description": "Last iteration of the Campaign",
             "type": "string",
-            "format": "ISO 8601"
+            "format": "ISO 8601",
+            "x-usage": "Phone call campaigns only"
           }
         }
       },
@@ -1001,7 +1054,7 @@
         "type": "object",
         "properties": {
           "total_count": {
-            "description": "Total number of Campaigns",
+            "description": "Total number of Campaigns for the given query",
             "type": "integer"
           },
           "campaigns": {
@@ -1020,7 +1073,7 @@
         "type": "object",
         "properties": {
           "total_count": {
-            "description": "Total number of Campaign Contacts",
+            "description": "Total number of Campaign Contacts for the given query",
             "type": "integer"
           },
           "contacts": {
@@ -1056,7 +1109,7 @@
             ]
           },
           "info": {
-            "description": "EndUser's information valuable for interactions with Chatbots or human agents",
+            "description": "EndUser's information valuable for interactions with Agents or human agents",
             "type": "string"
           }
         },
@@ -1074,28 +1127,10 @@
             "type": "string"
           },
           "info": {
-            "description": "EndUser's information valuable for interactions with chatbots or human agents",
+            "description": "EndUser's information valuable for interactions with Agents or human agents",
             "type": "string"
           }
         }
-      },
-      "Chatbot": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "description": "Unique identifier for the Chatbot",
-            "type": "string",
-            "format": "uuid4"
-          },
-          "name": {
-            "description": "Name given to the Chatbot",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
       },
       "Integration": {
         "type": "object",
@@ -1181,8 +1216,8 @@
             "description": "Unique identifier for the Thread",
             "type": "string"
           },
-          "chatbot": {
-            "$ref": "#/components/schemas/Chatbot"
+          "agent": {
+            "$ref": "#/components/schemas/Agent"
           },
           "end_user": {
             "$ref": "#/components/schemas/EndUser"
@@ -1196,7 +1231,7 @@
             "format": "date-time"
           },
           "active": {
-            "description": "Boolean describing if automatic responses by the Chatbot are active on this Thread",
+            "description": "Boolean describing if automatic responses by the Agent are active on this Thread",
             "type": "boolean"
           },
           "blocked": {
