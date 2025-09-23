@@ -938,56 +938,47 @@
             "type": "boolean"
           },
           "template": {
-            "description": "WhatsApp Template assigned to the Campaign",
-            "type": "string",
-            "x-usage": "WhatsApp campaigns only"
+            "description": "WhatsApp Template assigned to the Campaign (WhatsApp campaigns only)",
+            "type": "string"
           },
           "first_message": {
-            "description": "The first message the Agent will say upon the call being answered",
-            "type": "string",
-            "x-usage": "Phone call campaigns only"
+            "description": "The first message the Agent will say upon the call being answered (Phone call campaigns only)",
+            "type": "string"
           },
           "cycle_enabled": {
-            "description": "Whether the Campaign will be cycled",
-            "type": "boolean",
-            "x-usage": "Phone call campaigns only"
+            "description": "Whether the Campaign will be cycled (Phone call campaigns only)",
+            "type": "boolean"
           },
           "cycle_max_iterations": {
-            "description": "Max times a campaign will be repeated",
-            "type": "integer",
-            "x-usage": "Phone call campaigns only"
+            "description": "Max times a campaign will be repeated (Phone call campaigns only)",
+            "type": "integer"
           },
           "cycle_cooldown": {
-            "description": "Cooldown of the Campaign in minutes",
-            "type": "integer",
-            "x-usage": "Phone call campaigns only"
+            "description": "Cooldown of the Campaign in minutes (Phone call campaigns only)",
+            "type": "integer"
           },
           "cycle_status_filters": {
-            "description": "Status filters of the Campaign",
+            "description": "Status filters of the Campaign (Phone call campaigns only)",
             "type": "array",
             "items": {
-              "type": "string",
-              "x-usage": "Phone call campaigns only"
+              "type": "string"
             }
           },
           "cycle_tag_filters": {
-            "description": "Tag filters of the Campaign",
+            "description": "Tag filters of the Campaign (Phone call campaigns only)",
             "type": "array",
             "items": {
-              "type": "string",
-              "x-usage": "Phone call campaigns only"
+              "type": "string"
             }
           },
           "cycle_current_iteration": {
-            "description": "Current iteration of the Campaign",
-            "type": "integer",
-            "x-usage": "Phone call campaigns only"
+            "description": "Current iteration of the Campaign (Phone call campaigns only)",
+            "type": "integer"
           },
           "last_iteration_at": {
-            "description": "Last iteration of the Campaign",
+            "description": "Last iteration of the Campaign (Phone call campaigns only)",
             "type": "string",
-            "format": "ISO 8601",
-            "x-usage": "Phone call campaigns only"
+            "format": "ISO 8601"
           }
         }
       },
