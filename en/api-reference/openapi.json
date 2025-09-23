@@ -903,7 +903,7 @@
             "type": "string"
           },
           "created_at": {
-            "description": "The date and time when the campaign was created",
+            "description": "The date and time when the Campaign was created",
             "type": "string",
             "format": "ISO 8601"
           },
@@ -942,11 +942,11 @@
             "type": "integer"
           },
           "cycle_enabled": {
-            "description": "Allows the campaign to automatically rerun and re-contact users that didn't respond or contacts where the objective was not achieved (Phone call campaigns only)",
+            "description": "If enabled the campaign will automatically rerun and re-contact contacts (Phone call campaigns only)",
             "type": "boolean"
           },
           "cycle_max_iterations": {
-            "description": "The maximum number of times a campaign will retry to contact a contact if the call (Phone call campaigns only)",
+            "description": "The maximum number of times a campaign will retry to contact a contact if the call fails (Phone call campaigns only)",
             "type": "integer"
           },
           "cycle_cooldown": {
@@ -954,14 +954,14 @@
             "type": "integer"
           },
           "cycle_status_filters": {
-            "description": "The list of statuses to exclude from the campaign on cycles (Phone call campaigns only)",
+            "description": "The list of contact statuses to exclude from the campaign on cycles (Phone call campaigns only)",
             "type": "array",
             "items": {
               "type": "string"
             }
           },
           "cycle_tag_filters": {
-            "description": "The list of tags assigned to the contacts to exclude from the campaign on cycles (Phone call campaigns only)",
+            "description": "The list of contact tags assigned to the contacts to exclude from the campaign on cycles (Phone call campaigns only)",
             "type": "array",
             "items": {
               "type": "string"
