@@ -35,7 +35,7 @@
           {
             "name": "status",
             "in": "query",
-            "description": "Filters the Campaigns by Status of the Campaign",
+            "description": "Filters the Campaigns by the Status of the Campaign",
             "schema": {
               "type": "string",
               "enum": [
@@ -162,7 +162,7 @@
     },
     "/campaigns/{id}/contacts": {
       "get": {
-        "description": "Returns the Campaign Contacts corresponding to the given indentifier",
+        "description": "Returns the Campaign Contacts corresponding to the given identifier",
         "parameters": [
           {
             "name": "id",
@@ -176,7 +176,7 @@
           {
             "name": "status",
             "in": "query",
-            "description": "Filters the Campaign Contacts by Status of the Campaign Contact",
+            "description": "Filters the Campaign Contacts by the Status of the Campaign Contact",
             "schema": {
               "type": "string",
               "enum": [
@@ -327,7 +327,7 @@
     },
     "/enduser/{id}": {
       "get": {
-        "description": "Returns the EndUser corresponding to the given indentifier",
+        "description": "Returns the EndUser corresponding to the given identifier",
         "parameters": [
           {
             "name": "id",
@@ -481,7 +481,7 @@
     },
     "/thread/{id}": {
       "get": {
-        "description": "Returns the Thread corresponding to the given indentifier",
+        "description": "Returns the Thread corresponding to the given identifier",
         "parameters": [
           {
             "name": "id",
@@ -528,7 +528,7 @@
                 "type": "object",
                 "properties": {
                   "agent_id": {
-                    "description": "Unique identifier of the Agent recieving the Message",
+                    "description": "Unique identifier of the Agent receiving the Message",
                     "type": "string",
                     "format": "uuid4"
                   },
@@ -592,7 +592,7 @@
     },
     "/message/{thread_id}": {
       "get": {
-        "description": "Get a all Messages in a Thread, ordered from oldest to most recently sent",
+        "description": "Get all Messages in a Thread, ordered from oldest to most recently sent",
         "parameters": [
           {
             "name": "thread_id",
@@ -755,7 +755,7 @@
     },
     "/call/{id}": {
       "get": {
-        "description": "Returns the Call corresponding to the given indentifier",
+        "description": "Returns the Call corresponding to the given identifier",
         "parameters": [
           {
             "name": "id",
@@ -881,11 +881,7 @@
             "description": "Name of the Agent",
             "type": "string"
           }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
+        }
       },
       "Campaign": {
         "type": "object",
@@ -903,7 +899,7 @@
             "type": "string"
           },
           "status": {
-            "description": "Status of the Campaign",
+            "description": "The current status of the Campaign",
             "type": "string"
           },
           "created_at": {
@@ -912,25 +908,21 @@
             "format": "ISO 8601"
           },
           "agent": {
-            "description": "Agent assigned to the Campaign",
+            "description": "The agent assigned to the Campaign",
             "type": "object",
             "$ref": "#/components/schemas/Agent"
           },
           "scheduling": {
-            "description": "Schedule of the Campaign",
+            "description": "The schedule of the Campaign",
             "type": "object",
             "$ref": "#/components/schemas/CampaignSchedule"
           },
           "timezone": {
-            "description": "Timezone of the Campaign",
+            "description": "The timezone of the Campaign",
             "type": "string"
           },
           "retries": {
-            "description": "Retries of the Campaign",
-            "type": "integer"
-          },
-          "concurrency": {
-            "description": "Concurrency of the Campaign",
+            "description": "The number of times the campaign will retry to contact a contact if the call or message fails",
             "type": "integer"
           },
           "archived": {
@@ -945,27 +937,31 @@
             "description": "The first message the Agent will say upon the call being answered (Phone call campaigns only)",
             "type": "string"
           },
+          "concurrency": {
+            "description": "The number of calls that can be active at the same time (Phone call campaigns only)",
+            "type": "integer"
+          },
           "cycle_enabled": {
-            "description": "Whether the Campaign will be cycled (Phone call campaigns only)",
+            "description": "Allows the campaign to automatically rerun and re-contact users that didn't respond or contacts where the objective was not achieved (Phone call campaigns only)",
             "type": "boolean"
           },
           "cycle_max_iterations": {
-            "description": "Max times a campaign will be repeated (Phone call campaigns only)",
+            "description": "The maximum number of times a campaign will retry to contact a contact if the call (Phone call campaigns only)",
             "type": "integer"
           },
           "cycle_cooldown": {
-            "description": "Cooldown of the Campaign in minutes (Phone call campaigns only)",
+            "description": "The cooldown time between cycles of the campaign in minutes (Phone call campaigns only)",
             "type": "integer"
           },
           "cycle_status_filters": {
-            "description": "Status filters of the Campaign (Phone call campaigns only)",
+            "description": "The list of statuses to exclude from the campaign on cycles (Phone call campaigns only)",
             "type": "array",
             "items": {
               "type": "string"
             }
           },
           "cycle_tag_filters": {
-            "description": "Tag filters of the Campaign (Phone call campaigns only)",
+            "description": "The list of tags assigned to the contacts to exclude from the campaign on cycles (Phone call campaigns only)",
             "type": "array",
             "items": {
               "type": "string"
