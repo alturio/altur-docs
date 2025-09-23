@@ -1359,16 +1359,56 @@
             "type": "string"
           }
         }
-      }
-    },
-    "securitySchemes": {
-      "apiKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "Authorization",
-        "description": "Add `api-key YOUR_API_SECRET_KEY` as the value of the `Authorization` header."
       },
-      "CursorPagination": {
+      "CampaignContact": {
+        "type": "object",
+        "properties": {
+          "f_id": {
+            "description": "Unique External identifier for the Campaign Contact",
+            "type": "string"
+          },
+          "id": {
+            "description": "Unique identifier for the Campaign Contact",
+            "type": "integer"
+          },
+          "name": {
+            "description": "Name of the Campaign Contact",
+            "type": "string"
+          },
+          "contact": {
+            "description": "Phone number of the contact",
+            "type": "string"
+          },
+          "status": {
+            "description": "Status of the Campaign Contact",
+            "type": "string"
+          },
+          "context": {
+            "description": "Context of the Campaign Contact",
+            "type": "string"
+          },
+          "failed_retries": {
+            "description": "Failed retries of the Campaign Contact",
+            "type": "integer"
+          },
+          "voicemail_retries": {
+            "description": "Voicemail retries of the Campaign Contact",
+            "type": "integer"
+          },
+          "tags": {
+            "description": "Tags of the Campaign Contact",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "extracted_data": {
+            "description": "Extracted data of the Campaign Contact",
+            "type": "object"
+          }
+        }
+      },
+      "Pagination": {
         "type": "object",
         "properties": {
           "has_more": {
@@ -1388,6 +1428,14 @@
             "description": "Cursor to the previous page to return"
           }
         }
+      }
+    },
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Add `api-key YOUR_API_SECRET_KEY` as the value of the `Authorization` header."
       }
     }
   }

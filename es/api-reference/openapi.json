@@ -1359,16 +1359,39 @@
             "type": "string"
           }
         }
-      }
-    },
-    "securitySchemes": {
-      "apiKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "Authorization",
-        "description": "Add `api-key YOUR_API_SECRET_KEY` as the value of the `Authorization` header."
       },
-      "CursorPagination": {
+      "CampaignContact": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the Campaign Contact",
+            "type": "integer"
+          },
+          "campaign_id": {
+            "description": "ID of the associated Campaign",
+            "type": "integer"
+          },
+          "phone_number": {
+            "description": "Phone number of the contact",
+            "type": "string"
+          },
+          "status": {
+            "description": "Status of the Campaign Contact",
+            "type": "string"
+          },
+          "created_at": {
+            "description": "Datetime when the Campaign Contact was created",
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "description": "Datetime when the Campaign Contact was last updated",
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Pagination": {
         "type": "object",
         "properties": {
           "has_more": {
@@ -1388,6 +1411,14 @@
             "description": "Cursor to the previous page to return"
           }
         }
+      }
+    },
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Add `api-key YOUR_API_SECRET_KEY` as the value of the `Authorization` header."
       }
     }
   }
