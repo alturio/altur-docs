@@ -19,6 +19,212 @@
     }
   ],
   "paths": {
+    "/campaigns": {
+      "get": {
+        "description": "Returns all Campaigns for your organization",
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "query",
+            "description": "Agent ID",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Status",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "integration",
+            "in": "query",
+            "description": "Type of integration for the Campaign",
+            "type": "string",
+            "enum": [
+              "phone_call",
+              "whatsapp"
+            ],
+            "required": false
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "Bottom date of the range to filter the Campaigns in ISO 8601 format",
+            "type": "string"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "Top date of the range to filter the Campaigns in ISO 8601 format",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "archived",
+            "in": "query",
+            "description": "If true, archived Campaigns will be included in the results.",
+            "type": "boolean",
+            "default": false,
+            "required": false
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of items per page to return.",
+            "type": "integer",
+            "default": 25,
+            "maximum": 100,
+            "required": false
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Cursor to the next page to return.",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "description": "Direction of the cursor to return the results in.",
+            "type": "string",
+            "enum": [
+              "next",
+              "previous"
+            ],
+            "default": "next",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaigns response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campaigns/{id}/contacts": {
+      "get": {
+        "description": "Returns the Campaign Contacts corresponding to the given indentifier",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the Campaign to return the Contacts",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Status of the Campaign Contacts",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of items per page to return.",
+            "type": "integer",
+            "default": 25,
+            "maximum": 100,
+            "required": false
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Cursor to the next page to return.",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "description": "Direction of the cursor to return the results in.",
+            "type": "string",
+            "enum": [
+              "next",
+              "previous"
+            ],
+            "default": "next",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign Contacts response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignContactsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaign not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/enduser": {
       "post": {
         "description": "Create new EndUser for your organization",
@@ -612,6 +818,197 @@
   },
   "components": {
     "schemas": {
+      "Campaign": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the Campaign",
+            "type": "integer"
+          },
+          "name": {
+            "description": "Name of the Campaign",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of the Campaign",
+            "type": "string"
+          },
+          "status": {
+            "description": "Status of the Campaign",
+            "type": "string"
+          },
+          "created_at": {
+            "description": "Datetime from when the Campaign was created",
+            "type": "string",
+            "format": "ISO 8601"
+          },
+          "agent": {
+            "description": "Agent of the Campaign",
+            "type": "string"
+          },
+          "scheduling": {
+            "description": "Schedule of the Campaign",
+            "type": "object",
+            "$ref": "#/components/schemas/CampaignSchedule"
+          },
+          "timezone": {
+            "description": "Timezone of the Campaign",
+            "type": "string"
+          },
+          "retries": {
+            "description": "Retries of the Campaign",
+            "type": "integer"
+          },
+          "concurrency": {
+            "description": "Concurrency of the Campaign",
+            "type": "integer"
+          },
+          "archived": {
+            "description": "Whether the Campaign is archived",
+            "type": "boolean"
+          },
+          "template": {
+            "description": "Template of the Campaign",
+            "type": "string"
+          },
+          "first_message": {
+            "description": "First message of the Campaign",
+            "type": "string"
+          },
+          "cycle_enabled": {
+            "description": "Whether the Campaign is cycle enabled",
+            "type": "boolean"
+          },
+          "cycle_max_iterations": {
+            "description": "Max iterations of the Campaign",
+            "type": "integer"
+          },
+          "cycle_cooldown": {
+            "description": "Cooldown of the Campaign in minutes",
+            "type": "integer"
+          },
+          "cycle_status_filters": {
+            "description": "Status filters of the Campaign",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cycle_tag_filters": {
+            "description": "Tag filters of the Campaign",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cycle_current_iteration": {
+            "description": "Current iteration of the Campaign",
+            "type": "integer"
+          },
+          "last_iteration_at": {
+            "description": "Last iteration of the Campaign",
+            "type": "string",
+            "format": "ISO 8601"
+          }
+        }
+      },
+      "CampaignScheduleDay":{
+        "type": "object",
+        "properties": {
+          "startTime": {
+            "description": "Start time of the Campaign on Monday",
+            "type": "string",
+            "format": "ISO 8601"
+          },
+          "endTime": {
+            "description": "End time of the Campaign on Monday",
+            "type": "string",
+            "format": "ISO 8601"
+          },
+          "active": {
+            "description": "Boolean describing if the Campaign is active on Monday",
+            "type": "boolean"
+          }
+        }
+      },
+      "CampaignSchedule":{
+        "type": "object",
+        "properties": {
+          "mon": {
+            "description": "Monday",
+            "type": "object",
+            "$ref": "#/components/schemas/CampaignScheduleDay"
+          },
+          "tue": {
+            "description": "Tuesday",
+            "type": "object",
+            "$ref": "#/components/schemas/CampaignScheduleDay"
+          },
+          "wed": {
+            "description": "Wednesday",
+            "type": "object",
+            "$ref": "#/components/schemas/CampaignScheduleDay"
+          },
+          "thu": {
+            "description": "Thursday",
+            "type": "object",
+            "$ref": "#/components/schemas/CampaignScheduleDay"
+          },
+          "fri": {
+            "description": "Friday",
+            "type": "object",
+            "$ref": "#/components/schemas/CampaignScheduleDay"
+          },
+          "sat": {
+            "description": "Saturday",
+            "type": "object",
+            "$ref": "#/components/schemas/CampaignScheduleDay"
+          },
+          "sun": {
+            "description": "Sunday",
+            "type": "object",
+            "$ref": "#/components/schemas/CampaignScheduleDay"
+          }
+        }
+      },
+      "CampaignsResponse": {
+        "type": "object",
+        "properties": {
+          "total_count": {
+            "description": "Total number of Campaigns",
+            "type": "integer"
+          },
+          "campaigns": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Campaign"
+            }
+          },
+          "pagination": {
+            "type": "object",
+            "$ref": "#/components/schemas/Pagination"
+          }
+        }
+      },
+      "CampaignContactsResponse": {
+        "type": "object",
+        "properties": {
+          "total_count": {
+            "description": "Total number of Campaign Contacts",
+            "type": "integer"
+          },
+          "contacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CampaignContact"
+            }
+          },
+          "pagination": {
+            "type": "object",
+            "$ref": "#/components/schemas/Pagination"
+          }
+        }
+      },
       "EndUser": {
         "type": "object",
         "properties": {
@@ -970,6 +1367,27 @@
         "in": "header",
         "name": "Authorization",
         "description": "Add `api-key YOUR_API_SECRET_KEY` as the value of the `Authorization` header."
+      },
+      "CursorPagination": {
+        "type": "object",
+        "properties": {
+          "has_more": {
+            "type": "boolean",
+            "description": "Boolean describing if there are more items to fetch"
+          },
+          "has_previous": {
+            "type": "boolean",
+            "description": "Boolean describing if there are previous items to fetch"
+          },
+          "next_cursor": {
+            "type": "string",
+            "description": "Cursor to the next page to return"
+          },
+          "previous_cursor": {
+            "type": "string",
+            "description": "Cursor to the previous page to return"
+          }
+        }
       }
     }
   }
