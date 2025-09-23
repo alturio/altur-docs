@@ -84,6 +84,14 @@
                     ]
                   },
                   {
+                    "group": "Campaigns",
+                    "icon": "megaphone",
+                    "pages": [
+                      "en/api-reference/campaigns/retrieve",
+                      "en/api-reference/campaigns/retrieve-contacts"
+                    ]
+                  },
+                  {
                     "group": "Messages",
                     "icon": "message",
                     "pages": [
@@ -173,6 +181,14 @@
                       "es/api-reference/calls/start",
                       "es/api-reference/calls/retrieve",
                       "es/api-reference/calls/retrieve-recording"
+                    ]
+                  },
+                  {
+                    "group": "Campañas",
+                    "icon": "megaphone",
+                    "pages": [
+                      "es/api-reference/campaigns/retrieve",
+                      "es/api-reference/campaigns/retrieve-contacts"
                     ]
                   },
                   {
