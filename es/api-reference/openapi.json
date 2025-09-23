@@ -27,74 +27,92 @@
             "name": "agent_id",
             "in": "query",
             "description": "Agent ID",
-            "type": "string",
+            "schema": {
+              "type": "string"
+            },
             "required": false
           },
           {
             "name": "status",
             "in": "query",
             "description": "Status",
-            "type": "string",
+            "schema": {
+              "type": "string"
+            },
             "required": false
           },
           {
             "name": "integration",
             "in": "query",
             "description": "Type of integration for the Campaign",
-            "type": "string",
-            "enum": [
-              "phone_call",
-              "whatsapp"
-            ],
+            "schema": {
+              "type": "string",
+              "enum": [
+                "phone_call",
+                "whatsapp"
+              ]
+            },
             "required": false
           },
           {
             "name": "startDate",
             "in": "query",
             "description": "Bottom date of the range to filter the Campaigns in ISO 8601 format",
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "endDate",
             "in": "query",
             "description": "Top date of the range to filter the Campaigns in ISO 8601 format",
-            "type": "string",
+            "schema": {
+              "type": "string"
+            },
             "required": false
           },
           {
             "name": "archived",
             "in": "query",
             "description": "If true, archived Campaigns will be included in the results.",
-            "type": "boolean",
-            "default": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
             "required": false
           },
           {
             "name": "pageSize",
             "in": "query",
             "description": "Number of items per page to return.",
-            "type": "integer",
-            "default": 25,
-            "maximum": 100,
+            "schema": {
+              "type": "integer",
+              "default": 25,
+              "maximum": 100
+            },
             "required": false
           },
           {
             "name": "cursor",
             "in": "query",
             "description": "Cursor to the next page to return.",
-            "type": "string",
+            "schema": {
+              "type": "string"
+            },
             "required": false
           },
           {
             "name": "direction",
             "in": "query",
             "description": "Direction of the cursor to return the results in.",
-            "type": "string",
-            "enum": [
-              "next",
-              "previous"
-            ],
-            "default": "next",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "next",
+                "previous"
+              ],
+              "default": "next"
+            },
             "required": false
           }
         ],
@@ -149,35 +167,43 @@
             "name": "status",
             "in": "query",
             "description": "Status of the Campaign Contacts",
-            "type": "string",
+            "schema": {
+              "type": "string"
+            },
             "required": false
           },
           {
             "name": "pageSize",
             "in": "query",
             "description": "Number of items per page to return.",
-            "type": "integer",
-            "default": 25,
-            "maximum": 100,
+            "schema": {
+              "type": "integer",
+              "default": 25,
+              "maximum": 100
+            },
             "required": false
           },
           {
             "name": "cursor",
             "in": "query",
             "description": "Cursor to the next page to return.",
-            "type": "string",
+            "schema": {
+              "type": "string"
+            },
             "required": false
           },
           {
             "name": "direction",
             "in": "query",
             "description": "Direction of the cursor to return the results in.",
-            "type": "string",
-            "enum": [
-              "next",
-              "previous"
-            ],
-            "default": "next",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "next",
+                "previous"
+              ],
+              "default": "next"
+            },
             "required": false
           }
         ],
@@ -1363,15 +1389,19 @@
       "CampaignContact": {
         "type": "object",
         "properties": {
+          "f_id": {
+            "description": "Unique External identifier for the Campaign Contact",
+            "type": "string"
+          },
           "id": {
             "description": "Unique identifier for the Campaign Contact",
             "type": "integer"
           },
-          "campaign_id": {
-            "description": "ID of the associated Campaign",
-            "type": "integer"
+          "name": {
+            "description": "Name of the Campaign Contact",
+            "type": "string"
           },
-          "phone_number": {
+          "contact": {
             "description": "Phone number of the contact",
             "type": "string"
           },
@@ -1379,15 +1409,28 @@
             "description": "Status of the Campaign Contact",
             "type": "string"
           },
-          "created_at": {
-            "description": "Datetime when the Campaign Contact was created",
-            "type": "string",
-            "format": "date-time"
+          "context": {
+            "description": "Context of the Campaign Contact",
+            "type": "string"
           },
-          "updated_at": {
-            "description": "Datetime when the Campaign Contact was last updated",
-            "type": "string",
-            "format": "date-time"
+          "failed_retries": {
+            "description": "Failed retries of the Campaign Contact",
+            "type": "integer"
+          },
+          "voicemail_retries": {
+            "description": "Voicemail retries of the Campaign Contact",
+            "type": "integer"
+          },
+          "tags": {
+            "description": "Tags of the Campaign Contact",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "extracted_data": {
+            "description": "Extracted data of the Campaign Contact",
+            "type": "object"
           }
         }
       },
