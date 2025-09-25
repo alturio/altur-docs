@@ -1428,6 +1428,7 @@
       },
       "Pagination": {
         "type": "object",
+        "description": "Filters are applied to each request independently. Changing filters while paginating may result in gaps or overlaps in the result set. For consistent results, maintain the same filters throughout pagination.",
         "properties": {
           "hasNext": {
             "type": "boolean",
