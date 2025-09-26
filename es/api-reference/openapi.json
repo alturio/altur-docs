@@ -190,17 +190,21 @@
             "description": "Number of items per page to return.",
             "schema": {
               "type": "integer",
-              "default": 25,
+              "default": 50,
+              "minimum": 1,
               "maximum": 100
             },
             "required": false
           },
           {
-            "name": "cursor",
+            "name": "pageIndex",
             "in": "query",
-            "description": "Cursor to the next page to return.",
+            "description": "Page number to the next page to return.",
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "default": 0,
+              "maximum": 25000,
+              "minimum": 0
             },
             "required": false
           }
@@ -1022,7 +1026,7 @@
           },
           "pagination": {
             "type": "object",
-            "$ref": "#/components/schemas/Pagination"
+            "$ref": "#/components/schemas/CursorPagination"
           }
         }
       },
@@ -1030,7 +1034,7 @@
         "type": "object",
         "properties": {
           "totalCount": {
-            "description": "Total number of Campaign Contacts for the given query. NOTE: The result is cache for 3 minutes.",
+            "description": "Total number of Campaign Contacts for the given query. NOTE: Only calculated in the first page.",
             "type": "integer"
           },
           "contacts": {
@@ -1041,7 +1045,7 @@
           },
           "pagination": {
             "type": "object",
-            "$ref": "#/components/schemas/Pagination"
+            "$ref": "#/components/schemas/OffsetPagination"
           }
         }
       },
@@ -1426,7 +1430,7 @@
           }
         }
       },
-      "Pagination": {
+      "CursorPagination": {
         "type": "object",
         "description": "Filters are applied to each request independently. Changing filters while paginating may result in gaps or overlaps in the result set. For consistent results, maintain the same filters throughout pagination.",
         "properties": {
@@ -1445,6 +1449,20 @@
           "previousCursor": {
             "type": "string",
             "description": "Cursor to the previous page to return"
+          }
+        }
+      },
+      "OffsetPagination": {
+        "type": "object",
+        "description": "Filters are applied to each request independently. Changing filters while paginating may result in gaps or overlaps in the result set. For consistent results, maintain the same filters throughout pagination.",
+        "properties": {
+          "nextPage": {
+            "type": "integer",
+            "description": "Page Index to the next page to return. Can be none if there are no more pages."
+          },
+          "previousPage": {
+            "type": "integer",
+            "description": "Page Index to the previous page to return. Can be none if there are no previous pages."
           }
         }
       }
