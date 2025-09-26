@@ -634,7 +634,7 @@
                 "type": "object",
                 "properties": {
                   "agent_id": {
-                    "description": "Unique identifier of the Agent that will participate in the Call (formerly Agent or Assistant)",
+                    "description": "Unique identifier of the Agent that will participate in the Call (formerly Chatbot or Assistant)",
                     "type": "string",
                     "format": "uuid4"
                   },
