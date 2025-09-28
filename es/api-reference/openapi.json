@@ -28,7 +28,8 @@
             "in": "query",
             "description": "Filters the Campaigns by Agent ID of the agent assigned to the Campaign",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid4"
             },
             "required": false
           },
@@ -128,7 +129,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/DRFBadRequestError"
                 }
               }
             }
@@ -225,7 +226,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/DRFBadRequestError"
                 }
               }
             }
@@ -851,7 +852,8 @@
         "properties": {
           "id": {
             "description": "Unique identifier for the Agent",
-            "type": "string"
+            "type": "string",
+            "format": "uuid4"
           },
           "name": {
             "description": "Name of the Agent",
@@ -936,7 +938,7 @@
               "type": "string"
             }
           },
-          "cycleTagFilters": {
+          "cycleFilterTags": {
             "description": "The list of contact tags assigned to the contacts to exclude from the campaign on cycles (Phone call campaigns only)",
             "type": "array",
             "items": {
@@ -961,7 +963,7 @@
             "description": "Start time of the Campaign on Monday",
             "type": "string"
           },
-          "endTime": {
+          "stopTime": {
             "description": "End time of the Campaign on Monday",
             "type": "string"
           },
@@ -1358,6 +1360,21 @@
           "sent_at"
         ]
       },
+      "DRFBadRequestError":{
+        "type": "object",
+        "description": "Validation error response where each field name that has an error is a property containing an array of error messages",
+        "additionalProperties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "field1": ["This field is required."],
+          "field2": ["Incorrect format."],
+          "non_field_errors": ["The date range is not valid."]
+        }
+      },
       "Error": {
         "required": [
           "error",
@@ -1417,13 +1434,6 @@
             "description": "Voicemail retries of the Campaign Contact",
             "type": "integer"
           },
-          "tags": {
-            "description": "Tags of the Campaign Contact",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
           "extractedData": {
             "description": "Extracted data of the Campaign Contact",
             "type": "object"
@@ -1458,11 +1468,11 @@
         "properties": {
           "nextPage": {
             "type": "integer",
-            "description": "Page Index to the next page to return. Can be none if there are no more pages."
+            "description": "Page Index to the next page to return. Can be null if there are no more pages."
           },
           "previousPage": {
             "type": "integer",
-            "description": "Page Index to the previous page to return. Can be none if there are no previous pages."
+            "description": "Page Index to the previous page to return. Can be null if there are no previous pages."
           }
         }
       }
