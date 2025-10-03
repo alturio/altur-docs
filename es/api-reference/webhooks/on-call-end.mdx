@@ -5,7 +5,7 @@ description: "Triggered at the end of a call to provide detailed Call and End Us
 
 ## About This Event
 
-The `on_call_end` webhook is triggered at the conclusion of a call in the Altur platform. This webhook provides detailed information about the call, the agent involved, and the end user. Use this webhook to keep your backend or CRM updated with the latest call data.
+The `on_call_end` webhook is triggered at the conclusion of a call in the Altur platform. This webhook provides detailed information about the call, the agent involved, and the campaign user. Use this webhook to keep your backend or CRM updated with the latest call data.
 
 ## Event Details
 
@@ -66,7 +66,22 @@ Here’s an example of the payload sent with the `on_call_end` event:
       "Payment Date": "2024-12-26",
       "Payment Medium": "app"
     },
-	"tags": ["payment_promise", "call_later"]
+    "tags": ["payment_promise", "call_later"]
+  },
+  "campaign_user": {
+    "f_id": "user_12345",
+    "name": "John Doe",
+    "contact": "+521234567890",
+    "context": "Customer data for campaign...",
+    "status": "converted",
+    "failed_retries": 0,
+    "voicemail_retries": 1,
+    "extracted_data": {
+      "Payment Amount": "1200",
+      "Payment Date": "2024-12-26",
+      "Payment Medium": "app"
+    },
+    "tags": ["payment_promise", "call_later"]
   }
 }
 ```
@@ -100,6 +115,12 @@ Here’s an example of the payload sent with the `on_call_end` event:
 
 ### End User Object
 
+<Warning>
+  **Deprecated**: The `end_user` object is deprecated and will be removed in a
+  future version. Please use the `campaign_user` object instead for
+  campaign-related calls.
+</Warning>
+
 | Field            | Type     | Description                                                                                    |
 | :--------------- | :------- | :--------------------------------------------------------------------------------------------- |
 | `id`             | `uuid`   | Unique identifier for the end user.                                                            |
@@ -109,6 +130,20 @@ Here’s an example of the payload sent with the `on_call_end` event:
 | `context`        | `string` | Additional user-specific information.                                                          |
 | `extracted_data` | `object` | Key-value pairs of extracted data.                                                             |
 | `tags`           | `array`  | Array of tag names corresponding to tags assigned to the last campaign user or current thread. |
+
+### Campaign User Object
+
+| Field               | Type     | Description                                                |
+| :------------------ | :------- | :--------------------------------------------------------- |
+| `f_id`              | `string` | Foreign identifier for the campaign user from your system. |
+| `name`              | `string` | Name of the campaign user.                                 |
+| `contact`           | `string` | Contact phone number (E.164 format).                       |
+| `context`           | `string` | Additional campaign user-specific information.             |
+| `status`            | `string` | Current status of the campaign user (e.g., `converted`).   |
+| `failed_retries`    | `int`    | Number of failed retry attempts.                           |
+| `voicemail_retries` | `int`    | Number of voicemail retry attempts.                        |
+| `extracted_data`    | `object` | Key-value pairs of data extracted during the call.         |
+| `tags`              | `array`  | Array of tag names assigned to the campaign user.          |
 
 ## Response Expectations
 
@@ -123,9 +158,11 @@ Each request includes an HMAC signature in the `X-Altur-Signature` header. Refer
 1. **CRM Integration**
 
    Use the `on_call_end` webhook to update call logs and user interaction data in your CRM system.
+
 2. **Analytics**
 
    Process transcripts and user status to generate insights or trigger follow-up actions.
+
 3. **Data Enrichment**
 
    Automatically store extracted data, like account numbers or due dates, in your system for further use.
