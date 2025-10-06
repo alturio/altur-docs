@@ -98,7 +98,7 @@
             "description": "Number of items per page to return.",
             "schema": {
               "type": "integer",
-              "default": 25,
+              "default": 50,
               "maximum": 100
             },
             "required": false
@@ -880,7 +880,7 @@
             "description": "The current status of the Campaign",
             "type": "string"
           },
-          "createdAt": {
+          "created_at": {
             "description": "The date and time when the Campaign was created",
             "type": "string",
             "format": "ISO 8601"
@@ -911,45 +911,45 @@
             "description": "WhatsApp Template assigned to the Campaign (WhatsApp campaigns only)",
             "type": "string"
           },
-          "firstMessage": {
+          "first_message": {
             "description": "The first message the Agent will say upon the call being answered (Phone call campaigns only)",
             "type": "string"
           },
-          "concurrency": {
+          "concurrency_limit": {
             "description": "The number of calls that can be active at the same time (Phone call campaigns only)",
             "type": "integer"
           },
-          "cycleEnabled": {
+          "cycle_enabled": {
             "description": "If enabled the campaign will automatically rerun and re-contact contacts (Phone call campaigns only)",
             "type": "boolean"
           },
-          "cycleMaxIterations": {
+          "cycle_max_iterations": {
             "description": "The maximum number of times a campaign will retry to contact a contact if the call fails (Phone call campaigns only)",
             "type": "integer"
           },
-          "cycleCooldown": {
+          "cycle_cooldown_minutes": {
             "description": "The cooldown time between cycles of the campaign in minutes (Phone call campaigns only)",
             "type": "integer"
           },
-          "cycleFilterStatuses": {
+          "cycle_filter_statuses": {
             "description": "The list of contact statuses to exclude from the campaign on cycles (Phone call campaigns only)",
             "type": "array",
             "items": {
               "type": "string"
             }
           },
-          "cycleFilterTags": {
+          "cycle_filter_tags": {
             "description": "The list of contact tags assigned to the contacts to exclude from the campaign on cycles (Phone call campaigns only)",
             "type": "array",
             "items": {
               "type": "string"
             }
           },
-          "cycleCurrentIteration": {
+          "cycle_current_iteration": {
             "description": "Current iteration of the Campaign (Phone call campaigns only)",
             "type": "integer"
           },
-          "cycleLastIterationAt": {
+          "cycle_last_iteration_at": {
             "description": "Last iteration of the Campaign (Phone call campaigns only)",
             "type": "string",
             "format": "ISO 8601"
@@ -1016,7 +1016,7 @@
       "CampaignsResponse": {
         "type": "object",
         "properties": {
-          "totalCount": {
+          "total_count": {
             "description": "Total number of Campaigns for the given query. NOTE: The result is cache for 3 minutes.",
             "type": "integer"
           },
@@ -1035,7 +1035,7 @@
       "CampaignContactsResponse": {
         "type": "object",
         "properties": {
-          "totalCount": {
+          "total_count": {
             "description": "Total number of Campaign Contacts for the given query. NOTE: Only calculated in the first page.",
             "type": "integer"
           },
@@ -1402,7 +1402,7 @@
       "CampaignContact": {
         "type": "object",
         "properties": {
-          "fId": {
+          "f_id": {
             "description": "Unique External identifier for the Campaign Contact",
             "type": "string"
           },
@@ -1426,17 +1426,46 @@
             "description": "Context of the Campaign Contact",
             "type": "string"
           },
-          "failedRetries": {
-            "description": "Failed retries of the Campaign Contact",
-            "type": "integer"
-          },
-          "voicemailRetries": {
+          "retries": {
             "description": "Voicemail retries of the Campaign Contact",
             "type": "integer"
           },
-          "extractedData": {
+          "has_follow_up":{
+            "description": "Boolean describing if the Campaign Contact has a follow up scheduled",
+            "type": "boolean"
+          },
+          "call_count":{
+            "description": "Number of calls made to the Campaign Contact",
+            "type": "integer"
+          },
+          "billed_duration":{
+            "description": "The total billed duration of the Campaign Contact Calls",
+            "type": "string",
+            "example": "00:46"
+          },
+          "last_call_at":{
+            "description": "The datetime of the last call made to the Campaign Contact",
+            "type": "string",
+            "example": "2025-10-03 19:11:39"
+          },
+          "extracted_data": {
             "description": "Extracted data of the Campaign Contact",
-            "type": "object"
+            "type": "object",
+            "example": {
+              "monto_prometido": "1000",
+              "fecha_limite": "01-01-2025"
+            }
+          },
+          "tags":{
+            "description": "Tags assigned to the Campaign Contact",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "tag1",
+              "tag2"
+            ]
           }
         }
       },
@@ -1444,19 +1473,19 @@
         "type": "object",
         "description": "Filters are applied to each request independently. Changing filters while paginating may result in gaps or overlaps in the result set. For consistent results, maintain the same filters throughout pagination.",
         "properties": {
-          "hasNext": {
+          "has_next": {
             "type": "boolean",
             "description": "Boolean describing if there are more items to fetch"
           },
-          "hasPrevious": {
+          "has_previous": {
             "type": "boolean",
             "description": "Boolean describing if there are previous items to fetch"
           },
-          "nextCursor": {
+          "next_cursor": {
             "type": "string",
             "description": "Cursor to the next page to return"
           },
-          "previousCursor": {
+          "previous_cursor": {
             "type": "string",
             "description": "Cursor to the previous page to return"
           }
@@ -1466,11 +1495,19 @@
         "type": "object",
         "description": "Filters are applied to each request independently. Changing filters while paginating may result in gaps or overlaps in the result set. For consistent results, maintain the same filters throughout pagination.",
         "properties": {
-          "nextPage": {
+          "has_next": {
+            "type": "boolean",
+            "description": "Boolean describing if there are more items to fetch"
+          },
+          "has_previous": {
+            "type": "boolean",
+            "description": "Boolean describing if there are previous items to fetch"
+          },
+          "next_page": {
             "type": "integer",
             "description": "Page Index to the next page to return. Can be null if there are no more pages."
           },
-          "previousPage": {
+          "previous_page": {
             "type": "integer",
             "description": "Page Index to the previous page to return. Can be null if there are no previous pages."
           }
