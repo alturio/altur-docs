@@ -1,0 +1,104 @@
+---
+title: "Seguimientos"
+description: "Haz que tu agente realice llamadas o mensajes de seguimiento de forma automática"
+---
+
+Los **seguimientos** son una herramienta que Altur te ofrece para que tu agente pueda agendar y ejecutar, llamadas o mensajes de WhatsApp de acuerdo con la conversación que tenga con cada contacto de tu campaña.
+
+Esta función es configurable dentro de cada **agente** y puedes **personalizarla** según los parametros de ejecución que definas.
+
+---
+
+## Antes de empezar
+
+- **Permisos:** asegúrate de tener permisos para editar el agente/proyecto.
+- **Integraciones:** si usarás WhatsApp y/o llamadas, confirma que tus líneas/plantillas están **aprobadas** y conectadas.
+- **Consentimiento:** usa WhatsApp outbound solo con contactos que hayan dado **consentimiento previo** para evitar el riesgo de bloqueo por Meta.
+
+### Acceso a la configuración de Seguimiento
+
+1. **Accede a la configuración de tu agente**: Dirígete a la sección de \*\*Agentes \*\*en la barra lateral izquierda.
+   - Si tu agente ya está creado, accede a su configuración dando click sobre el.
+   - En caso de que tu agente aún no esté creado, da click en **Nuevo agente** para iniciar la configuración.
+3. **Dirígete a la pestaña de Seguimiento**: Una vez dentro de tu agente, verás las secciones de configuración del lado izquierdo. Localiza **Seguimientos** y accede haciendo click.
+
+---
+
+## 🔧 Configuración
+
+### 1. Horario permitido para seguimiento
+
+Limita el horario en que el agente puede **ejecutar** llamadas o mensajes de seguimiento.
+
+- **Ejemplo:** `08:00 – 20:00`
+
+### 2. Días permitidos para seguimiento
+
+Define en qué días tu agente puede realizar seguimiento.
+
+- **Ejemplo típico:** **Lun–Sáb** activo, **Dom** inactivo.
+
+### 3. Activar seguimiento - Llamadas
+
+Habilita que el agente pueda programar seguimientos por **llamadas** usando el interruptor.
+
+#### **Cuándo programar llamadas:**
+
+Indica al agente los criterios que usará para decidir **cuándo** agendar una llamada de seguimiento, según el contexto de la conversación.
+
+> Aségurate de indicar en qué escenario debe agendar un seguimiento al igual que las indicaciones para que pueda definir el día y hora en que lanzará la llamada.
+
+#### **Instrucciones para la llamada:**
+
+Guión que el agente seguirá **durante** la llamada de seguimiento. Funciona igual que las instrucciones para llamadas en la sección de **Comportamiento** de tu agente.
+
+#### Máximo número de reintentos:
+
+Define cuántas veces **reintentar** el contacto si la llamada no es contestada.
+
+- **Ejemplo:** `3`.
+
+### 4. Activar seguimiento - WhatsApp
+
+**Usa el interruptor** para habilitar que el agente pueda agendar un seguimiento por **WhatsApp**.
+
+#### **Cuándo programar mensajes**
+
+Indica al agente los criterios que usará para decidir (de acuerdo a la conversación con el contacto) **cuándo** agendar el envío de un mensaje de seguimeinto por WhatsApp.
+
+> Aségurate de indicar en qué escenario debe agendar seguimiento, al igual que las indicaciones para que pueda definir el día y hora en que enviará el mensaje.
+
+#### **Instrucciones para conversación (WhatsApp)**
+
+Guía de **tono y estructura** que el agente seguirá para interactuar en la conversación de seguimiento por WhatsApp  Funciona igual que las instrucciones para WhatsApp en la sección de **Comportamiento** de tu agente.
+
+#### Plantillas de WhatsApp
+
+En esta sección, selecciona la plantilla que el agente usará para iniciar la conversación.
+
+### 5. Guardar cambios
+
+Antes de guardar, revisa:
+
+1. Horario y días correctos
+2. Reintentos configurados
+3. Textos de "Cuándo programar" e "Instrucciones" completos y sin amigüedades.
+
+Una vez lo hayas revisado, guarda los cambios haciendo click en el botón que encontrarás en la esquina inferior derecha.
+
+---
+
+## 🚀 Lanzamiento
+
+Una vez activo el seguimiento por llamada y/o WhatsApp. Tu agente, comenzará a agendar el envío de llamadas o mensajes de forma automática dentro de tus campañas.
+
+---
+
+## ✅ Visualización de seguimientos agendados
+
+Puedes ver los seguimientos agendados de dos formas:
+
+1. **Dentro de tu campaña:** en la sección de **Seguimientos**
+2. **En tu Inbox:** dentro de las conversaciones, en los textos que aparecen debajo de la grabación de la llamada.
+
+---

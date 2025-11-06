@@ -1,0 +1,104 @@
+---
+title: "Follow-ups"
+description: "Make your agent automatically place follow-up calls or send messages"
+---
+
+**Follow-ups** are a tool that Altur offers so your agent can schedule and execute WhatsApp calls or messages according to the conversation it has with each contact in your campaign.
+
+This feature is configurable within each **agent** and you can **customize it** according to the execution parameters you define.
+
+---
+
+## Before you start
+
+- **Permissions:** make sure you have permissions to edit the agent/project.
+- **Integrations:** if you will use WhatsApp and/or calls, confirm that your lines/templates are **approved** and connected.
+- **Consent:** use outbound WhatsApp only with contacts who have given **prior consent** to avoid the risk of being blocked by Meta.
+
+### Accessing Follow-up Settings
+
+1. **Access your agent's configuration**: Go to the **Agents** section in the left sidebar.
+   - If your agent is already created, access its configuration by clicking on it.
+   - If your agent is not yet created, click **New agent** to start the configuration.
+3. **Go to the Follow-up tab**: Once inside your agent, you will see the configuration sections on the left side. Locate **Follow-ups** and access it by clicking.
+
+---
+
+## 🔧 Configuration
+
+### 1. Allowed schedule for follow-up
+
+Limit the hours during which the agent can **execute** follow-up calls or messages.
+
+- **Example:** `08:00 – 20:00`
+
+### 2. Allowed days for follow-up
+
+Define which days your agent can perform follow-ups.
+
+- **Typical example:** **Mon–Sat** active, **Sun** inactive.
+
+### 3. Enable follow-up - Calls
+
+Enable the agent to schedule follow-ups via **calls** using the toggle.
+
+#### **When to schedule calls:**
+
+Indicate to the agent the criteria it will use to decide **when** to schedule a follow-up call, based on the conversation context.
+
+> Make sure to indicate in which scenario it should schedule a follow-up as well as the instructions so it can define the day and time when the call will be placed.
+
+#### **Instructions for the call:**
+
+Script that the agent will follow **during** the follow-up call. Works the same as the call instructions in the **Behavior** section of your agent.
+
+#### Maximum number of retries:
+
+Define how many times to **retry** contacting if the call is not answered.
+
+- **Example:** `3`.
+
+### 4. Enable follow-up - WhatsApp
+
+**Use the toggle** to enable the agent to schedule a follow-up via **WhatsApp**.
+
+#### **When to schedule messages**
+
+Indicate to the agent the criteria it will use to decide (according to the conversation with the contact) **when** to schedule sending a follow-up message via WhatsApp.
+
+> Make sure to indicate in which scenario it should schedule a follow-up, as well as the instructions so it can define the day and time when it will send the message.
+
+#### **Instructions for conversation (WhatsApp)**
+
+Guide for **tone and structure** that the agent will follow to interact in the follow-up conversation via WhatsApp. Works the same as the WhatsApp instructions in the **Behavior** section of your agent.
+
+#### WhatsApp Templates
+
+In this section, select the template that the agent will use to start the conversation.
+
+### 5. Save changes
+
+Before saving, review:
+
+1. Correct schedule and days
+2. Retries configured
+3. "When to schedule" and "Instructions" texts complete and without ambiguities.
+
+Once you have reviewed it, save the changes by clicking the button you will find in the lower right corner.
+
+---
+
+## 🚀 Launch
+
+Once follow-up via call and/or WhatsApp is active, your agent will begin to automatically schedule the sending of calls or messages within your campaigns.
+
+---
+
+## ✅ Viewing scheduled follow-ups
+
+You can see scheduled follow-ups in two ways:
+
+1. **Within your campaign:** in the **Follow-ups** section
+2. **In your Inbox:** within conversations, in the texts that appear below the call recording.
+
+---

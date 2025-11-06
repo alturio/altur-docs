@@ -48,6 +48,12 @@
                 ]
               },
               {
+                "group": "Agents",
+                "pages": [
+                  "en/documentation/agents/follow-ups"
+                ]
+              },
+              {
                 "group": "Campaigns",
                 "pages": [
                   "en/documentation/campaigns/create"
@@ -145,6 +151,12 @@
                 "group": "Introducción",
                 "pages": [
                   "es/documentation/introduction"
+                ]
+              },
+              {
+                "group": "Agentes",
+                "pages": [
+                  "es/documentation/agents/follow-ups"
                 ]
               },
               {
