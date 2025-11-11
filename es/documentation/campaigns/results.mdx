@@ -1,0 +1,190 @@
+---
+title: "Interpretación de Resultados de Campañas"
+description: "Una breve guía sobre como interpretar correctamente los resultados de las campañas en Altur."
+---
+
+Después de ejecutar una campaña, Altur permite descargar múltiples archivos `.csv`. En esta guía se detalla el contenido de cada uno de ellos y cómo interpretar correctamente los resultados.
+
+### Exportación de Contactos
+
+Este archivo CSV contiene **todos los contactos** agregados a la campaña junto con su estado actual y métricas asociadas.
+
+#### Columnas del Archivo
+
+**Columnas Básicas:**
+
+- `campaign_name`: Nombre de la campaña.
+- `campaign_date`: Fecha de creación de la campaña (formato: YYYY-MM-DD).
+- `id`: Identificador único del contacto en el archivo de importación (si se proporcionó).
+- `contact`: Número de teléfono en formato E.164.
+- `name`: Nombre del contacto.
+- `context`: Contexto o información adicional del contacto.
+- `status`: Estado actual del contacto en la campaña (ver sección de estados).
+- `retries`: Número de reintentos realizados.
+- `calls`: Número total de llamadas realizadas al contacto (solo campañas de llamadas).
+- `billed_duration`: Duración facturable total en formato legible (solo campañas de llamadas).
+- `last_update`: Fecha y hora de la última actualización del estado.
+- `follow_up`: Indica si el contacto tiene un seguimiento programado (`True`/`False`).
+
+**Columnas Dinámicas:**
+
+- **Tags**: Una columna por cada etiqueta configurada en el agente. El valor será `True` si el contacto tiene esa etiqueta, `False` en caso contrario.
+- **Campos Extraíbles**: Una columna por cada campo de datos configurado para extracción en el agente (ej: "email", "interés", "calificación").
+
+#### Estados de Contacto en Campaña
+
+Los contactos pueden tener los siguientes estados (`status`):
+
+| Estado      | Descripción                                           | Canal    |
+| ----------- | ----------------------------------------------------- | -------- |
+| `queue`     | En cola, esperando ser procesado                      | Ambos    |
+| `sending`   | Enviando mensaje o iniciando llamada                  | Ambos    |
+| `failed`    | Fallo general en el envío/llamada                     | Ambos    |
+| `delivered` | Mensaje entregado / Llamada contestada por humano     | WhatsApp |
+| `read`      | Mensaje leído                                         | WhatsApp |
+| `accepted`  | Contacto aceptó la conversación                       | WhatsApp |
+| `rejected`  | Contacto rechazó la conversación                      | WhatsApp |
+| `voicemail` | Llamada contestada por buzón de voz                   | Llamadas |
+| `answered`  | Llamada contestada                                    | Llamadas |
+| `retrying`  | En reintento después de estado fallido o no respuesta | Ambos    |
+| `converted` | Contacto marcado como convertido por el sistema       | Ambos    |
+
+<Info>
+  **Condicional:** Estos estados pueden cambiar a `queue` o `retrying` si el sistema determina que hay reintentos disponibles según la configuración de la campaña.
+</Info>
+
+#### Interpretación de Reintentos
+
+- `retries`: Contador de reintentos específico para llamadas que caen en buzón de voz. El límite se configura en la campaña.
+- `failed_retries` (no visible en CSV): Sistema interno que reintenta contactos con estado `failed`. Límite definido en configuración del sistema (normalmente 1).
+
+**Lógica de Reintentos:**
+
+1. Si un contacto cae en `voicemail` y `retries < limite_campaña`, el estado cambiará a `retrying` y se volverá a intentar el contacto.
+2. Si un contacto tiene `failed`, y no ha excedido el límite de reintentos del sistema, volverá a `queue` .
+3. Cuando se exceden los límites, el estado se mantiene como final.
+
+### Exportación de Llamadas
+
+Este archivo CSV contiene **cada llamada individual** realizada durante la campaña, permitiendo análisis detallado de cada interacción.
+
+#### Columnas del Archivo
+
+**Columnas Básicas:**
+
+- `campaign_name`: Nombre de la campaña.
+- `campaign_date`: Fecha de creación de la campaña.
+- `id`: ID único de la llamada.
+- `number_to`: Número de teléfono destino (E.164).
+- `contact_name`: Nombre del contacto.
+- `type`: Tipo de llamada (`inbound` / `outbound`).
+- `status`: Estado final de la llamada (ver sección de estados).
+- `answered_by`: Quién contestó la llamada (ver siguiente sección).
+- `created_at`: Fecha y hora de creación de la llamada.
+- `started_at`: Fecha y hora de inicio de la llamada (cuando fue contestada).
+- `ended_at`: Fecha y hora de finalización de la llamada.
+- `duration`: Duración total en formato legible (MM:SS).
+- `billed_duration`: Duración facturable en formato legible (MM:SS).
+- `recording_url`: URL para descargar la grabación de la llamada.
+
+**Columnas Dinámicas:**
+
+- **Tags**: Una columna por cada etiqueta configurada en el agente.
+- **Campos Extraíbles**: Datos extraídos durante la conversación.
+
+#### Estados de Llamada
+
+Las llamadas individuales pueden tener los siguientes estados (`status`):
+
+| Estado        | Descripción                      |
+| ------------- | -------------------------------- |
+| `created`     | Llamada creada en el sistema     |
+| `queued`      | Llamada en cola para ser marcada |
+| `ringing`     | Teléfono sonando                 |
+| `in-progress` | Llamada en curso                 |
+| `forwarding`  | Llamada siendo transferida       |
+| `ended`       | Llamada terminada exitosamente   |
+| `busy`        | Línea ocupada                    |
+| `no-answer`   | No hubo respuesta                |
+| `failed`      | Error en la llamada              |
+
+#### Tipos de Respuesta (answered_by)
+
+Este campo es crítico para entender quién contestó la llamada:
+
+| Valor     | Descripción                      | Impacto en Facturación       |
+| --------- | -------------------------------- | ---------------------------- |
+| `human`   | Contestó un humano               | Tarifa completa              |
+| `machine` | Contestó contestadora automática | Tarifa limitada a 5 segundos |
+| `unknown` | No se pudo determinar            | Según configuración          |
+
+**Nota importante sobre facturación:**
+
+- Las llamadas contestadas por contestadoras (`machine`) tienen una tarifa reducida.
+- La duración facturable (`billed_duration`) aplica el limite a llamadas en buzón automáticamente.
+- Solo las llamadas con `answered_by: human` se incluyen en la exportación de grabaciones.
+
+#### Diferencia entre Duration y Billed Duration
+
+- `duration`: Tiempo total desde que la llamada fue contestada hasta que finalizó.
+- `billed_duration`: Tiempo que se facutra como consumo:
+  - Para `human`:  igual a `duration` .
+  - Para `machine`: `duration` limitado a 5 segundos.
+
+### Exportación de Resultados
+
+Este archivo CSV es una **versión filtrada** de la exportación de contactos que incluye **únicamente los contactos que tienen datos extraídos**.
+
+#### Diferencias con Exportación de Contactos
+
+- **Incluye**: Solo contactos con datos extraídos.
+- **Propósito**: Análisis de conversiones y resultados positivos de la campaña.
+- **Columnas**: Idénticas a la exportación de contactos.
+
+#### Casos de Uso
+
+Este export es útil para:
+
+- Analizar leads calificados que completaron el flujo de conversación.
+- Obtener información estructurada recopilada durante las conversaciones (emails, fechas, preferencias, etc.).
+- Calcular tasas de conversión efectivas.
+- Integrar con CRMs u otros sistemas downstream.
+
+---
+
+#### Estados de Campaña
+
+| Estado                   | Descripción                            |
+| ------------------------ | -------------------------------------- |
+| `Pendiente (pending)`    | Campaña creada, esperando contactos    |
+| `Lista (ready)`          | Contactos cargados, lista para activar |
+| `Activa (active)`        | Campaña en ejecución                   |
+| `Inactiva (inactive)`    | Campaña pausada manualmente            |
+| `En Cooldown (cooldown)` | Entre ciclos, esperando para reanudar  |
+| `Finalizada (finished)`  | Todos los ciclos completados           |
+
+#### Interpretación de Ciclos en Resultados
+
+Cuando una campaña tiene ciclos habilitados:
+
+- Los contactos que no alcancen un estado "final exitoso" serán reintentados.
+- El campo `retries` se reinicia en cada ciclo.
+- Los estados dentro del filtro de para los ciclos no volverán a cola en el siguiente ciclo
+
+---
+
+### Mejores Prácticas para Análisis
+
+1. **Para medir alcance**: Usar exportación de **Contactos** y contar estados:
+   - **Para Llamadas:**
+     - `answered`
+     - `converted`
+   - **Para WhatsApp:**
+     - `delivered`
+     - `accepted`
+     - `read`
+     - `converted`
+2. **Para medir conversión**: Usar exportación de **Contactos **y filtrar/contar contactos en estado `converted` o **Resultados** y analizar campos extraídos.
+3. **Para auditoría de costos**: Usar exportación de **Llamadas** y sumar `billed_duration` por `answered_by` .
+
+---

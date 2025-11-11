@@ -162,7 +162,8 @@
               {
                 "group": "Campañas",
                 "pages": [
-                  "es/documentation/campaigns/create"
+                  "es/documentation/campaigns/create",
+                  "es/documentation/campaigns/results"
                 ]
               },
               {
