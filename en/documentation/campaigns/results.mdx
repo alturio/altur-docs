@@ -1,0 +1,204 @@
+---
+title: "Campaign Results Interpretation"
+description: "A brief guide on how to correctly interpret campaign results in Altur."
+---
+
+After running a campaign, Altur allows you to download multiple `.csv` files. This guide details the content of each one and how to correctly interpret the results.
+
+### Contact Export
+
+This CSV file contains **all contacts** added to the campaign along with their current status and associated metrics.
+
+#### File Columns
+
+**Basic Columns:**
+
+- `campaign_name`: Campaign name.
+- `campaign_date`: Campaign creation date (format: YYYY-MM-DD).
+- `id`: Unique contact identifier from the import file (if provided).
+- `contact`: Phone number in E.164 format.
+- `name`: Contact name.
+- `context`: Context or additional contact information.
+- `status`: Current contact status in the campaign (see status section).
+- `retries`: Number of retries performed.
+- `calls`: Total number of calls made to the contact (call campaigns only).
+- `billed_duration`: Total billable duration in readable format (call campaigns only).
+- `last_update`: Date and time of last status update.
+- `follow_up`: Indicates if the contact has a scheduled follow-up (`True`/`False`).
+
+**Dynamic Columns:**
+
+- **Tags**: One column per tag configured in the agent. The value will be `True` if the contact has that tag, `False` otherwise.
+- **Extractable Fields**: One column per data field configured for extraction in the agent (e.g., "email", "interest", "rating").
+
+#### Campaign Contact Statuses
+
+Contacts can have different statuses depending on the campaign channel.
+
+##### Common Statuses (Both Channels)
+
+| Status      | Description                                 |
+| ----------- | ------------------------------------------- |
+| `queue`     | Queued, waiting to be processed             |
+| `sending`   | Sending message or initiating call          |
+| `failed`    | General failure in sending/call             |
+| `retrying`  | Retrying after failed status or no response |
+| `converted` | Contact marked as converted by the system   |
+
+##### Call-Specific Statuses
+
+| Status      | Description                |
+| ----------- | -------------------------- |
+| `voicemail` | Call answered by voicemail |
+| `answered`  | Call answered              |
+
+##### WhatsApp-Specific Statuses
+
+| Status      | Description                       |
+| ----------- | --------------------------------- |
+| `delivered` | Message delivered                 |
+| `read`      | Message read                      |
+| `accepted`  | Contact accepted the conversation |
+| `rejected`  | Contact rejected the conversation |
+
+<Info>
+  **Conditional:** These statuses can change to `queue` or `retrying` if the
+  system determines there are available retries according to the campaign
+  configuration.
+</Info>
+
+#### Understanding Retries
+
+- `retries`: Retry counter specific to calls that reach voicemail. The limit is configured in the campaign.
+- `failed_retries` (not visible in CSV): Internal system that retries contacts with `failed` status. Limit defined in system configuration (typically 1).
+
+**Retry Logic:**
+
+1. If a contact reaches `voicemail` and `retries < campaign_limit`, the status will change to `retrying` and the contact will be attempted again.
+2. If a contact has `failed`, and has not exceeded the system retry limit, it will return to `queue`.
+3. When limits are exceeded, the status remains as final.
+
+### Call Export
+
+This CSV file contains **each individual call** made during the campaign, allowing detailed analysis of each interaction.
+
+#### File Columns
+
+**Basic Columns:**
+
+- `campaign_name`: Campaign name.
+- `campaign_date`: Campaign creation date.
+- `id`: Unique call ID.
+- `number_to`: Destination phone number (E.164).
+- `contact_name`: Contact name.
+- `type`: Call type (`inbound` / `outbound`).
+- `status`: Final call status (see status section).
+- `answered_by`: Who answered the call (see next section).
+- `created_at`: Call creation date and time.
+- `started_at`: Call start date and time (when answered).
+- `ended_at`: Call end date and time.
+- `duration`: Total duration in readable format (MM:SS).
+- `billed_duration`: Billable duration in readable format (MM:SS).
+- `recording_url`: URL to download the call recording.
+
+**Dynamic Columns:**
+
+- **Tags**: One column per tag configured in the agent.
+- **Extractable Fields**: Data extracted during the conversation.
+
+#### Call Statuses
+
+Individual calls can have the following statuses (`status`):
+
+| Status        | Description                |
+| ------------- | -------------------------- |
+| `created`     | Call created in the system |
+| `queued`      | Call queued to be dialed   |
+| `ringing`     | Phone ringing              |
+| `in-progress` | Call in progress           |
+| `forwarding`  | Call being transferred     |
+| `ended`       | Call ended successfully    |
+| `busy`        | Line busy                  |
+| `no-answer`   | No answer                  |
+| `failed`      | Call error                 |
+
+#### Response Types (answered_by)
+
+This field is critical to understand who answered the call:
+
+| Value     | Description                   | Billing Impact             |
+| --------- | ----------------------------- | -------------------------- |
+| `human`   | Answered by a human           | Full rate                  |
+| `machine` | Answered by answering machine | Rate limited to 5 seconds  |
+| `unknown` | Could not be determined       | According to configuration |
+
+**Important note on billing:**
+
+- Calls answered by answering machines (`machine`) have a reduced rate.
+- The billable duration (`billed_duration`) automatically applies the limit to voicemail calls.
+- Only calls with `answered_by: human` are included in the recording export.
+
+#### Difference between Duration and Billed Duration
+
+- `duration`: Total time from when the call was answered until it ended.
+- `billed_duration`: Time billed as consumption:
+  - For `human`: equal to `duration`.
+  - For `machine`: `duration` limited to 5 seconds.
+
+### Results Export
+
+This CSV file is a **filtered version** of the contact export that includes **only contacts with extracted data**.
+
+#### Differences from Contact Export
+
+- **Includes**: Only contacts with extracted data.
+- **Purpose**: Analysis of conversions and positive campaign results.
+- **Columns**: Identical to the contact export.
+
+#### Use Cases
+
+This export is useful for:
+
+- Analyzing qualified leads that completed the conversation flow.
+- Obtaining structured information collected during conversations (emails, dates, preferences, etc.).
+- Calculating effective conversion rates.
+- Integrating with CRMs or other downstream systems.
+
+---
+
+#### Campaign Statuses
+
+| Status                | Description                         |
+| --------------------- | ----------------------------------- |
+| `Pending (pending)`   | Campaign created, awaiting contacts |
+| `Ready (ready)`       | Contacts loaded, ready to activate  |
+| `Active (active)`     | Campaign running                    |
+| `Inactive (inactive)` | Campaign manually paused            |
+| `Cooldown (cooldown)` | Between cycles, waiting to resume   |
+| `Finished (finished)` | All cycles completed                |
+
+#### Cycle Interpretation in Results
+
+When a campaign has cycles enabled:
+
+- Contacts that do not reach a "successful final status" will be retried.
+- The `retries` field resets on each cycle.
+- Statuses within the filter for cycles will not return to queue in the next cycle.
+
+---
+
+### Best Practices for Analysis
+
+1. **To measure reach**: Use **Contact** export and count statuses:
+   - **For Calls:**
+     - `answered`
+     - `converted`
+   - **For WhatsApp:**
+     - `delivered`
+     - `accepted`
+     - `read`
+     - `converted`
+2. **To measure conversion**: Use **Contact** export and filter/count contacts in `converted` status or use **Results** and analyze extracted fields.
+3. **For cost auditing**: Use **Call** export and sum `billed_duration` by `answered_by`.
+
+---

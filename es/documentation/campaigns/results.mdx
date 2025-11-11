@@ -33,24 +33,38 @@ Este archivo CSV contiene **todos los contactos** agregados a la campaña junto 
 
 #### Estados de Contacto en Campaña
 
-Los contactos pueden tener los siguientes estados (`status`):
+Los contactos pueden tener diferentes estados según el canal de la campaña.
 
-| Estado      | Descripción                                           | Canal    |
-| ----------- | ----------------------------------------------------- | -------- |
-| `queue`     | En cola, esperando ser procesado                      | Ambos    |
-| `sending`   | Enviando mensaje o iniciando llamada                  | Ambos    |
-| `failed`    | Fallo general en el envío/llamada                     | Ambos    |
-| `delivered` | Mensaje entregado / Llamada contestada por humano     | WhatsApp |
-| `read`      | Mensaje leído                                         | WhatsApp |
-| `accepted`  | Contacto aceptó la conversación                       | WhatsApp |
-| `rejected`  | Contacto rechazó la conversación                      | WhatsApp |
-| `voicemail` | Llamada contestada por buzón de voz                   | Llamadas |
-| `answered`  | Llamada contestada                                    | Llamadas |
-| `retrying`  | En reintento después de estado fallido o no respuesta | Ambos    |
-| `converted` | Contacto marcado como convertido por el sistema       | Ambos    |
+##### Estados Comunes (Ambos Canales)
+
+| Estado      | Descripción                                           |
+| ----------- | ----------------------------------------------------- |
+| `queue`     | En cola, esperando ser procesado                      |
+| `sending`   | Enviando mensaje o iniciando llamada                  |
+| `failed`    | Fallo general en el envío/llamada                     |
+| `retrying`  | En reintento después de estado fallido o no respuesta |
+| `converted` | Contacto marcado como convertido por el sistema       |
+
+##### Estados Específicos de Llamadas
+
+| Estado      | Descripción                         |
+| ----------- | ----------------------------------- |
+| `voicemail` | Llamada contestada por buzón de voz |
+| `answered`  | Llamada contestada                  |
+
+##### Estados Específicos de WhatsApp
+
+| Estado      | Descripción                      |
+| ----------- | -------------------------------- |
+| `delivered` | Mensaje entregado                |
+| `read`      | Mensaje leído                    |
+| `accepted`  | Contacto aceptó la conversación  |
+| `rejected`  | Contacto rechazó la conversación |
 
 <Info>
-  **Condicional:** Estos estados pueden cambiar a `queue` o `retrying` si el sistema determina que hay reintentos disponibles según la configuración de la campaña.
+  **Condicional:** Estos estados pueden cambiar a `queue` o `retrying` si el
+  sistema determina que hay reintentos disponibles según la configuración de la
+  campaña.
 </Info>
 
 #### Interpretación de Reintentos
@@ -128,7 +142,7 @@ Este campo es crítico para entender quién contestó la llamada:
 
 - `duration`: Tiempo total desde que la llamada fue contestada hasta que finalizó.
 - `billed_duration`: Tiempo que se facutra como consumo:
-  - Para `human`:  igual a `duration` .
+  - Para `human`: igual a `duration` .
   - Para `machine`: `duration` limitado a 5 segundos.
 
 ### Exportación de Resultados

@@ -56,7 +56,8 @@
               {
                 "group": "Campaigns",
                 "pages": [
-                  "en/documentation/campaigns/create"
+                  "en/documentation/campaigns/create",
+                  "en/documentation/campaigns/results"
                 ]
               },
               {
