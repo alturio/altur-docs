@@ -56,10 +56,18 @@ Los contactos pueden tener diferentes estados según el canal de la campaña.
 
 | Estado      | Descripción                      |
 | ----------- | -------------------------------- |
+| `sent`      | Mensaje enviado                  |
 | `delivered` | Mensaje entregado                |
 | `read`      | Mensaje leído                    |
 | `accepted`  | Contacto aceptó la conversación  |
 | `rejected`  | Contacto rechazó la conversación |
+
+<Warning>
+  **Estados Obsoletos (Solo Datos Heredados):** Los siguientes estados ya no se asignan a nuevos registros, pero pueden aparecer al consultar datos heredados creados antes de enero de 2026:
+  - `no-answer` → Ahora se mapea a `failed`
+  - `busy` → Ahora se mapea a `failed`
+  - `unreachable` → Ahora se mapea a `failed`
+</Warning>
 
 <Info>
   **Condicional:** Estos estados pueden cambiar a `queue` o `retrying` si el

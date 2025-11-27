@@ -56,10 +56,18 @@ Contacts can have different statuses depending on the campaign channel.
 
 | Status      | Description                       |
 | ----------- | --------------------------------- |
+| `sent`      | Message sent                      |
 | `delivered` | Message delivered                 |
 | `read`      | Message read                      |
 | `accepted`  | Contact accepted the conversation |
 | `rejected`  | Contact rejected the conversation |
+
+<Warning>
+  **Deprecated Statuses (Legacy Data Only):** The following statuses are no longer assigned to new records but may appear when querying legacy data created before December 2025:
+  - `no-answer` → Now maps to `failed`
+  - `busy` → Now maps to `failed`
+  - `unreachable` → Now maps to `failed`
+</Warning>
 
 <Info>
   **Conditional:** These statuses can change to `queue` or `retrying` if the

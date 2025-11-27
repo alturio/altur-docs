@@ -174,13 +174,11 @@
                 "voicemail",
                 "read",
                 "failed",
-                "no-answer",
-                "busy",
                 "retrying",
                 "converted",
-                "acepted",
-                "rejected",
-                "unreachable"
+                "answered",
+                "accepted",
+                "rejected"
               ]
             },
             "required": false
