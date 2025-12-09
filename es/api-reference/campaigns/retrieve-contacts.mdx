@@ -3,21 +3,11 @@ title: 'Listar Contactos de Campaña'
 openapi: 'GET /campaigns/{id}/contacts'
 ---
 
-Obtén una lista paginada de contactos (usuarios de campaña) para una campaña específica.
-
 <Info>
   **Límite de Tasa:** 12 solicitudes por segundo
 </Info>
 
-## Parámetros de Consulta
-
-| Parámetro | Tipo | Requerido | Default | Descripción |
-|-----------|------|-----------|---------|-------------|
-| `pageIndex` | integer | No | 0 | Número de página (basado en 0, máx 25000) |
-| `pageSize` | integer | No | 50 | Resultados por página (1-100) |
-| `status` | string | No | - | Filtrar por estado del contacto (ver valores abajo) |
-
-### Valores de Estado
+## Valores de Estado por Tipo de Campaña
 
 <Tabs>
   <Tab title="Campañas de Llamadas">
@@ -42,31 +32,3 @@ Obtén una lista paginada de contactos (usuarios de campaña) para una campaña 
     - `converted` — Contacto fue convertido
   </Tab>
 </Tabs>
-
-## Campos de Respuesta
-
-### Objeto Contact
-
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| `id` | integer | ID interno del contacto |
-| `f_id` | string | ID externo/foráneo (tu referencia) |
-| `name` | string | Nombre del contacto |
-| `contact` | string | Número telefónico (formato E.164) |
-| `status` | string | Estado actual del contacto |
-| `context` | string | Contexto/notas para el AI |
-| `retries` | integer | Conteo de reintentos por buzón |
-| `extracted_data` | object | Pares clave-valor extraídos de la conversación |
-| `tags` | array | Nombres de tags asignados al contacto |
-| `has_follow_up` | boolean | Si tiene seguimiento programado |
-| `call_count` | integer | Total de llamadas realizadas |
-| `billed_duration` | integer | Total de segundos facturados |
-| `last_call_at` | string | Timestamp de última llamada (`YYYY-MM-DD HH:MM:SS`) |
-
-## Paginación
-
-Este endpoint usa **paginación basada en offset**:
-
-- Usa `pageIndex` (basado en 0) y `pageSize`
-- Máximo accesible: 2,500,000 registros (25,000 páginas × 100 elementos)
-- Los filtros se aplican a cada solicitud de forma independiente, mantén los mismos filtros durante la paginación para obtener resultados consistentes

@@ -3,60 +3,10 @@ title: 'List Campaigns'
 openapi: 'GET /campaigns'
 ---
 
-Retrieve a paginated list of campaigns for your organization.
-
 <Info>
   **Rate Limit:** 12 requests per second
 </Info>
 
-## Query Parameters
-
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `cursor` | string | No | - | Cursor token for pagination |
-| `pageSize` | integer | No | 50 | Results per page (1-100) |
-| `agentId` | UUID | No | - | Filter by agent/bot ID |
-| `status` | string | No | - | Filter by status: `pending`, `ready`, `active`, `inactive`, `cooldown`, `finished` |
-| `integration` | string | No | - | Filter by type: `whatsapp`, `phone_call` |
-| `archived` | boolean | No | `false` | Include archived campaigns |
-| `startDate` | ISO 8601 | No | - | Filter campaigns created after this date |
-| `endDate` | ISO 8601 | No | - | Filter campaigns created before this date |
-
 <Warning>
-  `startDate` and `endDate` must be provided together.
+  `startDate` and `endDate` must be provided together when filtering by date range.
 </Warning>
-
-## Response Fields
-
-### Campaign Object
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | integer | Campaign ID |
-| `name` | string | Campaign name |
-| `description` | string | Campaign description |
-| `status` | string | Current status |
-| `created_at` | datetime | Creation timestamp |
-| `agent` | object | Agent/bot info (`id`, `name`) |
-| `scheduling` | object | Weekly schedule configuration |
-| `timezone` | string | Campaign timezone |
-| `retries` | integer | Max voicemail retries |
-| `archived` | boolean | Whether campaign is archived |
-| `template` | string | WhatsApp template name (WhatsApp only) |
-| `first_message` | string | Initial AI message (Phone only) |
-| `concurrency_limit` | integer | Max concurrent calls (Phone only) |
-| `cycle_enabled` | boolean | Auto-cycle enabled (Phone only) |
-| `cycle_max_iterations` | integer | Max cycle iterations |
-| `cycle_cooldown_minutes` | integer | Minutes between cycles |
-| `cycle_filter_statuses` | array | Statuses to exclude from re-queue |
-| `cycle_filter_tags` | array | Tags to exclude from re-queue |
-| `cycle_current_iteration` | integer | Current cycle number |
-| `cycle_last_iteration_at` | datetime | Last cycle timestamp |
-
-## Pagination
-
-This endpoint uses **cursor-based pagination**:
-
-- Use `next_cursor` / `previous_cursor` from the response
-- Pass as `?cursor={value}` in the next request
-- Filters are applied to each request independently, maintain the same filters throughout pagination for consistent results
