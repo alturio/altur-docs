@@ -1,0 +1,101 @@
+---
+title: 'List Campaign Calls'
+openapi: 'GET /campaigns/{id}/calls'
+---
+
+Retrieve a paginated list of calls for a specific campaign.
+
+<Info>
+  **Rate Limit:** 12 requests per second
+</Info>
+
+## Query Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `pageIndex` | integer | No | 0 | Page number (0-based, max 25000) |
+| `pageSize` | integer | No | 50 | Results per page (1-100) |
+| `status` | string | No | - | Filter: `ended`, `failed`, `busy`, `no-answer`, `in-progress` |
+| `answeredBy` | string | No | - | Filter: `human`, `machine`, `unknown` |
+| `startDate` | ISO 8601 | No | - | Filter calls after this date |
+| `endDate` | ISO 8601 | No | - | Filter calls before this date |
+
+## Response Fields
+
+### Call Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Call ID |
+| `type` | string | `inbound` or `outbound` |
+| `status` | string | Call status |
+| `answered_by` | string | `human`, `machine`, `unknown`, or `null` |
+| `created_at` | datetime | Call creation timestamp (ISO 8601) |
+| `started_at` | datetime | Call start timestamp (ISO 8601) |
+| `ended_at` | datetime | Call end timestamp (ISO 8601) |
+| `duration` | integer | Call duration in seconds |
+| `billed_duration` | integer | Billed duration in seconds |
+| `contact` | object | Contact info (see below) |
+| `extracted_data` | object | Key-value pairs extracted from call |
+| `tags` | array | Tag names assigned to call |
+| `recording_url` | string | URL to fetch call recording |
+
+### Contact Object (nested in Call)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | integer | Campaign contact ID |
+| `f_id` | string | External/foreign ID |
+| `name` | string | Contact name |
+| `phone_number` | string | Phone number (E.164) |
+| `status` | string | Contact status in campaign |
+
+## Example Response
+
+```json
+{
+  "calls": [
+    {
+      "id": "call_abc123def456",
+      "type": "outbound",
+      "status": "ended",
+      "answered_by": "human",
+      "created_at": "2024-01-15T10:30:00-06:00",
+      "started_at": "2024-01-15T10:30:05-06:00",
+      "ended_at": "2024-01-15T10:35:00-06:00",
+      "duration": 295,
+      "billed_duration": 300,
+      "contact": {
+        "id": 12345,
+        "f_id": "EXT-001",
+        "name": "Juan García",
+        "phone_number": "+521234567890",
+        "status": "answered"
+      },
+      "extracted_data": {
+        "interested": "yes",
+        "appointment_date": "2024-01-20"
+      },
+      "tags": ["interested", "callback"],
+      "recording_url": "/api/v1.0/call/call_abc123def456/recording"
+    }
+  ],
+  "total_count": 85000,
+  "pagination": {
+    "page_index": 0,
+    "page_size": 100,
+    "next_page": 1,
+    "previous_page": null,
+    "has_next": true,
+    "has_previous": false
+  }
+}
+```
+
+## Pagination
+
+This endpoint uses **offset-based pagination**:
+
+- Use `pageIndex` (0-based) and `pageSize`
+- Maximum accessible: 2,500,000 records (25,000 pages × 100 items)
+- Filters are applied to each request independently, maintain the same filters throughout pagination for consistent results

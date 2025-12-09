@@ -1,8 +1,72 @@
 ---
-title: 'Get Campaign Contacts'
+title: 'List Campaign Contacts'
 openapi: 'GET /campaigns/{id}/contacts'
 ---
 
-<Warning>
-    **Coming Soon**: This endpoint will be available on September 29, 2025.
-</Warning
+Retrieve a paginated list of contacts (campaign users) for a specific campaign.
+
+<Info>
+  **Rate Limit:** 12 requests per second
+</Info>
+
+## Query Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `pageIndex` | integer | No | 0 | Page number (0-based, max 25000) |
+| `pageSize` | integer | No | 50 | Results per page (1-100) |
+| `status` | string | No | - | Filter by contact status (see values below) |
+
+### Status Values
+
+<Tabs>
+  <Tab title="Phone Campaigns">
+    - `queue` — Contact is waiting in queue
+    - `sending` — Call is being initiated
+    - `failed` — Call failed to connect
+    - `retrying` — Scheduled for retry
+    - `converted` — Contact was converted
+    - `voicemail` — Reached voicemail
+    - `answered` — Call was answered
+  </Tab>
+  <Tab title="WhatsApp Campaigns">
+    - `queue` — Message is queued
+    - `sending` — Message is being sent
+    - `sent` — Message was sent
+    - `delivered` — Message was delivered
+    - `read` — Message was read
+    - `accepted` — Contact accepted
+    - `rejected` — Contact rejected
+    - `failed` — Message failed
+    - `retrying` — Scheduled for retry
+    - `converted` — Contact was converted
+  </Tab>
+</Tabs>
+
+## Response Fields
+
+### Contact Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | integer | Internal contact ID |
+| `f_id` | string | External/foreign ID (your reference) |
+| `name` | string | Contact name |
+| `contact` | string | Phone number (E.164 format) |
+| `status` | string | Current contact status |
+| `context` | string | Context/notes for the AI |
+| `retries` | integer | Voicemail retry count |
+| `extracted_data` | object | Key-value pairs extracted from conversation |
+| `tags` | array | Tag names assigned to contact |
+| `has_follow_up` | boolean | Whether follow-up is scheduled |
+| `call_count` | integer | Total calls made |
+| `billed_duration` | integer | Total billed seconds |
+| `last_call_at` | string | Last call timestamp (`YYYY-MM-DD HH:MM:SS`) |
+
+## Pagination
+
+This endpoint uses **offset-based pagination**:
+
+- Use `pageIndex` (0-based) and `pageSize`
+- Maximum accessible: 2,500,000 records (25,000 pages × 100 items)
+- Filters are applied to each request independently, maintain the same filters throughout pagination for consistent results

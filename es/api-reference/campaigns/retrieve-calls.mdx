@@ -1,0 +1,101 @@
+---
+title: 'Listar Llamadas de Campaña'
+openapi: 'GET /campaigns/{id}/calls'
+---
+
+Obtén una lista paginada de llamadas para una campaña específica.
+
+<Info>
+  **Límite de Tasa:** 12 solicitudes por segundo
+</Info>
+
+## Parámetros de Consulta
+
+| Parámetro | Tipo | Requerido | Default | Descripción |
+|-----------|------|-----------|---------|-------------|
+| `pageIndex` | integer | No | 0 | Número de página (basado en 0, máx 25000) |
+| `pageSize` | integer | No | 50 | Resultados por página (1-100) |
+| `status` | string | No | - | Filtrar: `ended`, `failed`, `busy`, `no-answer`, `in-progress` |
+| `answeredBy` | string | No | - | Filtrar: `human`, `machine`, `unknown` |
+| `startDate` | ISO 8601 | No | - | Filtrar llamadas después de esta fecha |
+| `endDate` | ISO 8601 | No | - | Filtrar llamadas antes de esta fecha |
+
+## Campos de Respuesta
+
+### Objeto Call
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | string | ID de la llamada |
+| `type` | string | `inbound` o `outbound` |
+| `status` | string | Estado de la llamada |
+| `answered_by` | string | `human`, `machine`, `unknown`, o `null` |
+| `created_at` | datetime | Timestamp de creación (ISO 8601) |
+| `started_at` | datetime | Timestamp de inicio (ISO 8601) |
+| `ended_at` | datetime | Timestamp de finalización (ISO 8601) |
+| `duration` | integer | Duración de la llamada en segundos |
+| `billed_duration` | integer | Duración facturada en segundos |
+| `contact` | object | Info del contacto (ver abajo) |
+| `extracted_data` | object | Pares clave-valor extraídos de la llamada |
+| `tags` | array | Nombres de tags asignados a la llamada |
+| `recording_url` | string | URL para obtener la grabación |
+
+### Objeto Contact (anidado en Call)
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | integer | ID del contacto de campaña |
+| `f_id` | string | ID externo/foráneo |
+| `name` | string | Nombre del contacto |
+| `phone_number` | string | Número telefónico (E.164) |
+| `status` | string | Estado del contacto en la campaña |
+
+## Ejemplo de Respuesta
+
+```json
+{
+  "calls": [
+    {
+      "id": "call_abc123def456",
+      "type": "outbound",
+      "status": "ended",
+      "answered_by": "human",
+      "created_at": "2024-01-15T10:30:00-06:00",
+      "started_at": "2024-01-15T10:30:05-06:00",
+      "ended_at": "2024-01-15T10:35:00-06:00",
+      "duration": 295,
+      "billed_duration": 300,
+      "contact": {
+        "id": 12345,
+        "f_id": "EXT-001",
+        "name": "Juan García",
+        "phone_number": "+521234567890",
+        "status": "answered"
+      },
+      "extracted_data": {
+        "interested": "yes",
+        "appointment_date": "2024-01-20"
+      },
+      "tags": ["interested", "callback"],
+      "recording_url": "/api/v1.0/call/call_abc123def456/recording"
+    }
+  ],
+  "total_count": 85000,
+  "pagination": {
+    "page_index": 0,
+    "page_size": 100,
+    "next_page": 1,
+    "previous_page": null,
+    "has_next": true,
+    "has_previous": false
+  }
+}
+```
+
+## Paginación
+
+Este endpoint usa **paginación basada en offset**:
+
+- Usa `pageIndex` (basado en 0) y `pageSize`
+- Máximo accesible: 2,500,000 registros (25,000 páginas × 100 elementos)
+- Los filtros se aplican a cada solicitud de forma independiente, mantén los mismos filtros durante la paginación para obtener resultados consistentes

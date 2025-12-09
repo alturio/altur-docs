@@ -95,7 +95,8 @@
                     "icon": "megaphone",
                     "pages": [
                       "en/api-reference/campaigns/retrieve",
-                      "en/api-reference/campaigns/retrieve-contacts"
+                      "en/api-reference/campaigns/retrieve-contacts",
+                      "en/api-reference/campaigns/retrieve-calls"
                     ]
                   },
                   {
@@ -202,7 +203,8 @@
                     "icon": "megaphone",
                     "pages": [
                       "es/api-reference/campaigns/retrieve",
-                      "es/api-reference/campaigns/retrieve-contacts"
+                      "es/api-reference/campaigns/retrieve-contacts",
+                      "es/api-reference/campaigns/retrieve-calls"
                     ]
                   },
                   {

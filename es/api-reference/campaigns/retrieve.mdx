@@ -1,8 +1,62 @@
 ---
-title: 'Get Campaigns'
+title: 'Listar Campañas'
 openapi: 'GET /campaigns'
 ---
 
+Obtén una lista paginada de campañas para tu organización.
+
+<Info>
+  **Límite de Tasa:** 12 solicitudes por segundo
+</Info>
+
+## Parámetros de Consulta
+
+| Parámetro | Tipo | Requerido | Default | Descripción |
+|-----------|------|-----------|---------|-------------|
+| `cursor` | string | No | - | Token de cursor para paginación |
+| `pageSize` | integer | No | 50 | Resultados por página (1-100) |
+| `agentId` | UUID | No | - | Filtrar por ID del agente/bot |
+| `status` | string | No | - | Filtrar por estado: `pending`, `ready`, `active`, `inactive`, `cooldown`, `finished` |
+| `integration` | string | No | - | Filtrar por tipo: `whatsapp`, `phone_call` |
+| `archived` | boolean | No | `false` | Incluir campañas archivadas |
+| `startDate` | ISO 8601 | No | - | Filtrar campañas creadas después de esta fecha |
+| `endDate` | ISO 8601 | No | - | Filtrar campañas creadas antes de esta fecha |
+
 <Warning>
-    **Coming Soon**: This endpoint will be available on September 29, 2025.
-</Warning
+  `startDate` y `endDate` deben proporcionarse juntos.
+</Warning>
+
+## Campos de Respuesta
+
+### Objeto Campaign
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | integer | ID de la campaña |
+| `name` | string | Nombre de la campaña |
+| `description` | string | Descripción de la campaña |
+| `status` | string | Estado actual |
+| `created_at` | datetime | Fecha de creación |
+| `agent` | object | Info del agente/bot (`id`, `name`) |
+| `scheduling` | object | Configuración del horario semanal |
+| `timezone` | string | Zona horaria de la campaña |
+| `retries` | integer | Máximo de reintentos por buzón de voz |
+| `archived` | boolean | Si la campaña está archivada |
+| `template` | string | Nombre del template de WhatsApp (solo WhatsApp) |
+| `first_message` | string | Mensaje inicial del AI (solo llamadas) |
+| `concurrency_limit` | integer | Máximo de llamadas concurrentes (solo llamadas) |
+| `cycle_enabled` | boolean | Ciclo automático habilitado (solo llamadas) |
+| `cycle_max_iterations` | integer | Máximo de iteraciones del ciclo |
+| `cycle_cooldown_minutes` | integer | Minutos entre ciclos |
+| `cycle_filter_statuses` | array | Estados a excluir del re-encolamiento |
+| `cycle_filter_tags` | array | Tags a excluir del re-encolamiento |
+| `cycle_current_iteration` | integer | Número de ciclo actual |
+| `cycle_last_iteration_at` | datetime | Timestamp del último ciclo |
+
+## Paginación
+
+Este endpoint usa **paginación basada en cursor**:
+
+- Usa `next_cursor` / `previous_cursor` de la respuesta
+- Pásalo como `?cursor={valor}` en la siguiente solicitud
+- Los filtros se aplican a cada solicitud de forma independiente, mantén los mismos filtros durante la paginación para obtener resultados consistentes

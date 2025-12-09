@@ -252,6 +252,138 @@
         }
       }
     },
+    "/campaigns/{id}/calls": {
+      "get": {
+        "description": "Returns a paginated list of calls for a specific campaign",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the Campaign to return the Calls",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filters the Campaign Calls by the status of the Call",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ended",
+                "failed",
+                "busy",
+                "no-answer",
+                "in-progress"
+              ]
+            },
+            "required": false
+          },
+          {
+            "name": "answeredBy",
+            "in": "query",
+            "description": "Filters the Campaign Calls by who answered the call",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "human",
+                "machine",
+                "unknown"
+              ]
+            },
+            "required": false
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "Filter calls created after this date in ISO 8601 format",
+            "schema": {
+              "type": "string",
+              "format": "ISO 8601"
+            },
+            "required": false
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "Filter calls created before this date in ISO 8601 format",
+            "schema": {
+              "type": "string",
+              "format": "ISO 8601"
+            },
+            "required": false
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of items per page to return.",
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "required": false
+          },
+          {
+            "name": "pageIndex",
+            "in": "query",
+            "description": "Page number to return (0-based).",
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "maximum": 25000,
+              "minimum": 0
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign Calls response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignCallsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DRFBadRequestError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaign not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/enduser": {
       "post": {
         "description": "Create new EndUser for your organization",
@@ -914,7 +1046,7 @@
             "type": "string"
           },
           "concurrency_limit": {
-            "description": "The number of calls that can be active at the same time (Phone call campaigns only)",
+            "description": "The maximum number of concurrent calls allowed (Phone call campaigns only)",
             "type": "integer"
           },
           "cycle_enabled": {
@@ -1027,6 +1159,158 @@
           "pagination": {
             "type": "object",
             "$ref": "#/components/schemas/CursorPagination"
+          }
+        }
+      },
+      "CampaignCallsResponse": {
+        "type": "object",
+        "properties": {
+          "total_count": {
+            "description": "Total number of Campaign Calls for the given query.",
+            "type": "integer"
+          },
+          "calls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CampaignCall"
+            }
+          },
+          "pagination": {
+            "type": "object",
+            "$ref": "#/components/schemas/CampaignCallsPagination"
+          }
+        }
+      },
+      "CampaignCall": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the Call",
+            "type": "string"
+          },
+          "type": {
+            "description": "Type of the Call",
+            "type": "string",
+            "enum": ["inbound", "outbound"]
+          },
+          "status": {
+            "description": "Status of the Call",
+            "type": "string",
+            "enum": ["ended", "failed", "busy", "no-answer", "in-progress"]
+          },
+          "answered_by": {
+            "description": "Who or what answered the Call",
+            "type": "string",
+            "enum": ["human", "machine", "unknown"],
+            "nullable": true
+          },
+          "created_at": {
+            "description": "Datetime when the Call was created (ISO 8601)",
+            "type": "string",
+            "format": "date-time"
+          },
+          "started_at": {
+            "description": "Datetime when the Call was started (ISO 8601)",
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "ended_at": {
+            "description": "Datetime when the Call ended (ISO 8601)",
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "duration": {
+            "description": "Duration of the Call in seconds",
+            "type": "integer"
+          },
+          "billed_duration": {
+            "description": "Billed duration of the Call in seconds",
+            "type": "integer"
+          },
+          "contact": {
+            "description": "The contact associated with this call",
+            "type": "object",
+            "$ref": "#/components/schemas/CampaignCallContact"
+          },
+          "extracted_data": {
+            "description": "Key-value pairs extracted from the call conversation",
+            "type": "object",
+            "example": {
+              "interested": "yes",
+              "appointment_date": "2024-01-20"
+            }
+          },
+          "tags": {
+            "description": "Tags assigned to the Call",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["interested", "callback"]
+          },
+          "recording_url": {
+            "description": "URL to fetch the call recording",
+            "type": "string",
+            "example": "/api/v1.0/call/call_abc123def456/recording"
+          }
+        }
+      },
+      "CampaignCallContact": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Internal Campaign Contact ID",
+            "type": "integer"
+          },
+          "f_id": {
+            "description": "External/foreign ID (your reference)",
+            "type": "string"
+          },
+          "name": {
+            "description": "Contact name",
+            "type": "string"
+          },
+          "phone_number": {
+            "description": "Phone number in E.164 format",
+            "type": "string"
+          },
+          "status": {
+            "description": "Contact status in the campaign",
+            "type": "string"
+          }
+        }
+      },
+      "CampaignCallsPagination": {
+        "type": "object",
+        "description": "Pagination information for campaign calls",
+        "properties": {
+          "page_index": {
+            "type": "integer",
+            "description": "Current page index"
+          },
+          "page_size": {
+            "type": "integer",
+            "description": "Number of items per page"
+          },
+          "has_next": {
+            "type": "boolean",
+            "description": "Whether there are more pages available"
+          },
+          "has_previous": {
+            "type": "boolean",
+            "description": "Whether there are previous pages"
+          },
+          "next_page": {
+            "type": "integer",
+            "description": "Index of the next page (null if no more pages)",
+            "nullable": true
+          },
+          "previous_page": {
+            "type": "integer",
+            "description": "Index of the previous page (null if no previous pages)",
+            "nullable": true
           }
         }
       },
@@ -1437,9 +1721,9 @@
             "type": "integer"
           },
           "billed_duration":{
-            "description": "The total billed duration of the Campaign Contact Calls",
-            "type": "string",
-            "example": "00:46"
+            "description": "The total billed duration of the Campaign Contact Calls in seconds",
+            "type": "integer",
+            "example": 270
           },
           "last_call_at":{
             "description": "The datetime of the last call made to the Campaign Contact",
