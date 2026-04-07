@@ -1254,6 +1254,10 @@
             "description": "URL to fetch the call recording",
             "type": "string",
             "example": "/api/v1.0/call/call_abc123def456/recording"
+          },
+          "policy_evaluation": {
+            "description": "Resultados de la evaluación de cumplimiento de políticas",
+            "$ref": "#/components/schemas/PolicyEvaluation"
           }
         }
       },
@@ -1563,6 +1567,10 @@
           "billable_duration": {
             "description": "Billable duration of the Call in seconds",
             "type": "integer"
+          },
+          "policy_evaluation": {
+            "description": "Resultados de la evaluación de cumplimiento de políticas",
+            "$ref": "#/components/schemas/PolicyEvaluation"
           }
         }
       },
@@ -1770,6 +1778,82 @@
           "previous_cursor": {
             "type": "string",
             "description": "Cursor to the previous page to return"
+          }
+        }
+      },
+      "PolicyEvaluation": {
+        "type": "object",
+        "description": "Resultados de la evaluación de cumplimiento de políticas para una llamada. Los campos de puntuación y conteo serán null cuando la llamada no ha sido evaluada (ej: no fue muestreada, no hay políticas activas, o la evaluación está pendiente). El arreglo de políticas estará vacío en estos casos.",
+        "properties": {
+          "score": {
+            "description": "Puntuación de cumplimiento de 0 a 10. Fórmula: (políticas_cumplidas / políticas_aplicables) * 10. Null si no hay políticas aplicables o la evaluación no se ejecutó.",
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          },
+          "policies_evaluated_count": {
+            "description": "Número total de políticas evaluadas",
+            "type": "integer",
+            "nullable": true
+          },
+          "policies_met_count": {
+            "description": "Número de políticas que fueron cumplidas",
+            "type": "integer",
+            "nullable": true
+          },
+          "policies_not_applicable_count": {
+            "description": "Número de políticas marcadas como no aplicables",
+            "type": "integer",
+            "nullable": true
+          },
+          "completed": {
+            "description": "Si la evaluación de políticas ha sido completada",
+            "type": "boolean"
+          },
+          "completed_at": {
+            "description": "Cuándo se completó la evaluación",
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "policies": {
+            "description": "Resultados de evaluación por política",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PolicyEvaluationItem"
+            }
+          }
+        }
+      },
+      "PolicyEvaluationItem": {
+        "type": "object",
+        "description": "Resultado individual de evaluación de política",
+        "properties": {
+          "policy_id": {
+            "description": "Identificador único de la política",
+            "type": "string"
+          },
+          "policy_name": {
+            "description": "Nombre de la política",
+            "type": "string"
+          },
+          "result": {
+            "description": "Resultado de la evaluación",
+            "type": "string",
+            "enum": [
+              "met",
+              "not_met",
+              "not_applicable"
+            ]
+          },
+          "explanation": {
+            "description": "Explicación generada por LLM sobre la evaluación",
+            "type": "string"
+          },
+          "evaluated_at": {
+            "description": "Cuándo se evaluó esta política",
+            "type": "string",
+            "format": "date-time"
           }
         }
       },

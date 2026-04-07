@@ -1270,6 +1270,10 @@
             "description": "URL to fetch the call recording",
             "type": "string",
             "example": "/api/v1.0/call/call_abc123def456/recording"
+          },
+          "policy_evaluation": {
+            "description": "Policy compliance evaluation results",
+            "$ref": "#/components/schemas/PolicyEvaluation"
           }
         }
       },
@@ -1579,6 +1583,10 @@
           "billable_duration": {
             "description": "Billable duration of the Call in seconds",
             "type": "integer"
+          },
+          "policy_evaluation": {
+            "description": "Policy compliance evaluation results",
+            "$ref": "#/components/schemas/PolicyEvaluation"
           }
         }
       },
@@ -1792,6 +1800,82 @@
           "previous_cursor": {
             "type": "string",
             "description": "Cursor to the previous page to return"
+          }
+        }
+      },
+      "PolicyEvaluation": {
+        "type": "object",
+        "description": "Policy compliance evaluation results for a call. Score and count fields will be null when the call has not been evaluated (e.g., not sampled, no active policies, or evaluation still pending). The policies array will be empty in these cases.",
+        "properties": {
+          "score": {
+            "description": "Compliance score from 0 to 10. Formula: (policies_met / applicable_policies) * 10. Null if no applicable policies or evaluation not run.",
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          },
+          "policies_evaluated_count": {
+            "description": "Total number of policies evaluated",
+            "type": "integer",
+            "nullable": true
+          },
+          "policies_met_count": {
+            "description": "Number of policies that were met",
+            "type": "integer",
+            "nullable": true
+          },
+          "policies_not_applicable_count": {
+            "description": "Number of policies marked as not applicable",
+            "type": "integer",
+            "nullable": true
+          },
+          "completed": {
+            "description": "Whether the policy evaluation has been completed",
+            "type": "boolean"
+          },
+          "completed_at": {
+            "description": "When the evaluation was completed",
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "policies": {
+            "description": "Per-policy evaluation results",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PolicyEvaluationItem"
+            }
+          }
+        }
+      },
+      "PolicyEvaluationItem": {
+        "type": "object",
+        "description": "Individual policy evaluation result",
+        "properties": {
+          "policy_id": {
+            "description": "Unique identifier of the policy",
+            "type": "string"
+          },
+          "policy_name": {
+            "description": "Name of the policy",
+            "type": "string"
+          },
+          "result": {
+            "description": "Evaluation result",
+            "type": "string",
+            "enum": [
+              "met",
+              "not_met",
+              "not_applicable"
+            ]
+          },
+          "explanation": {
+            "description": "LLM-generated explanation of the evaluation",
+            "type": "string"
+          },
+          "evaluated_at": {
+            "description": "When this policy was evaluated",
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
