@@ -145,6 +145,301 @@
             }
           }
         }
+      },
+      "post": {
+        "description": "Crea una nueva Campaña para tu organización. Usa `integration_type` para seleccionar entre llamada telefónica o WhatsApp; los campos exclusivos del canal contrario son rechazados.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Llave opcional generada por el cliente (UUID recomendado) para hacer la solicitud idempotente.",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "requestBody": {
+          "description": "Campaña a crear",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CampaignCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Campaña creada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada inválida o tipo de integración no soportado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Límite de facturación alcanzado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Agente o Integración no encontrados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campaigns/{id}": {
+      "get": {
+        "description": "Devuelve el detalle de una Campaña, incluyendo agente, integración, configuración de ciclos y (cuando esté disponible) snapshot de analíticas.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "El identificador de la Campaña",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta de detalle de la Campaña",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignDetailResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaña no encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Actualización parcial de una Campaña. Los campos inmutables (`agent_id`, `integration_id`, `integration_type`, `cycles.enabled`, `cycles.mode`) no se pueden modificar y devuelven `IMMUTABLE_FIELD`. Las campañas finalizadas son de solo lectura.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "El identificador de la Campaña",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "Actualización parcial de Campaña",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CampaignUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Campaña actualizada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada inválida, campo inmutable, ciclos no habilitados, o uso indebido de campos exclusivos del modo `scheduled`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaña no encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Campaña finalizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campaigns/{id}/{action}": {
+      "post": {
+        "description": "Aplica una acción de ciclo de vida a una Campaña. Acciones válidas: `activate`, `pause`, `archive`, `resume`. La acción es idempotente — aplicar una acción cuando la campaña ya está en el estado destino es un no-op exitoso.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "El identificador de la Campaña",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "name": "action",
+            "in": "path",
+            "description": "Acción de ciclo de vida a aplicar",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "activate",
+                "pause",
+                "archive",
+                "resume"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Acción aplicada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Acción desconocida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Límite de facturación alcanzado (para `activate` / `resume`)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaña no encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Transición de estado inválida para la acción",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignLifecycleConflictError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/campaigns/{id}/contacts": {
@@ -245,6 +540,197 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Crea Contactos de Campaña por lotes. Hasta 1000 contactos por solicitud. Cada item se procesa de forma independiente — una fila inválida no rompe el lote — y se devuelve un `summary` agregado y `results` por item. Usa `if_duplicate` para controlar el comportamiento cuando un contacto ya existe en la campaña (`skip` mantiene el original, `update` sobreescribe los campos mutables).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "El identificador de la Campaña",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Llave opcional generada por el cliente (UUID recomendado) para hacer la solicitud idempotente.",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "requestBody": {
+          "description": "Lote de contactos a crear",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CampaignContactBatchCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Lote procesado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignContactBatchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DRFBadRequestError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaña no encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campaigns/{id}/contacts/{contact_id}": {
+      "get": {
+        "description": "Devuelve el detalle de un contacto dentro de una Campaña.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "El identificador de la Campaña",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "name": "contact_id",
+            "in": "path",
+            "description": "El identificador del contacto dentro de la Campaña",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalle del contacto",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignContactDetailResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaña o contacto no encontrados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Elimina un contacto de una Campaña. Solo se pueden eliminar contactos en estado `queue` o `failed`; cualquier otro estado devuelve `CONTACT_NOT_DELETABLE` (409).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "El identificador de la Campaña",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "name": "contact_id",
+            "in": "path",
+            "description": "El identificador del contacto dentro de la Campaña",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Contacto eliminado exitosamente"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaña o contacto no encontrados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El contacto no está en un estado eliminable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignApiError"
                 }
               }
             }
@@ -1336,6 +1822,432 @@
             "$ref": "#/components/schemas/OffsetPagination"
           }
         }
+      },
+      "CampaignDetail": {
+        "type": "object",
+        "description": "Detalle de una Campaña con agente, integración y configuración de ciclos anidados. El campo `analytics` se incluye solo cuando hay snapshot disponible.",
+        "properties": {
+          "id": {
+            "description": "Identificador único de la Campaña",
+            "type": "integer"
+          },
+          "name": {
+            "description": "Nombre de la Campaña",
+            "type": "string"
+          },
+          "status": {
+            "description": "Estado actual de la Campaña",
+            "type": "string",
+            "enum": [
+              "pending",
+              "ready",
+              "active",
+              "inactive",
+              "cooldown",
+              "finished"
+            ]
+          },
+          "integration": {
+            "description": "Objeto {id, type} de la integración sobre la que se creó la Campaña",
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "phone_call",
+                  "whatsapp"
+                ]
+              }
+            }
+          },
+          "agent": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid4"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "scheduling": {
+            "$ref": "#/components/schemas/CampaignSchedule"
+          },
+          "cycles": {
+            "$ref": "#/components/schemas/CampaignCyclesConfig"
+          },
+          "analytics": {
+            "description": "Snapshot de analíticas. La forma depende de `integration.type`.",
+            "type": "object"
+          }
+        }
+      },
+      "CampaignDetailResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "campaign": {
+            "$ref": "#/components/schemas/CampaignDetail"
+          }
+        }
+      },
+      "CampaignCyclesConfig": {
+        "type": "object",
+        "description": "Bloque de configuración de ciclos. Solo aplicable a campañas de llamada telefónica.",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Si los ciclos están habilitados. Inmutable después de la creación."
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "cooldown",
+              "scheduled"
+            ],
+            "description": "Modo del ciclo. Inmutable después de la creación."
+          },
+          "max_iterations": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 12
+          },
+          "cooldown_minutes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1440
+          },
+          "filter_statuses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Estados de contactos excluidos de la siguiente iteración."
+          },
+          "filter_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "IDs de tags de hilo cuyos contactos se excluyen de la siguiente iteración. Solo de entrada — no se devuelve en la respuesta de detalle."
+          },
+          "schedule": {
+            "$ref": "#/components/schemas/CampaignSchedule",
+            "description": "Horario por día. Solo se usa cuando `mode` = `scheduled`."
+          },
+          "schedule_start_date": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Solo se usa cuando `mode` = `scheduled`."
+          },
+          "schedule_end_date": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Solo se usa cuando `mode` = `scheduled`."
+          }
+        }
+      },
+      "CampaignCreate": {
+        "type": "object",
+        "required": [
+          "name",
+          "agent_id",
+          "integration_id",
+          "integration_type"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string"
+          },
+          "agent_id": {
+            "type": "string",
+            "format": "uuid4",
+            "description": "`public_id` del agente que será dueño de esta campaña."
+          },
+          "integration_id": {
+            "type": "string",
+            "description": "`public_id` de la integración a usar. Debe pertenecer a `agent_id`."
+          },
+          "integration_type": {
+            "type": "string",
+            "enum": [
+              "phone_call",
+              "whatsapp"
+            ]
+          },
+          "timezone": {
+            "type": "string",
+            "description": "Timezone IANA. Por defecto `America/Mexico_City`."
+          },
+          "retries": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5,
+            "default": 1
+          },
+          "message_limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 250
+          },
+          "first_message": {
+            "type": "string",
+            "description": "Primer mensaje del Agente al ser contestada la llamada. Solo para `phone_call`."
+          },
+          "template": {
+            "type": "string",
+            "description": "Nombre del template de WhatsApp. Solo para `whatsapp`."
+          },
+          "template_alt": {
+            "type": "string",
+            "description": "Nombre del template alternativo. Solo para `whatsapp`."
+          },
+          "scheduling": {
+            "$ref": "#/components/schemas/CampaignSchedule"
+          },
+          "cycles": {
+            "$ref": "#/components/schemas/CampaignCyclesConfig"
+          }
+        }
+      },
+      "CampaignUpdate": {
+        "type": "object",
+        "description": "Actualización parcial. Cualquier campo puede omitirse. Los campos inmutables (`agent_id`, `integration_id`, `integration_type`, `cycles.enabled`, `cycles.mode`) no pueden incluirse.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "retries": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "message_limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "scheduling": {
+            "$ref": "#/components/schemas/CampaignSchedule"
+          },
+          "first_message": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string"
+          },
+          "template_alt": {
+            "type": "string"
+          },
+          "cycles": {
+            "$ref": "#/components/schemas/CampaignCyclesConfig"
+          }
+        }
+      },
+      "CampaignContactBatchCreate": {
+        "type": "object",
+        "required": [
+          "contacts"
+        ],
+        "properties": {
+          "contacts": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1000,
+            "items": {
+              "type": "object",
+              "required": [
+                "contact"
+              ],
+              "properties": {
+                "contact": {
+                  "type": "string",
+                  "description": "Número de teléfono, normalizado a E.164 al insertar."
+                },
+                "name": {
+                  "type": "string"
+                },
+                "context": {
+                  "type": "string"
+                },
+                "extracted_data": {
+                  "type": "object"
+                },
+                "f_id": {
+                  "type": "string",
+                  "description": "Identificador externo del contacto en tu sistema."
+                }
+              }
+            }
+          },
+          "if_duplicate": {
+            "type": "string",
+            "enum": [
+              "skip",
+              "update"
+            ],
+            "default": "skip",
+            "description": "Comportamiento cuando el número del contacto ya existe en la campaña."
+          }
+        }
+      },
+      "CampaignContactBatchResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "created": {
+                "type": "integer"
+              },
+              "updated": {
+                "type": "integer"
+              },
+              "skipped_duplicate": {
+                "type": "integer"
+              },
+              "failed": {
+                "type": "integer"
+              }
+            }
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "created",
+                    "updated",
+                    "skipped_duplicate",
+                    "failed"
+                  ]
+                },
+                "id": {
+                  "type": "string",
+                  "description": "Presente cuando status es `created`, `updated` o `skipped_duplicate`."
+                },
+                "contact": {
+                  "type": "string"
+                },
+                "error": {
+                  "type": "string",
+                  "description": "Presente cuando status es `failed`. Uno de `INVALID_PHONE_NUMBER`, `MISSING_CONTACT`, `SERVER_ERROR`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "CampaignContactDetailResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "contact": {
+            "$ref": "#/components/schemas/CampaignContact"
+          }
+        }
+      },
+      "CampaignApiError": {
+        "type": "object",
+        "description": "Envelope de error estándar de la API v1.0 de campañas.",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Llave de error estable en UPPER_SNAKE_CASE.",
+            "enum": [
+              "FORBIDDEN",
+              "NOT_FOUND",
+              "RATE_LIMITED",
+              "SERVER_ERROR",
+              "INVALID_REQUEST",
+              "INVALID_STATUS",
+              "IMMUTABLE_FIELD",
+              "UNKNOWN_ACTION",
+              "AGENT_NOT_FOUND",
+              "INTEGRATION_NOT_FOUND",
+              "INVALID_INTEGRATION_TYPE",
+              "INVALID_FILTER_TAG",
+              "INVALID_PHONE_NUMBER",
+              "MISSING_CONTACT",
+              "CONTACT_NOT_FOUND",
+              "CONTACT_NOT_DELETABLE",
+              "CAMPAIGN_FINISHED",
+              "CYCLES_NOT_ENABLED",
+              "SCHEDULED_MODE_ONLY",
+              "INVALID_STATUS_TRANSITION",
+              "BILLING_LIMIT_REACHED"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string",
+            "description": "Presente cuando `error` es `IMMUTABLE_FIELD`; identifica el campo en conflicto."
+          }
+        }
+      },
+      "CampaignLifecycleConflictError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CampaignApiError"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "current_status": {
+                "type": "string"
+              },
+              "valid_targets": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
       },
       "EndUser": {
         "type": "object",

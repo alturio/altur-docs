@@ -1,0 +1,150 @@
+---
+title: "campaign.cycle_completed"
+description: "Se dispara cuando una iteración del ciclo de una Campaña termina, con el número de iteración y el timestamp de la siguiente iteración programada."
+---
+
+Se dispara cuando termina una iteración del ciclo de una Campaña. El payload incluye el número de iteración recién completada y el timestamp en que está programada la siguiente iteración (`null` si no hay más iteraciones).
+
+Úsalo para seguir el progreso ciclo por ciclo sin hacer polling al endpoint de campañas.
+
+- **Trigger**: Una iteración del ciclo de una Campaña termina (independientemente de si siguen más iteraciones).
+- **Aplica a**: Campañas de llamada telefónica con ciclos habilitados.
+
+## Solicitud
+
+- **Método**: `POST`
+- **Content-Type**: `application/json`
+- **Endpoint**: La URL que configuras en tu integración de webhook.
+- **Autenticación**: Header `X-Altur-Signature` para verificación HMAC. Ver [Descripción general de Webhooks](https://docs.altur.io/es/api-reference/webhooks/overview#securing-your-webhooks).
+
+## Ejemplo de Payload
+
+```json
+{
+  "event_id": "evt_5tH9aB2nQ8vR3mZ1cP0k",
+  "event_type": "campaign.cycle_completed",
+  "occurred_at": "2026-06-08T18:00:00.000000-06:00",
+  "api_version": "1.0",
+  "project_id": "prj_8YqL3mZxR1tV0nKfH9bA",
+  "data": {
+    "campaign": {
+      "id": 1234,
+      "name": "Reactivación Q2",
+      "status": "cooldown",
+      "previous_status": null
+    },
+    "cycle_iteration": 2,
+    "next_cycle_at": "2026-06-09T09:00:00.000000-06:00"
+  }
+}
+```
+
+### Campos del envelope
+
+| Campo         | Tipo     | Descripción                                                                 |
+| :------------ | :------- | :-------------------------------------------------------------------------- |
+| `event_id`    | `string` | Identificador único de esta entrega. Útil para procesamiento idempotente.   |
+| `event_type`  | `string` | Siempre `campaign.cycle_completed`.                                         |
+| `occurred_at` | `string` | Timestamp ISO 8601 en el timezone del proyecto.                             |
+| `api_version` | `string` | Versión del esquema del payload (actualmente `1.0`).                        |
+| `project_id`  | `string` | Identificador público del proyecto dueño de la campaña.                     |
+| `data`        | `object` | Payload del evento (ver abajo).                                             |
+
+### Objeto `data`
+
+| Campo             | Tipo               | Descripción                                                                                                                       |
+| :---------------- | :----------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| `campaign`        | `object`           | Resumen compacto (`id`, `name`, `status`, `previous_status`). `previous_status` es `null` para este evento.                       |
+| `cycle_iteration` | `int` \| `null`    | Número de iteración recién completada.                                                                                            |
+| `next_cycle_at`   | `string` \| `null` | Timestamp ISO 8601 de la siguiente iteración en el timezone del proyecto, o `null` si no hay más iteraciones.                     |
+
+## Respuesta
+
+Devuelve `200 OK` para confirmar la recepción. Los fallos se reintentan según la [política de reintentos](https://docs.altur.io/es/api-reference/webhooks/overview#delivery-retry-policy).
+
+## Ejemplos de Receptor
+
+Para verificación de firma, ver [`is_valid_signature`](https://docs.altur.io/es/api-reference/webhooks/overview#securing-your-webhooks) en el Descripción general de Webhooks.
+
+<CodeGroup>
+
+```python Python (Flask)
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.post("/webhooks/altur/campaign-cycle")
+def on_campaign_cycle_completed():
+    signature = request.headers.get("X-Altur-Signature")
+    if not is_valid_signature(SHARED_SECRET, request.get_json(), signature):
+        return jsonify(error="invalid signature"), 401
+
+    event = request.get_json()
+    data = event["data"]
+    campaign = data["campaign"]
+
+    snapshot_cycle_metrics(
+        campaign_id=campaign["id"],
+        iteration=data["cycle_iteration"],
+        next_at=data["next_cycle_at"],
+    )
+
+    if data["next_cycle_at"] is None and campaign["status"] != "finished":
+        alert_stalled_campaign(campaign["id"])
+
+    return "", 200
+```
+
+```javascript JavaScript (Express)
+import express from "express";
+
+const app = express();
+app.use(express.json());
+
+app.post("/webhooks/altur/campaign-cycle", (req, res) => {
+  const signature = req.headers["x-altur-signature"];
+  if (!isValidSignature(SHARED_SECRET, req.body, signature)) {
+    return res.status(401).json({ error: "invalid signature" });
+  }
+
+  const { data } = req.body;
+  const { campaign, cycle_iteration, next_cycle_at } = data;
+
+  snapshotCycleMetrics(campaign.id, cycle_iteration, next_cycle_at);
+
+  if (next_cycle_at === null && campaign.status !== "finished") {
+    alertStalledCampaign(campaign.id);
+  }
+
+  res.status(200).send();
+});
+```
+
+```php PHP
+<?php
+$raw = file_get_contents("php://input");
+$signature = $_SERVER["HTTP_X_ALTUR_SIGNATURE"] ?? "";
+$event = json_decode($raw, true);
+
+if (!isValidSignature($sharedSecret, $event, $signature)) {
+    http_response_code(401);
+    exit;
+}
+
+$data = $event["data"];
+$campaign = $data["campaign"];
+
+snapshot_cycle_metrics(
+    $campaign["id"],
+    $data["cycle_iteration"],
+    $data["next_cycle_at"]
+);
+
+if ($data["next_cycle_at"] === null && $campaign["status"] !== "finished") {
+    alert_stalled_campaign($campaign["id"]);
+}
+
+http_response_code(200);
+```
+
+</CodeGroup>

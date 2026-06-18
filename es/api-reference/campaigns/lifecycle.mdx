@@ -1,0 +1,64 @@
+---
+title: 'Acciones de Ciclo de Vida'
+openapi: 'POST /campaigns/{id}/{action}'
+---
+
+<Info>
+  **Límite de Tasa:** 12 solicitudes por segundo
+</Info>
+
+`action` es uno de `activate`, `pause`, `archive`, `resume`.
+
+## Transiciones Válidas
+
+| Acción     | Estados de origen permitidos            | Efecto                          |
+| :--------- | :-------------------------------------- | :------------------------------ |
+| `activate` | `pending`, `ready`, `cooldown`          | establece `status` → `active`   |
+| `pause`    | `active`, `cooldown`                    | establece `status` → `inactive` |
+| `resume`   | `inactive`                              | establece `status` → `active`   |
+| `archive`  | cualquiera                              | establece `archived = true`     |
+
+## Idempotencia
+
+- `archive` siempre es exitoso. Re-archivar una campaña es un no-op.
+- `pause` en una campaña ya `inactive`, y `resume` en una campaña ya `active`, son no-ops exitosos.
+- `activate` **no** es idempotente: llamarlo en una campaña ya en `active` (o `inactive`, o `finished`) devuelve `409 INVALID_STATUS_TRANSITION` porque `active` no está en los orígenes permitidos. Usa `resume` para reactivar una campaña pausada.
+
+## Errores
+
+- `400 UNKNOWN_ACTION`: `action` no es uno de los valores soportados.
+- `402 BILLING_LIMIT_REACHED`: `activate` o `resume` y se alcanzó el límite del plan.
+- `409 INVALID_STATUS_TRANSITION`: el estado actual no está en los orígenes permitidos. La respuesta incluye `current_status` y `valid_targets`.
+
+## Ejemplos
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://api.altur.io/api/v1.0/campaigns/1234/activate" \
+  -H "Authorization: api-key YOUR_API_SECRET_KEY"
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://api.altur.io/api/v1.0/campaigns/1234/activate",
+    headers={"Authorization": "api-key YOUR_API_SECRET_KEY"},
+)
+response.raise_for_status()
+campaign = response.json()["campaign"]
+```
+
+```javascript JavaScript
+const res = await fetch(
+  "https://api.altur.io/api/v1.0/campaigns/1234/activate",
+  {
+    method: "POST",
+    headers: { Authorization: "api-key YOUR_API_SECRET_KEY" },
+  },
+);
+const { campaign } = await res.json();
+```
+
+</CodeGroup>

@@ -1,0 +1,98 @@
+---
+title: 'Update Campaign'
+openapi: 'PATCH /campaigns/{id}'
+---
+
+<Info>
+  **Rate Limit:** 12 requests per second
+</Info>
+
+## Immutable Fields
+
+The following fields cannot be modified after creation. Including them in a PATCH returns `400 IMMUTABLE_FIELD` and identifies the offending field in the response `field` key:
+
+- `agent_id`
+- `integration_id`
+- `integration_type`
+- `cycles.enabled`
+- `cycles.mode`
+
+Finished campaigns are read-only and return `409 CAMPAIGN_FINISHED` on any PATCH.
+
+## Cycle Updates
+
+Cycle fields can only be updated on campaigns that have cycles enabled (`400 CYCLES_NOT_ENABLED` otherwise). `schedule`, `schedule_start_date`, and `schedule_end_date` are only valid when `cycles.mode` is `scheduled` (`400 SCHEDULED_MODE_ONLY` otherwise).
+
+## Examples
+
+### Rename a campaign and tighten retries
+
+<CodeGroup>
+
+```bash cURL
+curl -X PATCH "https://api.altur.io/api/v1.0/campaigns/1234" \
+  -H "Authorization: api-key YOUR_API_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Q2 Reactivation - wave 2",
+    "retries": 2
+  }'
+```
+
+```python Python
+import requests
+
+response = requests.patch(
+    "https://api.altur.io/api/v1.0/campaigns/1234",
+    headers={"Authorization": "api-key YOUR_API_SECRET_KEY"},
+    json={"name": "Q2 Reactivation - wave 2", "retries": 2},
+)
+response.raise_for_status()
+```
+
+```javascript JavaScript
+await fetch("https://api.altur.io/api/v1.0/campaigns/1234", {
+  method: "PATCH",
+  headers: {
+    Authorization: "api-key YOUR_API_SECRET_KEY",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ name: "Q2 Reactivation - wave 2", retries: 2 }),
+});
+```
+
+</CodeGroup>
+
+### Update cycle cooldown
+
+<CodeGroup>
+
+```bash cURL
+curl -X PATCH "https://api.altur.io/api/v1.0/campaigns/1234" \
+  -H "Authorization: api-key YOUR_API_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cycles": { "cooldown_minutes": 60 }
+  }'
+```
+
+```python Python
+requests.patch(
+    "https://api.altur.io/api/v1.0/campaigns/1234",
+    headers={"Authorization": "api-key YOUR_API_SECRET_KEY"},
+    json={"cycles": {"cooldown_minutes": 60}},
+).raise_for_status()
+```
+
+```javascript JavaScript
+await fetch("https://api.altur.io/api/v1.0/campaigns/1234", {
+  method: "PATCH",
+  headers: {
+    Authorization: "api-key YOUR_API_SECRET_KEY",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ cycles: { cooldown_minutes: 60 } }),
+});
+```
+
+</CodeGroup>

@@ -1,0 +1,46 @@
+---
+title: 'Delete Campaign Contact'
+openapi: 'DELETE /campaigns/{id}/contacts/{contact_id}'
+---
+
+<Info>
+  **Rate Limit:** 12 requests per second
+</Info>
+
+<Warning>
+  Only contacts in `queue` or `failed` status can be deleted. Anything further
+  along the lifecycle (`sending`, `sent`, `answered`, etc.) returns
+  `409 CONTACT_NOT_DELETABLE`.
+</Warning>
+
+## Examples
+
+<CodeGroup>
+
+```bash cURL
+curl -X DELETE "https://api.altur.io/api/v1.0/campaigns/1234/contacts/42" \
+  -H "Authorization: api-key YOUR_API_SECRET_KEY"
+```
+
+```python Python
+import requests
+
+response = requests.delete(
+    "https://api.altur.io/api/v1.0/campaigns/1234/contacts/42",
+    headers={"Authorization": "api-key YOUR_API_SECRET_KEY"},
+)
+response.raise_for_status()  # 204 No Content
+```
+
+```javascript JavaScript
+const res = await fetch(
+  "https://api.altur.io/api/v1.0/campaigns/1234/contacts/42",
+  {
+    method: "DELETE",
+    headers: { Authorization: "api-key YOUR_API_SECRET_KEY" },
+  },
+);
+if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
+```
+
+</CodeGroup>

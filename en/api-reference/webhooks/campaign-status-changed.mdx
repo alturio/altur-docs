@@ -1,0 +1,170 @@
+---
+title: "campaign.status_changed"
+description: "Fires whenever a Campaign transitions between lifecycle statuses (e.g., active to cooldown, cooldown to finished)."
+---
+
+Fires whenever the `status` of a Campaign changes. The payload includes both the previous and new status, so consumers can react to specific transitions (e.g., notify on `finished`, archive on `inactive`).
+
+When `new_status` is `finished`, the payload also includes the campaign's analytics snapshot, so you don't need an extra API call to summarize a finished campaign.
+
+- **Trigger**: Any campaign status transition (`pending` to `ready`, `active` to `inactive`, `active` to `cooldown`, `cooldown` to `finished`, etc.).
+- **Filtering**: When configuring the webhook in Altur, you can restrict deliveries to a list of target statuses via the `filters.status` array.
+
+## Request
+
+- **Method**: `POST`
+- **Content-Type**: `application/json`
+- **Endpoint**: The URL you configure in your webhook integration.
+- **Authentication**: `X-Altur-Signature` header for HMAC verification. See [Webhooks Overview](https://docs.altur.io/api-reference/webhooks/overview#securing-your-webhooks).
+
+## Payload Example
+
+```json
+{
+  "event_id": "evt_3kQpZ7tA9bN2cV1hX0sR",
+  "event_type": "campaign.status_changed",
+  "occurred_at": "2026-06-08T14:23:15.482000-06:00",
+  "api_version": "1.0",
+  "project_id": "prj_8YqL3mZxR1tV0nKfH9bA",
+  "data": {
+    "campaign": {
+      "id": 1234,
+      "name": "Q2 Reactivation",
+      "status": "finished",
+      "previous_status": "cooldown"
+    },
+    "analytics": {
+      "calls": 1820,
+      "callsAnsweredByHuman": 945,
+      "callsAnsweredByMachine": 612,
+      "callsAnsweredByUnknown": 263,
+      "callsAnsweredByHumanRate": 0.519,
+      "callsAnsweredByMachineRate": 0.336,
+      "callsAnsweredByUnknownRate": 0.144,
+      "contacts": 2000,
+      "contactsProcessed": 1820,
+      "contactsProcessedRate": 0.91,
+      "contactsFailed": 80,
+      "contactsFailedRate": 0.04,
+      "contactsVoicemail": 612,
+      "contactsVoicemailRate": 0.306,
+      "contactsAnswered": 945,
+      "contactsAnsweredRate": 0.4725,
+      "contactsConverted": 312,
+      "contactsConvertedRate": 0.156
+    }
+  }
+}
+```
+
+### Envelope Fields
+
+| Field         | Type     | Description                                                                       |
+| :------------ | :------- | :-------------------------------------------------------------------------------- |
+| `event_id`    | `string` | Unique identifier for this delivery. Use for idempotent processing.               |
+| `event_type`  | `string` | Always `campaign.status_changed`.                                                 |
+| `occurred_at` | `string` | ISO 8601 timestamp in the project's timezone.                                     |
+| `api_version` | `string` | Webhook payload schema version (currently `1.0`).                                 |
+| `project_id`  | `string` | Public identifier of the project that owns the campaign.                          |
+| `data`        | `object` | Event payload (see below).                                                        |
+
+### `data.campaign` Object
+
+| Field             | Type     | Description                                              |
+| :---------------- | :------- | :------------------------------------------------------- |
+| `id`              | `int`    | Campaign identifier.                                     |
+| `name`            | `string` | Campaign name.                                           |
+| `status`          | `string` | The new status (after the transition).                   |
+| `previous_status` | `string` | The status the campaign was in before the transition.    |
+
+### `data.analytics` Object (only when `status` = `finished`)
+
+For phone-call campaigns, the snapshot contains call and contact counts and rates. For WhatsApp campaigns it contains message lifecycle counts and rates. See the [`Retrieve Campaign`](https://docs.altur.io/api-reference/campaigns/retrieve-detail) reference for the full shape. The analytics block here matches the `analytics` field on the campaign detail response.
+
+## Response
+
+Return `200 OK` to confirm receipt. Failures are retried per the [delivery retry policy](https://docs.altur.io/api-reference/webhooks/overview#delivery-retry-policy).
+
+## Status Filtering
+
+When configuring the webhook integration, pass `filters.status` as an array of target statuses (e.g., `["finished"]`). Only transitions whose `new_status` is in that list will be delivered. Omitting the filter delivers every status transition.
+
+## Receiver Examples
+
+For signature verification, see [`is_valid_signature`](https://docs.altur.io/api-reference/webhooks/overview#securing-your-webhooks) in the Webhooks Overview.
+
+<CodeGroup>
+
+```python Python (Flask)
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.post("/webhooks/altur/campaign-status")
+def on_campaign_status():
+    signature = request.headers.get("X-Altur-Signature")
+    if not is_valid_signature(SHARED_SECRET, request.get_json(), signature):
+        return jsonify(error="invalid signature"), 401
+
+    event = request.get_json()
+    data = event["data"]
+    campaign = data["campaign"]
+
+    if campaign["status"] == "finished":
+        analytics = data.get("analytics") or {}
+        archive_campaign_in_crm(campaign["id"], analytics)
+    elif campaign["status"] == "inactive":
+        pause_downstream_billing(campaign["id"])
+
+    return "", 200
+```
+
+```javascript JavaScript (Express)
+import express from "express";
+
+const app = express();
+app.use(express.json());
+
+app.post("/webhooks/altur/campaign-status", (req, res) => {
+  const signature = req.headers["x-altur-signature"];
+  if (!isValidSignature(SHARED_SECRET, req.body, signature)) {
+    return res.status(401).json({ error: "invalid signature" });
+  }
+
+  const { data } = req.body;
+  const { campaign } = data;
+
+  if (campaign.status === "finished") {
+    archiveCampaignInCrm(campaign.id, data.analytics ?? {});
+  } else if (campaign.status === "inactive") {
+    pauseDownstreamBilling(campaign.id);
+  }
+
+  res.status(200).send();
+});
+```
+
+```php PHP
+<?php
+$raw = file_get_contents("php://input");
+$signature = $_SERVER["HTTP_X_ALTUR_SIGNATURE"] ?? "";
+$event = json_decode($raw, true);
+
+if (!isValidSignature($sharedSecret, $event, $signature)) {
+    http_response_code(401);
+    exit;
+}
+
+$campaign = $event["data"]["campaign"];
+
+if ($campaign["status"] === "finished") {
+    $analytics = $event["data"]["analytics"] ?? [];
+    archive_campaign_in_crm($campaign["id"], $analytics);
+} elseif ($campaign["status"] === "inactive") {
+    pause_downstream_billing($campaign["id"]);
+}
+
+http_response_code(200);
+```
+
+</CodeGroup>

@@ -1,0 +1,44 @@
+---
+title: 'Detalle de Campaña'
+openapi: 'GET /campaigns/{id}'
+---
+
+<Info>
+  **Límite de Tasa:** 12 solicitudes por segundo
+</Info>
+
+La respuesta incluye un `agent`, `integration`, configuración de `cycles` y, cuando esté disponible, un snapshot de `analytics`. La forma de `analytics` depende del `integration.type` de la campaña:
+
+- `phone_call`: conteos y tasas de llamadas y contactos (ej. `calls`, `contactsAnswered`, `contactsConvertedRate`).
+- `whatsapp`: conteos y tasas del ciclo de vida del mensaje (ej. `sent`, `delivered`, `read`, `convertedRate`).
+
+## Ejemplos
+
+<CodeGroup>
+
+```bash cURL
+curl "https://api.altur.io/api/v1.0/campaigns/1234" \
+  -H "Authorization: api-key YOUR_API_SECRET_KEY"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.altur.io/api/v1.0/campaigns/1234",
+    headers={"Authorization": "api-key YOUR_API_SECRET_KEY"},
+)
+response.raise_for_status()
+campaign = response.json()["campaign"]
+analytics = campaign.get("analytics")
+```
+
+```javascript JavaScript
+const res = await fetch("https://api.altur.io/api/v1.0/campaigns/1234", {
+  headers: { Authorization: "api-key YOUR_API_SECRET_KEY" },
+});
+const { campaign } = await res.json();
+const analytics = campaign.analytics;
+```
+
+</CodeGroup>

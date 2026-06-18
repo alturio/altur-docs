@@ -1,0 +1,172 @@
+---
+title: 'Create Campaign'
+openapi: 'POST /campaigns'
+---
+
+<Info>
+  **Rate Limit:** 12 requests per second
+</Info>
+
+<Tip>
+  Pass an `Idempotency-Key` header (UUID recommended) so retries don't create
+  duplicate campaigns.
+</Tip>
+
+## Channel-specific Fields
+
+| Field           | Channel       |
+| :-------------- | :------------ |
+| `first_message` | `phone_call`  |
+| `template`      | `whatsapp`    |
+| `template_alt` | `whatsapp`    |
+
+Sending a channel-only field for the wrong `integration_type` returns a `400 INVALID_REQUEST`.
+
+## Cycles
+
+`cycles` is optional. When `cycles.enabled` is `false` (or omitted), the rest of the cycles block is ignored. When `cycles.mode` is `cooldown`, `schedule*` fields are rejected. Cycles can be enabled only at creation time; `cycles.enabled` and `cycles.mode` are immutable thereafter.
+
+## Examples
+
+### Phone-call campaign with cooldown cycles
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://api.altur.io/api/v1.0/campaigns" \
+  -H "Authorization: api-key YOUR_API_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: 6f0b2c8c-2a7e-4f5e-9b6a-3a2e8b9c4d10" \
+  -d '{
+    "name": "Q2 Reactivation",
+    "agent_id": "6cy951e6-9877-4d7c-88d7-56b4948d3cce",
+    "integration_id": "iph_8YqL3mZxR1tV0nKfH9bA",
+    "integration_type": "phone_call",
+    "timezone": "America/Mexico_City",
+    "first_message": "Hi, am I speaking with {name}?",
+    "cycles": {
+      "enabled": true,
+      "mode": "cooldown",
+      "max_iterations": 3,
+      "cooldown_minutes": 30,
+      "filter_statuses": ["converted"]
+    }
+  }'
+```
+
+```python Python
+import requests
+import uuid
+
+payload = {
+    "name": "Q2 Reactivation",
+    "agent_id": "6cy951e6-9877-4d7c-88d7-56b4948d3cce",
+    "integration_id": "iph_8YqL3mZxR1tV0nKfH9bA",
+    "integration_type": "phone_call",
+    "timezone": "America/Mexico_City",
+    "first_message": "Hi, am I speaking with {name}?",
+    "cycles": {
+        "enabled": True,
+        "mode": "cooldown",
+        "max_iterations": 3,
+        "cooldown_minutes": 30,
+        "filter_statuses": ["converted"],
+    },
+}
+
+response = requests.post(
+    "https://api.altur.io/api/v1.0/campaigns",
+    headers={
+        "Authorization": "api-key YOUR_API_SECRET_KEY",
+        "Idempotency-Key": str(uuid.uuid4()),
+    },
+    json=payload,
+)
+response.raise_for_status()
+campaign = response.json()["campaign"]
+print(campaign["id"])
+```
+
+```javascript JavaScript
+const payload = {
+  name: "Q2 Reactivation",
+  agent_id: "6cy951e6-9877-4d7c-88d7-56b4948d3cce",
+  integration_id: "iph_8YqL3mZxR1tV0nKfH9bA",
+  integration_type: "phone_call",
+  timezone: "America/Mexico_City",
+  first_message: "Hi, am I speaking with {name}?",
+  cycles: {
+    enabled: true,
+    mode: "cooldown",
+    max_iterations: 3,
+    cooldown_minutes: 30,
+    filter_statuses: ["converted"],
+  },
+};
+
+const res = await fetch("https://api.altur.io/api/v1.0/campaigns", {
+  method: "POST",
+  headers: {
+    Authorization: "api-key YOUR_API_SECRET_KEY",
+    "Content-Type": "application/json",
+    "Idempotency-Key": crypto.randomUUID(),
+  },
+  body: JSON.stringify(payload),
+});
+const { campaign } = await res.json();
+```
+
+</CodeGroup>
+
+### WhatsApp campaign
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://api.altur.io/api/v1.0/campaigns" \
+  -H "Authorization: api-key YOUR_API_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Promo June",
+    "agent_id": "6cy951e6-9877-4d7c-88d7-56b4948d3cce",
+    "integration_id": "iwa_8YqL3mZxR1tV0nKfH9bA",
+    "integration_type": "whatsapp",
+    "template": "promo_june_v1"
+  }'
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://api.altur.io/api/v1.0/campaigns",
+    headers={"Authorization": "api-key YOUR_API_SECRET_KEY"},
+    json={
+        "name": "Promo June",
+        "agent_id": "6cy951e6-9877-4d7c-88d7-56b4948d3cce",
+        "integration_id": "iwa_8YqL3mZxR1tV0nKfH9bA",
+        "integration_type": "whatsapp",
+        "template": "promo_june_v1",
+    },
+)
+response.raise_for_status()
+```
+
+```javascript JavaScript
+await fetch("https://api.altur.io/api/v1.0/campaigns", {
+  method: "POST",
+  headers: {
+    Authorization: "api-key YOUR_API_SECRET_KEY",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    name: "Promo June",
+    agent_id: "6cy951e6-9877-4d7c-88d7-56b4948d3cce",
+    integration_id: "iwa_8YqL3mZxR1tV0nKfH9bA",
+    integration_type: "whatsapp",
+    template: "promo_june_v1",
+  }),
+});
+```
+
+</CodeGroup>

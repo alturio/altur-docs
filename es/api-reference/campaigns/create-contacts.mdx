@@ -1,0 +1,143 @@
+---
+title: 'Agregar Contactos a Campaña'
+openapi: 'POST /campaigns/{id}/contacts'
+---
+
+<Info>
+  **Límite de Tasa:** 12 solicitudes por segundo
+</Info>
+
+Hasta **1000 contactos** por solicitud. Cada item se procesa de forma independiente, así que una fila inválida no rompe el lote. La respuesta incluye un `summary` agregado y `results` por item.
+
+<Tip>
+  Envía un header `Idempotency-Key` (UUID recomendado) para que los reintentos
+  no encolen lotes duplicados.
+</Tip>
+
+## Manejo de Duplicados
+
+`if_duplicate` controla el comportamiento cuando el número del contacto ya existe en la campaña:
+
+- `skip` (por defecto): mantener el contacto existente, devolver `skipped_duplicate`.
+- `update`: sobreescribir `name`, `context`, `extracted_data` y `f_id` en el contacto existente, devolver `updated`.
+
+## Estados por item
+
+| Status              | Significado                                                                  |
+| :------------------ | :--------------------------------------------------------------------------- |
+| `created`           | Nuevo contacto creado                                                        |
+| `updated`           | Contacto existente actualizado (solo cuando `if_duplicate=update`)           |
+| `skipped_duplicate` | Contacto existente preservado                                                |
+| `failed`            | Ver `error` (`INVALID_PHONE_NUMBER`, `MISSING_CONTACT`, `SERVER_ERROR`)      |
+
+## Ejemplos
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://api.altur.io/api/v1.0/campaigns/1234/contacts" \
+  -H "Authorization: api-key YOUR_API_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: c1a45e88-ad34-4f57-9d2e-91a1d4f50f7e" \
+  -d '{
+    "if_duplicate": "update",
+    "contacts": [
+      {
+        "f_id": "user_12345",
+        "name": "Juan Pérez",
+        "contact": "+521234567890",
+        "context": "Atrasado 30 días, debe $1200",
+        "extracted_data": { "balance": "1200" }
+      },
+      {
+        "f_id": "user_12346",
+        "name": "Sofía Pérez",
+        "contact": "+529876543210"
+      }
+    ]
+  }'
+```
+
+```python Python
+import requests
+import uuid
+
+batch = {
+    "if_duplicate": "update",
+    "contacts": [
+        {
+            "f_id": "user_12345",
+            "name": "Juan Pérez",
+            "contact": "+521234567890",
+            "context": "Atrasado 30 días, debe $1200",
+            "extracted_data": {"balance": "1200"},
+        },
+        {
+            "f_id": "user_12346",
+            "name": "Sofía Pérez",
+            "contact": "+529876543210",
+        },
+    ],
+}
+
+response = requests.post(
+    "https://api.altur.io/api/v1.0/campaigns/1234/contacts",
+    headers={
+        "Authorization": "api-key YOUR_API_SECRET_KEY",
+        "Idempotency-Key": str(uuid.uuid4()),
+    },
+    json=batch,
+)
+response.raise_for_status()
+body = response.json()
+print(body["summary"])  # {"created": 2, "updated": 0, ...}
+for item in body["results"]:
+    if item["status"] == "failed":
+        print(item["index"], item["error"], item["contact"])
+```
+
+```javascript JavaScript
+const batch = {
+  if_duplicate: "update",
+  contacts: [
+    {
+      f_id: "user_12345",
+      name: "Juan Pérez",
+      contact: "+521234567890",
+      context: "Atrasado 30 días, debe $1200",
+      extracted_data: { balance: "1200" },
+    },
+    { f_id: "user_12346", name: "Sofía Pérez", contact: "+529876543210" },
+  ],
+};
+
+const res = await fetch(
+  "https://api.altur.io/api/v1.0/campaigns/1234/contacts",
+  {
+    method: "POST",
+    headers: {
+      Authorization: "api-key YOUR_API_SECRET_KEY",
+      "Content-Type": "application/json",
+      "Idempotency-Key": crypto.randomUUID(),
+    },
+    body: JSON.stringify(batch),
+  },
+);
+const body = await res.json();
+console.log(body.summary);
+```
+
+</CodeGroup>
+
+### Ejemplo de Respuesta
+
+```json
+{
+  "success": true,
+  "summary": { "created": 2, "updated": 0, "skipped_duplicate": 0, "failed": 0 },
+  "results": [
+    { "index": 0, "status": "created", "id": "42", "contact": "+521234567890" },
+    { "index": 1, "status": "created", "id": "43", "contact": "+529876543210" }
+  ]
+}
+```

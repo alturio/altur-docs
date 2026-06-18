@@ -95,7 +95,14 @@
                     "icon": "megaphone",
                     "pages": [
                       "en/api-reference/campaigns/retrieve",
+                      "en/api-reference/campaigns/retrieve-detail",
+                      "en/api-reference/campaigns/create",
+                      "en/api-reference/campaigns/update",
+                      "en/api-reference/campaigns/lifecycle",
                       "en/api-reference/campaigns/retrieve-contacts",
+                      "en/api-reference/campaigns/create-contacts",
+                      "en/api-reference/campaigns/retrieve-contact",
+                      "en/api-reference/campaigns/delete-contact",
                       "en/api-reference/campaigns/retrieve-calls"
                     ]
                   },
@@ -134,7 +141,9 @@
                     "group": "Webhook Events",
                     "icon": "bolt",
                     "pages": [
-                      "en/api-reference/webhooks/on-call-end"
+                      "en/api-reference/webhooks/on-call-end",
+                      "en/api-reference/webhooks/campaign-status-changed",
+                      "en/api-reference/webhooks/campaign-cycle-completed"
                     ]
                   }
                 ]
@@ -203,7 +212,14 @@
                     "icon": "megaphone",
                     "pages": [
                       "es/api-reference/campaigns/retrieve",
+                      "es/api-reference/campaigns/retrieve-detail",
+                      "es/api-reference/campaigns/create",
+                      "es/api-reference/campaigns/update",
+                      "es/api-reference/campaigns/lifecycle",
                       "es/api-reference/campaigns/retrieve-contacts",
+                      "es/api-reference/campaigns/create-contacts",
+                      "es/api-reference/campaigns/retrieve-contact",
+                      "es/api-reference/campaigns/delete-contact",
                       "es/api-reference/campaigns/retrieve-calls"
                     ]
                   },
@@ -242,7 +258,9 @@
                     "group": "Eventos de Webhook",
                     "icon": "bolt",
                     "pages": [
-                      "es/api-reference/webhooks/on-call-end"
+                      "es/api-reference/webhooks/on-call-end",
+                      "es/api-reference/webhooks/campaign-status-changed",
+                      "es/api-reference/webhooks/campaign-cycle-completed"
                     ]
                   }
                 ]

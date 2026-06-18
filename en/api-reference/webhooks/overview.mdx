@@ -2,7 +2,7 @@
 title: "Webhooks Overview"
 icon: "webhook"
 iconType: "regular"
-description: "Recieve real-time updates from Altur directly to your backend or CRM."
+description: "Receive real-time updates from Altur directly to your backend or CRM."
 ---
 
 ## Introduction to Webhooks
@@ -18,13 +18,22 @@ Webhooks allow you to receive real-time notifications about events in your Altur
    When an event occurs, Altur sends a POST request with the event's details in a structured JSON format to your endpoint.
 
 3. **Acknowledge Delivery**  
-   Your endpoint should respond with a `200 OK` status code to confirm successful receipt. If the request fails or times out, Altur retries the delivery up to 5 times with an exponential backoff strategy.
+   Your endpoint should respond with a `200 OK` status code to confirm successful receipt. Altur waits up to 5 seconds for a response. If the request fails, times out, or returns a non-2xx status, Altur retries with exponential backoff (up to 5 total attempts).
 
 ## Event Types
 
 Webhooks can be triggered by the following event types:
 
 - [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end): Triggered at the end of a call, this webhook sends detailed information about the call along with basic information about the AI agent and the end user.
+- [`campaign.status_changed`](https://docs.altur.io/api-reference/webhooks/campaign-status-changed): Triggered when a Campaign transitions between lifecycle statuses. Includes the analytics snapshot when the campaign reaches `finished`.
+- [`campaign.cycle_completed`](https://docs.altur.io/api-reference/webhooks/campaign-cycle-completed): Triggered when a cycle iteration of a Campaign finishes, with the completed iteration number and the next scheduled iteration timestamp.
+
+<Note>
+  Campaign webhooks use a versioned envelope (`event_id`, `event_type`,
+  `occurred_at`, `api_version`, `project_id`, `data`). Use `event_id` for
+  idempotent processing on your side. The `on_call_end` event predates this
+  envelope and keeps its flat top-level shape.
+</Note>
 
 ## Securing Your Webhooks
 
@@ -182,14 +191,12 @@ This mechanism ensures:
 
 ## Delivery Retry Policy
 
-To ensure reliable delivery, Altur employs a retry mechanism for failed webhook requests. If your endpoint does not respond with a `200 OK` status code, the following retry policy is applied:
+If your endpoint does not respond with a 2xx status code (or does not respond within the 5-second request timeout), Altur retries the delivery:
 
-- **Retry Attempts**: 5
-- **Retry Strategy**: Exponential backoff
-  - Initial Retry: 2 seconds after the first failure.
-  - Maximum Retry Delay: 30 seconds between retries.
+- **Maximum attempts**: 5 (initial delivery plus 4 retries).
+- **Backoff**: 60s after the first failure, doubling each attempt (60s, 2m, 4m, 8m).
 
-If all retries fail, the webhook event will not be delivered. It is recommended to ensure that your endpoint is reliable and can process requests promptly.
+If all attempts fail, the event is marked as failed and will not be delivered again.
 
 ## Example Workflow
 
@@ -212,7 +219,7 @@ Here’s a typical workflow for handling webhooks effectively:
 
 4. **Respond Promptly**
 
-   Return a `200 OK` status code to acknowledge successful receipt. Aim to respond within 10 seconds to avoid timeouts or unnecessary retries by Altur.
+   Return a `200 OK` status code to acknowledge successful receipt. Altur times out the request after 5 seconds, so respond well before that to avoid unnecessary retries.
 
 5. **Log Events for Debugging**
 
@@ -244,7 +251,7 @@ Here’s a typical workflow for handling webhooks effectively:
 
 4. **Optimize Performance**
 
-   - **Respond Quickly**: Ensure your endpoint responds within 10 seconds to avoid timeouts. If processing takes longer, return a `200 OK` and handle the task asynchronously.
+   - **Respond Quickly**: Altur times out after 5 seconds. If processing takes longer, acknowledge with `200 OK` immediately and handle the work asynchronously.
    - **Minimize Processing**: Perform lightweight validation and queuing at the webhook level, offloading heavy processing to background workers.
    - **Use Caching**: Cache static responses for redundant requests when appropriate.
 

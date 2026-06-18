@@ -1,0 +1,38 @@
+---
+title: 'Retrieve Campaign Contact'
+openapi: 'GET /campaigns/{id}/contacts/{contact_id}'
+---
+
+<Info>
+  **Rate Limit:** 12 requests per second
+</Info>
+
+## Examples
+
+<CodeGroup>
+
+```bash cURL
+curl "https://api.altur.io/api/v1.0/campaigns/1234/contacts/42" \
+  -H "Authorization: api-key YOUR_API_SECRET_KEY"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.altur.io/api/v1.0/campaigns/1234/contacts/42",
+    headers={"Authorization": "api-key YOUR_API_SECRET_KEY"},
+)
+response.raise_for_status()
+contact = response.json()["contact"]
+```
+
+```javascript JavaScript
+const res = await fetch(
+  "https://api.altur.io/api/v1.0/campaigns/1234/contacts/42",
+  { headers: { Authorization: "api-key YOUR_API_SECRET_KEY" } },
+);
+const { contact } = await res.json();
+```
+
+</CodeGroup>
