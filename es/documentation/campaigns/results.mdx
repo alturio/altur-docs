@@ -105,6 +105,8 @@ Este archivo CSV contiene **cada llamada individual** realizada durante la campa
 - `created_at`: Fecha y hora de creación de la llamada.
 - `started_at`: Fecha y hora de inicio de la llamada (cuando fue contestada).
 - `ended_at`: Fecha y hora de finalización de la llamada.
+- `ended_by`: Quién finalizó la llamada (`agent`, `user` o `system`). Vacío si la llamada nunca conectó.
+- `ended_reason`: Motivo breve por el que finalizó la llamada. Vacío si no está disponible.
 - `duration`: Duración total en formato legible (MM:SS).
 - `billed_duration`: Duración facturable en formato legible (MM:SS).
 - `recording_url`: URL para descargar la grabación de la llamada.

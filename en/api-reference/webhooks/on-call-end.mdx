@@ -35,6 +35,8 @@ Here’s an example of the payload sent with the `on_call_end` event:
   "created_at": "2024-12-19T15:00:10Z",
   "started_at": "2024-12-19T15:00:10Z",
   "ended_at": "2024-12-19T15:00:10Z",
+  "ended_by": "user",
+  "ended_reason": "user_hangup",
   "duration": 45,
   "billed_duration": 45,
   "recording_url": "https://api.altur.io/api/v1.0/call/cll_gBoLtd02pUI50QwXkFjB/recording",
@@ -100,6 +102,8 @@ Here’s an example of the payload sent with the `on_call_end` event:
 | `created_at`        | `datetime` | ISO formatted date time of when the call was created.                                               |
 | `started_at`        | `datetime` | ISO formatted date time of when the call started.                                                   |
 | `ended_at`          | `datetime` | ISO formatted date time of when the call ended.                                                     |
+| `ended_by`          | `string`   | Indicates who ended the call (`agent`, `user` or `system`). Empty if the call never connected.      |
+| `ended_reason`      | `string`   | Brief reason why the call ended. Empty if not available.                                            |
 | `duration`          | `int`      | Call duration in seconds.                                                                           |
 | `billed_duration`   | `int`      | Billed call duration in seconds.                                                                    |
 | `recording_url`     | `string`   | URL to [download](https://docs.altur.io/api-reference/calls/retrieve-recording) the call recording. |

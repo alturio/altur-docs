@@ -105,6 +105,8 @@ This CSV file contains **each individual call** made during the campaign, allowi
 - `created_at`: Call creation date and time.
 - `started_at`: Call start date and time (when answered).
 - `ended_at`: Call end date and time.
+- `ended_by`: Who ended the call (`agent`, `user` or `system`). Empty if the call never connected.
+- `ended_reason`: Brief reason why the call ended. Empty if not available.
 - `duration`: Total duration in readable format (MM:SS).
 - `billed_duration`: Billable duration in readable format (MM:SS).
 - `recording_url`: URL to download the call recording.

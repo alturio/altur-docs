@@ -1707,6 +1707,15 @@
             "format": "date-time",
             "nullable": true
           },
+          "ended_by": {
+            "description": "Who ended the Call (agent, user or system). Empty if the call never connected",
+            "type": "string",
+            "enum": ["agent", "user", "system", ""]
+          },
+          "ended_reason": {
+            "description": "Brief reason why the Call ended. Empty if not available",
+            "type": "string"
+          },
           "duration": {
             "description": "Duration of the Call in seconds",
             "type": "integer"
@@ -2471,6 +2480,20 @@
             "description": "Datetime from when the Call was ended",
             "type": "string",
             "format": "date-time"
+          },
+          "ended_by": {
+            "description": "Who ended the Call (agent, user or system). Empty if the call never connected",
+            "type": "string",
+            "enum": [
+              "agent",
+              "user",
+              "system",
+              ""
+            ]
+          },
+          "ended_reason": {
+            "description": "Brief reason why the Call ended. Empty if not available",
+            "type": "string"
           },
           "duration": {
             "description": "Duration of the Call in seconds",
