@@ -7,6 +7,6 @@ openapi: 'GET /campaigns'
   **Rate Limit:** 12 requests per second
 </Info>
 
-<Warning>
-  `startDate` and `endDate` must be provided together when filtering by date range.
-</Warning>
+<Note>
+  `startDate`/`endDate` are legacy names kept for backward compatibility and are actually equivalent to `createdAfter`/`createdBefore` (they filter on `created_at`, not on when the Campaign started or ended). Use `startedAfter`/`startedBefore` and `endedAfter`/`endedBefore` to filter by those dates instead. When both ends of a pair are provided, the *after* value must be earlier than *before*.
+</Note>

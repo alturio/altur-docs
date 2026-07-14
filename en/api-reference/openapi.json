@@ -66,7 +66,7 @@
           {
             "name": "startDate",
             "in": "query",
-            "description": "Bottom date of the range to filter the Campaigns in ISO 8601 format",
+            "description": "Older name kept for backward compatibility, equivalent to `createdAfter`. Filters by `created_at`, not by start date.",
             "schema": {
               "type": "string",
               "format": "ISO 8601"
@@ -75,7 +75,67 @@
           {
             "name": "endDate",
             "in": "query",
-            "description": "Top date of the range to filter the Campaigns in ISO 8601 format",
+            "description": "Older name kept for backward compatibility, equivalent to `createdBefore`. Filters by `created_at`, not by end date.",
+            "schema": {
+              "type": "string",
+              "format": "ISO 8601"
+            },
+            "required": false
+          },
+          {
+            "name": "createdAfter",
+            "in": "query",
+            "description": "Filter by `created_at` on or after this date.",
+            "schema": {
+              "type": "string",
+              "format": "ISO 8601"
+            },
+            "required": false
+          },
+          {
+            "name": "createdBefore",
+            "in": "query",
+            "description": "Filter by `created_at` on or before this date.",
+            "schema": {
+              "type": "string",
+              "format": "ISO 8601"
+            },
+            "required": false
+          },
+          {
+            "name": "startedAfter",
+            "in": "query",
+            "description": "Filter by `started_at` on or after this date. Excludes Campaigns that have not started.",
+            "schema": {
+              "type": "string",
+              "format": "ISO 8601"
+            },
+            "required": false
+          },
+          {
+            "name": "startedBefore",
+            "in": "query",
+            "description": "Filter by `started_at` on or before this date. Excludes Campaigns that have not started.",
+            "schema": {
+              "type": "string",
+              "format": "ISO 8601"
+            },
+            "required": false
+          },
+          {
+            "name": "endedAfter",
+            "in": "query",
+            "description": "Filter by `ended_at` on or after this date. Excludes Campaigns that have not ended.",
+            "schema": {
+              "type": "string",
+              "format": "ISO 8601"
+            },
+            "required": false
+          },
+          {
+            "name": "endedBefore",
+            "in": "query",
+            "description": "Filter by `ended_at` on or before this date. Excludes Campaigns that have not ended.",
             "schema": {
               "type": "string",
               "format": "ISO 8601"
@@ -351,7 +411,7 @@
     },
     "/campaigns/{id}/{action}": {
       "post": {
-        "description": "Apply a lifecycle action to a Campaign. Valid actions are `activate`, `pause`, `archive` and `resume`. The action is idempotent — applying an action when the campaign is already in the target state is a no-op success.",
+        "description": "Apply a lifecycle action to a Campaign. Valid actions are `activate`, `pause`, `archive` and `resume`. The action is idempotent: applying an action when the campaign is already in the target state is a no-op success.",
         "parameters": [
           {
             "name": "id",
@@ -547,7 +607,7 @@
         }
       },
       "post": {
-        "description": "Batch-creates Campaign Contacts. Up to 1000 contacts per request. Each item is processed independently — a single bad row does not fail the batch — and an aggregate `summary` plus per-item `results` is returned. Use `if_duplicate` to control behavior when a contact already exists in the campaign (`skip` keeps the original, `update` overwrites mutable fields).",
+        "description": "Batch-creates Campaign Contacts. Up to 1000 contacts per request. Each item is processed independently (a single bad row does not fail the batch) and an aggregate `summary` plus per-item `results` is returned. Use `if_duplicate` to control behavior when a contact already exists in the campaign (`skip` keeps the original, `update` overwrites mutable fields).",
         "parameters": [
           {
             "name": "id",
@@ -680,7 +740,7 @@
         }
       },
       "delete": {
-        "description": "Deletes a contact from a Campaign. Only contacts in `queue` or `failed` status can be deleted — contacts further along the lifecycle return `CONTACT_NOT_DELETABLE` (409).",
+        "description": "Deletes a contact from a Campaign. Only contacts in `queue` or `failed` status can be deleted; contacts further along the lifecycle return `CONTACT_NOT_DELETABLE` (409).",
         "parameters": [
           {
             "name": "id",
@@ -1501,6 +1561,18 @@
             "type": "string",
             "format": "ISO 8601"
           },
+          "started_at": {
+            "description": "The date and time when the Campaign was started",
+            "type": "string",
+            "format": "ISO 8601",
+            "nullable": true
+          },
+          "ended_at": {
+            "description": "The date and time when the Campaign ended",
+            "type": "string",
+            "format": "ISO 8601",
+            "nullable": true
+          },
           "agent": {
             "description": "The agent assigned to the Campaign",
             "type": "object",
@@ -1917,7 +1989,7 @@
             "$ref": "#/components/schemas/CampaignCyclesConfig"
           },
           "analytics": {
-            "description": "Analytics snapshot for the Campaign. Shape depends on `integration.type` — see `CampaignAnalyticsPhoneCall` and `CampaignAnalyticsWhatsApp`.",
+            "description": "Analytics snapshot for the Campaign. Shape depends on `integration.type`; see `CampaignAnalyticsPhoneCall` and `CampaignAnalyticsWhatsApp`.",
             "type": "object"
           }
         }
@@ -1971,7 +2043,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Thread tag ids whose contacts are excluded from the next iteration. Input-only — not returned on the detail response."
+            "description": "Thread tag ids whose contacts are excluded from the next iteration. Input-only; not returned on the detail response."
           },
           "schedule": {
             "$ref": "#/components/schemas/CampaignSchedule",

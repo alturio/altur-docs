@@ -7,6 +7,6 @@ openapi: 'GET /campaigns'
   **Límite de Tasa:** 12 solicitudes por segundo
 </Info>
 
-<Warning>
-  `startDate` y `endDate` deben proporcionarse juntos cuando se filtra por rango de fechas.
-</Warning>
+<Note>
+  `startDate`/`endDate` son nombres antiguos que se mantienen por compatibilidad y equivalen a `createdAfter`/`createdBefore` (filtran sobre `created_at`, no sobre cuándo inició o finalizó la Campaña). Usa `startedAfter`/`startedBefore` y `endedAfter`/`endedBefore` para filtrar por esas fechas. Cuando se envían ambos extremos de un par, el valor *after* debe ser anterior al *before*.
+</Note>

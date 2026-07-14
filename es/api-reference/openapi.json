@@ -66,7 +66,7 @@
           {
             "name": "startDate",
             "in": "query",
-            "description": "Bottom date of the range to filter the Campaigns in ISO 8601 format",
+            "description": "Nombre antiguo mantenido por compatibilidad, equivalente a `createdAfter`. Filtra por `created_at`, no por fecha de inicio.",
             "schema": {
               "type": "string",
               "format": "ISO 8601"
@@ -75,7 +75,67 @@
           {
             "name": "endDate",
             "in": "query",
-            "description": "Top date of the range to filter the Campaigns in ISO 8601 format",
+            "description": "Nombre antiguo mantenido por compatibilidad, equivalente a `createdBefore`. Filtra por `created_at`, no por fecha de finalización.",
+            "schema": {
+              "type": "string",
+              "format": "ISO 8601"
+            },
+            "required": false
+          },
+          {
+            "name": "createdAfter",
+            "in": "query",
+            "description": "Filtra por `created_at` en o después de esta fecha.",
+            "schema": {
+              "type": "string",
+              "format": "ISO 8601"
+            },
+            "required": false
+          },
+          {
+            "name": "createdBefore",
+            "in": "query",
+            "description": "Filtra por `created_at` en o antes de esta fecha.",
+            "schema": {
+              "type": "string",
+              "format": "ISO 8601"
+            },
+            "required": false
+          },
+          {
+            "name": "startedAfter",
+            "in": "query",
+            "description": "Filtra por `started_at` en o después de esta fecha. Excluye Campañas que aún no han iniciado.",
+            "schema": {
+              "type": "string",
+              "format": "ISO 8601"
+            },
+            "required": false
+          },
+          {
+            "name": "startedBefore",
+            "in": "query",
+            "description": "Filtra por `started_at` en o antes de esta fecha. Excluye Campañas que aún no han iniciado.",
+            "schema": {
+              "type": "string",
+              "format": "ISO 8601"
+            },
+            "required": false
+          },
+          {
+            "name": "endedAfter",
+            "in": "query",
+            "description": "Filtra por `ended_at` en o después de esta fecha. Excluye Campañas que aún no han finalizado.",
+            "schema": {
+              "type": "string",
+              "format": "ISO 8601"
+            },
+            "required": false
+          },
+          {
+            "name": "endedBefore",
+            "in": "query",
+            "description": "Filtra por `ended_at` en o antes de esta fecha. Excluye Campañas que aún no han finalizado.",
             "schema": {
               "type": "string",
               "format": "ISO 8601"
@@ -351,7 +411,7 @@
     },
     "/campaigns/{id}/{action}": {
       "post": {
-        "description": "Aplica una acción de ciclo de vida a una Campaña. Acciones válidas: `activate`, `pause`, `archive`, `resume`. La acción es idempotente — aplicar una acción cuando la campaña ya está en el estado destino es un no-op exitoso.",
+        "description": "Aplica una acción de ciclo de vida a una Campaña. Acciones válidas: `activate`, `pause`, `archive`, `resume`. La acción es idempotente: aplicar una acción cuando la campaña ya está en el estado destino es un no-op exitoso.",
         "parameters": [
           {
             "name": "id",
@@ -547,7 +607,7 @@
         }
       },
       "post": {
-        "description": "Crea Contactos de Campaña por lotes. Hasta 1000 contactos por solicitud. Cada item se procesa de forma independiente — una fila inválida no rompe el lote — y se devuelve un `summary` agregado y `results` por item. Usa `if_duplicate` para controlar el comportamiento cuando un contacto ya existe en la campaña (`skip` mantiene el original, `update` sobreescribe los campos mutables).",
+        "description": "Crea Contactos de Campaña por lotes. Hasta 1000 contactos por solicitud. Cada item se procesa de forma independiente (una fila inválida no rompe el lote) y se devuelve un `summary` agregado y `results` por item. Usa `if_duplicate` para controlar el comportamiento cuando un contacto ya existe en la campaña (`skip` mantiene el original, `update` sobreescribe los campos mutables).",
         "parameters": [
           {
             "name": "id",
@@ -1501,6 +1561,18 @@
             "type": "string",
             "format": "ISO 8601"
           },
+          "started_at": {
+            "description": "The date and time when the Campaign was started",
+            "type": "string",
+            "format": "ISO 8601",
+            "nullable": true
+          },
+          "ended_at": {
+            "description": "The date and time when the Campaign ended",
+            "type": "string",
+            "format": "ISO 8601",
+            "nullable": true
+          },
           "agent": {
             "description": "The agent assigned to the Campaign",
             "type": "object",
@@ -1950,7 +2022,7 @@
             "items": {
               "type": "string"
             },
-            "description": "IDs de tags de hilo cuyos contactos se excluyen de la siguiente iteración. Solo de entrada — no se devuelve en la respuesta de detalle."
+            "description": "IDs de tags de hilo cuyos contactos se excluyen de la siguiente iteración. Solo de entrada; no se devuelve en la respuesta de detalle."
           },
           "schedule": {
             "$ref": "#/components/schemas/CampaignSchedule",
