@@ -27,6 +27,7 @@ Here’s an example of the payload sent with the `on_call_end` event:
 {
   "event_type": "on_call_end",
   "id": "cll_gBoLtd02pUI50QwXkFjB",
+  "thread_id": "thr_Kp7mQz3XvNb8LcRt2sYw",
   "type": "outbound",
   "status": "ended",
   "phone_number_from": "+000000000000",
@@ -94,6 +95,7 @@ Here’s an example of the payload sent with the `on_call_end` event:
 | :------------------ | :--------- | :-------------------------------------------------------------------------------------------------- |
 | `event_type`        | `string`   | Event type (`on_call_end`).                                                                         |
 | `id`                | `string`   | Unique identifier for the call.                                                                     |
+| `thread_id`         | `string`   | Unique identifier of the Thread the call belongs to.                                                |
 | `type`              | `string`   | Call type (`outbound`or `inbound`).                                                                 |
 | `status`            | `string`   | Status of the call enum value (e.g., `ended`).                                                      |
 | `phone_number_from` | `string`   | E.164 formatted number.                                                                             |

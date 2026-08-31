@@ -1786,6 +1786,10 @@
             "description": "Unique identifier for the Call",
             "type": "string"
           },
+          "thread_id": {
+            "description": "Identificador único del Thread al que pertenece la llamada",
+            "type": "string"
+          },
           "type": {
             "description": "Type of the Call",
             "type": "string",
@@ -2543,6 +2547,10 @@
             "description": "Unique identifier for the Call",
             "type": "string"
           },
+          "thread_id": {
+            "description": "Identificador único del Thread al que pertenece la llamada",
+            "type": "string"
+          },
           "thread": {
             "$ref": "#/components/schemas/Thread"
           },
@@ -2611,8 +2619,8 @@
             "description": "Duration of the Call in seconds",
             "type": "integer"
           },
-          "billable_duration": {
-            "description": "Billable duration of the Call in seconds",
+          "billed_duration": {
+            "description": "Billed duration of the Call in seconds",
             "type": "integer"
           },
           "policy_evaluation": {
