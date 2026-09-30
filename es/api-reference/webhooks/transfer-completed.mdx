@@ -80,6 +80,17 @@ El webhook `transfer_completed` se activa cuando Altur registra que conectó la 
 
 Los demás campos coinciden con el payload de llamada de [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end).
 
+<Note>
+  El payload describe la llamada en el momento de la transferencia: `status` es
+  `in-progress`, y `ended_at`, `ended_by`, `ended_reason`, `duration` y
+  `billed_duration` son `null`. El `transcript` contiene los mensajes que Altur
+  ha recibido hasta la transferencia; ocasionalmente pueden faltar las últimas
+  líneas dichas justo antes de transferir. Usa `on_call_end` para el
+  transcript completo.
+</Note>
+
+Los webhooks de transferencia solo se pueden filtrar por `answered_by`.
+
 ## Respuesta esperada
 
 Tu endpoint debe responder con 200 OK para confirmar recepción. Para el comportamiento de reintentos, consulta la [Retry Policy](https://docs.altur.io/api-reference/webhooks/overview#delivery-retry-policy).

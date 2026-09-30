@@ -80,6 +80,17 @@ The `transfer_started` webhook is triggered when Altur records that a call trans
 
 All other fields match the [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end) call payload.
 
+<Note>
+  The payload describes the call at the moment of the transfer: `status` is
+  `in-progress`, and `ended_at`, `ended_by`, `ended_reason`, `duration` and
+  `billed_duration` are `null`. The `transcript` contains the messages Altur has
+  received up to the transfer; the last few lines spoken right before the
+  transfer may occasionally be missing. Use `on_call_end` for the full
+  transcript.
+</Note>
+
+Transfer webhooks can be filtered by `answered_by` only.
+
 ## Response Expectations
 
 Your endpoint should return a 200 OK status code to confirm receipt. For retry behavior, see the [Retry Policy](https://docs.altur.io/api-reference/webhooks/overview#delivery-retry-policy).
