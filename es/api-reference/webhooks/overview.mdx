@@ -25,14 +25,16 @@ Los webhooks te permiten recibir notificaciones en tiempo real sobre eventos en 
 Los webhooks pueden disparar los siguientes tipos de evento:
 
 - [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end): Se dispara al final de una llamada. Envía información detallada de la llamada junto con datos básicos del agente de IA y del usuario final.
+- [`transfer_started` y `transfer_completed`](https://docs.altur.io/es/api-reference/webhooks/transfer-events): Se disparan cuando una transferencia inicia o conecta, para que tus agentes humanos reciban contexto en tiempo real.
 - [`campaign.status_changed`](https://docs.altur.io/es/api-reference/webhooks/campaign-status-changed): Se dispara cuando una Campaña cambia de estado. Incluye el snapshot de analíticas cuando la campaña llega a `finished`.
 - [`campaign.cycle_completed`](https://docs.altur.io/es/api-reference/webhooks/campaign-cycle-completed): Se dispara cuando una iteración del ciclo de una Campaña termina, con el número de iteración completada y el timestamp de la siguiente iteración.
 
 <Note>
   Los webhooks de campaña usan un envelope versionado (`event_id`, `event_type`,
   `occurred_at`, `api_version`, `project_id`, `data`). Usa `event_id` para
-  procesamiento idempotente. El evento `on_call_end` es anterior a este
-  envelope y mantiene su forma plana en el nivel superior.
+  procesamiento idempotente. Los eventos de llamada (`on_call_end`,
+  `transfer_started`, `transfer_completed`) son anteriores a este envelope y
+  mantienen su forma plana en el nivel superior.
 </Note>
 
 ## Asegurando tus Webhooks

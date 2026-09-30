@@ -1,0 +1,93 @@
+---
+title: "transfer_started y transfer_completed"
+description: "Se activan cuando una transferencia de llamada inicia o se completa."
+---
+
+## Acerca de estos eventos
+
+Los webhooks de transferencia notifican a tu sistema cuando una llamada de Altur se transfiere a un agente humano. Úsalos para mostrar contexto en tiempo real antes o justo cuando el agente reciba la llamada transferida.
+
+## Detalles del evento
+
+- **`transfer_started`**: Se activa cuando Altur registra que inició la transferencia.
+- **`transfer_completed`**: Se activa cuando Altur registra que la llamada transferida conectó.
+
+Ambos eventos usan el mismo formato de payload de llamada que [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end), con otro `event_type` y timestamps de transferencia.
+
+## Detalles de la solicitud
+
+- **Método HTTP**: `POST`
+- **Content Type**: `application/json`
+- **Endpoint**: La URL que configures en tu integración de webhook.
+- **Autenticación**: Incluye el header `X-Altur-Signature` para verificación HMAC.
+
+## Ejemplo de payload
+
+```json
+{
+  "event_type": "transfer_completed",
+  "id": "cll_gBoLtd02pUI50QwXkFjB",
+  "thread_id": "thr_Kp7mQz3XvNb8LcRt2sYw",
+  "type": "outbound",
+  "status": "in-progress",
+  "phone_number_from": "+000000000000",
+  "phone_number_to": "+000000000000",
+  "answered_by": "human",
+  "created_at": "2024-12-19T15:00:10Z",
+  "started_at": "2024-12-19T15:00:12Z",
+  "ended_at": null,
+  "ended_by": null,
+  "ended_reason": null,
+  "transfer_initiated_at": "2024-12-19T15:01:00Z",
+  "transfer_completed_at": "2024-12-19T15:01:08Z",
+  "duration": null,
+  "billed_duration": null,
+  "recording_url": "https://api.altur.io/api/v1.0/call/cll_gBoLtd02pUI50QwXkFjB/recording",
+  "transcript": [],
+  "assistant": {
+    "id": "6cy951e6-9877-4d7c-88d7-56b4948d3cce",
+    "nickname": "DebtCollectorBot",
+    "name": "Diana Arroyo"
+  },
+  "end_user": {
+    "id": "2be951e6-7798-47cd-878d-49b2918a3bba",
+    "status": "converted",
+    "display_name": "John Doe",
+    "phone_number": "+521234567890",
+    "context": "Customer data...",
+    "extracted_data": {},
+    "tags": ["call_later"]
+  },
+  "campaign_user": {
+    "f_id": "user_12345",
+    "name": "John Doe",
+    "contact": "+521234567890",
+    "context": "Customer data for campaign...",
+    "status": "converted",
+    "failed_retries": 0,
+    "voicemail_retries": 1,
+    "extracted_data": {},
+    "tags": ["call_later"]
+  }
+}
+```
+
+Para `transfer_started`, `event_type` es `transfer_started` y `transfer_completed_at` normalmente es `null`.
+
+### Campos de transferencia
+
+| Campo                     | Tipo       | Descripción                                                        |
+| :------------------------ | :--------- | :----------------------------------------------------------------- |
+| `event_type`              | `string`   | `transfer_started` o `transfer_completed`.                         |
+| `transfer_initiated_at`   | `datetime` | Timestamp ISO de cuando Altur registró el inicio de transferencia. |
+| `transfer_completed_at`   | `datetime` | Timestamp ISO de cuando Altur registró conexión de transferencia.  |
+
+Los demás campos coinciden con el payload de llamada de [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end).
+
+## Respuesta esperada
+
+Tu endpoint debe responder con 200 OK para confirmar recepción. Para el comportamiento de reintentos, consulta la [Retry Policy](https://docs.altur.io/api-reference/webhooks/overview#delivery-retry-policy).
+
+## Caso de uso
+
+Cuando recibas `transfer_started` o `transfer_completed`, busca la llamada por `id` o la conversación por `thread_id` y muestra el transcript, contexto del usuario y datos de campaña al agente humano que recibe la llamada.
