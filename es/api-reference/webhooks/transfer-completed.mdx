@@ -82,14 +82,15 @@ Los demás campos coinciden con el payload de llamada de [`on_call_end`](https:/
 
 <Note>
   El payload describe la llamada en el momento de la transferencia: `status` es
-  `in-progress`, y `ended_at`, `ended_by`, `ended_reason`, `duration` y
+  `in-progress`, `answered_by` es `human`, y `ended_at`, `ended_by`, `ended_reason`, `duration` y
   `billed_duration` son `null`. El `transcript` contiene los mensajes que Altur
   ha recibido hasta la transferencia; ocasionalmente pueden faltar las últimas
   líneas dichas justo antes de transferir. Usa `on_call_end` para el
-  transcript completo.
+  transcript completo. Los objetos `end_user` y `campaign_user` reflejan sus
+  valores al momento de enviar el evento.
 </Note>
 
-Los webhooks de transferencia solo se pueden filtrar por `answered_by`.
+Los webhooks de transferencia no admiten filtros.
 
 ## Respuesta esperada
 

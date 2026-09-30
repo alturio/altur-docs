@@ -82,14 +82,15 @@ All other fields match the [`on_call_end`](https://docs.altur.io/api-reference/w
 
 <Note>
   The payload describes the call at the moment of the transfer: `status` is
-  `in-progress`, and `ended_at`, `ended_by`, `ended_reason`, `duration` and
+  `in-progress`, `answered_by` is `human`, and `ended_at`, `ended_by`, `ended_reason`, `duration` and
   `billed_duration` are `null`. The `transcript` contains the messages Altur has
   received up to the transfer; the last few lines spoken right before the
   transfer may occasionally be missing. Use `on_call_end` for the full
-  transcript.
+  transcript. The `end_user` and `campaign_user` objects reflect their values
+  when the event is sent.
 </Note>
 
-Transfer webhooks can be filtered by `answered_by` only.
+Transfer webhooks do not support filters.
 
 ## Response Expectations
 
