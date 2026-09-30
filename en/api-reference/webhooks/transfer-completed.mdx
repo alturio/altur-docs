@@ -1,0 +1,85 @@
+---
+title: "transfer_completed"
+description: "Triggered when a call transfer connects."
+---
+
+## About This Event
+
+The `transfer_completed` webhook is triggered when Altur records that the transferred call leg connected. Use it to show real-time call context to the human agent receiving the transfer.
+
+## Event Details
+
+- **Trigger**: Automatically triggered when the transfer leg connects.
+- **Purpose**: To notify your backend or CRM that a human transfer connected.
+
+## Request Details
+
+- **HTTP Method**: `POST`
+- **Content Type**: `application/json`
+- **Endpoint**: The URL you configure in your webhook integration settings.
+- **Authentication**: Includes the `X-Altur-Signature` header for HMAC verification.
+
+## Payload Example
+
+```json
+{
+  "event_type": "transfer_completed",
+  "id": "cll_gBoLtd02pUI50QwXkFjB",
+  "thread_id": "thr_Kp7mQz3XvNb8LcRt2sYw",
+  "type": "outbound",
+  "status": "in-progress",
+  "phone_number_from": "+000000000000",
+  "phone_number_to": "+000000000000",
+  "answered_by": "human",
+  "created_at": "2024-12-19T15:00:10Z",
+  "started_at": "2024-12-19T15:00:12Z",
+  "ended_at": null,
+  "ended_by": null,
+  "ended_reason": null,
+  "transfer_initiated_at": "2024-12-19T15:01:00Z",
+  "transfer_completed_at": "2024-12-19T15:01:08Z",
+  "duration": null,
+  "billed_duration": null,
+  "recording_url": "https://api.altur.io/api/v1.0/call/cll_gBoLtd02pUI50QwXkFjB/recording",
+  "transcript": [],
+  "assistant": {
+    "id": "6cy951e6-9877-4d7c-88d7-56b4948d3cce",
+    "nickname": "DebtCollectorBot",
+    "name": "Diana Arroyo"
+  },
+  "end_user": {
+    "id": "2be951e6-7798-47cd-878d-49b2918a3bba",
+    "status": "converted",
+    "display_name": "John Doe",
+    "phone_number": "+521234567890",
+    "context": "Customer data...",
+    "extracted_data": {},
+    "tags": ["call_later"]
+  },
+  "campaign_user": {
+    "f_id": "user_12345",
+    "name": "John Doe",
+    "contact": "+521234567890",
+    "context": "Customer data for campaign...",
+    "status": "converted",
+    "failed_retries": 0,
+    "voicemail_retries": 1,
+    "extracted_data": {},
+    "tags": ["call_later"]
+  }
+}
+```
+
+### Transfer Fields
+
+| Field                   | Type       | Description                                                     |
+| :---------------------- | :--------- | :-------------------------------------------------------------- |
+| `event_type`            | `string`   | `transfer_completed`.                                           |
+| `transfer_initiated_at` | `datetime` | ISO timestamp when Altur recorded the transfer handoff starting. |
+| `transfer_completed_at` | `datetime` | ISO timestamp when Altur recorded the transfer leg connecting.   |
+
+All other fields match the [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end) call payload.
+
+## Response Expectations
+
+Your endpoint should return a 200 OK status code to confirm receipt. For retry behavior, see the [Retry Policy](https://docs.altur.io/api-reference/webhooks/overview#delivery-retry-policy).

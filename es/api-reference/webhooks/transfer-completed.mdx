@@ -1,18 +1,16 @@
 ---
-title: "transfer_started y transfer_completed"
-description: "Se activan cuando una transferencia de llamada inicia o se completa."
+title: "transfer_completed"
+description: "Se activa cuando conecta una transferencia de llamada."
 ---
 
-## Acerca de estos eventos
+## Acerca de este evento
 
-Los webhooks de transferencia notifican a tu sistema cuando una llamada de Altur se transfiere a un agente humano. Úsalos para mostrar contexto en tiempo real antes o justo cuando el agente reciba la llamada transferida.
+El webhook `transfer_completed` se activa cuando Altur registra que conectó la llamada transferida. Úsalo para mostrar contexto en tiempo real al agente humano que recibe la transferencia.
 
 ## Detalles del evento
 
-- **`transfer_started`**: Se activa cuando Altur registra que inició la transferencia.
-- **`transfer_completed`**: Se activa cuando Altur registra que la llamada transferida conectó.
-
-Ambos eventos usan el mismo formato de payload de llamada que [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end), con otro `event_type` y timestamps de transferencia.
+- **Trigger**: Se activa automáticamente cuando conecta la llamada transferida.
+- **Propósito**: Notificar a tu backend o CRM que conectó una transferencia a humano.
 
 ## Detalles de la solicitud
 
@@ -72,22 +70,16 @@ Ambos eventos usan el mismo formato de payload de llamada que [`on_call_end`](ht
 }
 ```
 
-Para `transfer_started`, `event_type` es `transfer_started` y `transfer_completed_at` normalmente es `null`.
-
 ### Campos de transferencia
 
-| Campo                     | Tipo       | Descripción                                                        |
-| :------------------------ | :--------- | :----------------------------------------------------------------- |
-| `event_type`              | `string`   | `transfer_started` o `transfer_completed`.                         |
-| `transfer_initiated_at`   | `datetime` | Timestamp ISO de cuando Altur registró el inicio de transferencia. |
-| `transfer_completed_at`   | `datetime` | Timestamp ISO de cuando Altur registró conexión de transferencia.  |
+| Campo                   | Tipo       | Descripción                                                        |
+| :---------------------- | :--------- | :----------------------------------------------------------------- |
+| `event_type`            | `string`   | `transfer_completed`.                                              |
+| `transfer_initiated_at` | `datetime` | Timestamp ISO de cuando Altur registró el inicio de transferencia. |
+| `transfer_completed_at` | `datetime` | Timestamp ISO de cuando Altur registró conexión de transferencia.  |
 
 Los demás campos coinciden con el payload de llamada de [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end).
 
 ## Respuesta esperada
 
 Tu endpoint debe responder con 200 OK para confirmar recepción. Para el comportamiento de reintentos, consulta la [Retry Policy](https://docs.altur.io/api-reference/webhooks/overview#delivery-retry-policy).
-
-## Caso de uso
-
-Cuando recibas `transfer_started` o `transfer_completed`, busca la llamada por `id` o la conversación por `thread_id` y muestra el transcript, contexto del usuario y datos de campaña al agente humano que recibe la llamada.

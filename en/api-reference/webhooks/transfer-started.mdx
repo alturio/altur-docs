@@ -1,18 +1,16 @@
 ---
-title: "transfer_started and transfer_completed"
-description: "Triggered when a call transfer starts or completes."
+title: "transfer_started"
+description: "Triggered when a call transfer starts."
 ---
 
-## About These Events
+## About This Event
 
-Transfer webhooks notify your system when an Altur call is handed off to a human agent. Use them to give your agents real-time context before or as they receive the transferred call.
+The `transfer_started` webhook is triggered when Altur records that a call transfer handoff has started. Use it to prepare real-time context for the human agent who may receive the transferred call.
 
 ## Event Details
 
-- **`transfer_started`**: Triggered when Altur records that the transfer handoff started.
-- **`transfer_completed`**: Triggered when Altur records that the transfer leg connected.
-
-Both events use the same call payload shape as [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end), with a different `event_type` and transfer timestamps.
+- **Trigger**: Automatically triggered when the transfer handoff starts.
+- **Purpose**: To notify your backend or CRM before the human transfer leg connects.
 
 ## Request Details
 
@@ -25,7 +23,7 @@ Both events use the same call payload shape as [`on_call_end`](https://docs.altu
 
 ```json
 {
-  "event_type": "transfer_completed",
+  "event_type": "transfer_started",
   "id": "cll_gBoLtd02pUI50QwXkFjB",
   "thread_id": "thr_Kp7mQz3XvNb8LcRt2sYw",
   "type": "outbound",
@@ -39,7 +37,7 @@ Both events use the same call payload shape as [`on_call_end`](https://docs.altu
   "ended_by": null,
   "ended_reason": null,
   "transfer_initiated_at": "2024-12-19T15:01:00Z",
-  "transfer_completed_at": "2024-12-19T15:01:08Z",
+  "transfer_completed_at": null,
   "duration": null,
   "billed_duration": null,
   "recording_url": "https://api.altur.io/api/v1.0/call/cll_gBoLtd02pUI50QwXkFjB/recording",
@@ -72,22 +70,16 @@ Both events use the same call payload shape as [`on_call_end`](https://docs.altu
 }
 ```
 
-For `transfer_started`, `event_type` is `transfer_started` and `transfer_completed_at` is usually `null`.
-
 ### Transfer Fields
 
-| Field                     | Type       | Description                                                        |
-| :------------------------ | :--------- | :----------------------------------------------------------------- |
-| `event_type`              | `string`   | `transfer_started` or `transfer_completed`.                        |
-| `transfer_initiated_at`   | `datetime` | ISO timestamp when Altur recorded the transfer handoff starting.    |
-| `transfer_completed_at`   | `datetime` | ISO timestamp when Altur recorded the transfer leg connecting.      |
+| Field                   | Type       | Description                                                     |
+| :---------------------- | :--------- | :-------------------------------------------------------------- |
+| `event_type`            | `string`   | `transfer_started`.                                             |
+| `transfer_initiated_at` | `datetime` | ISO timestamp when Altur recorded the transfer handoff starting. |
+| `transfer_completed_at` | `datetime` | Usually `null` for this event.                                  |
 
 All other fields match the [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end) call payload.
 
 ## Response Expectations
 
 Your endpoint should return a 200 OK status code to confirm receipt. For retry behavior, see the [Retry Policy](https://docs.altur.io/api-reference/webhooks/overview#delivery-retry-policy).
-
-## Example Use Case
-
-When you receive `transfer_started` or `transfer_completed`, look up the call by `id` or the conversation by `thread_id` and display the transcript, end-user context, and campaign data to the receiving human agent.

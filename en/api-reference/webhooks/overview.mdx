@@ -25,7 +25,8 @@ Webhooks allow you to receive real-time notifications about events in your Altur
 Webhooks can be triggered by the following event types:
 
 - [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end): Triggered at the end of a call, this webhook sends detailed information about the call along with basic information about the AI agent and the end user.
-- [`transfer_started` and `transfer_completed`](https://docs.altur.io/api-reference/webhooks/transfer-events): Triggered when a call transfer starts or connects, so your human agents can receive real-time call context.
+- [`transfer_started`](https://docs.altur.io/api-reference/webhooks/transfer-started): Triggered when a call transfer starts, so your human agents can prepare with real-time call context.
+- [`transfer_completed`](https://docs.altur.io/api-reference/webhooks/transfer-completed): Triggered when a call transfer connects to the human leg.
 - [`campaign.status_changed`](https://docs.altur.io/api-reference/webhooks/campaign-status-changed): Triggered when a Campaign transitions between lifecycle statuses. Includes the analytics snapshot when the campaign reaches `finished`.
 - [`campaign.cycle_completed`](https://docs.altur.io/api-reference/webhooks/campaign-cycle-completed): Triggered when a cycle iteration of a Campaign finishes, with the completed iteration number and the next scheduled iteration timestamp.
 
