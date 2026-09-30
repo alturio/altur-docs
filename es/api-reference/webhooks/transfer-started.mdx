@@ -31,17 +31,24 @@ El webhook `transfer_started` se activa cuando Altur registra que inició la tra
   "phone_number_from": "+000000000000",
   "phone_number_to": "+000000000000",
   "answered_by": "human",
-  "created_at": "2024-12-19T15:00:10Z",
-  "started_at": "2024-12-19T15:00:12Z",
+  "created_at": "2026-09-30T21:07:09.184530+00:00",
+  "started_at": "2026-09-30T21:07:12+00:00",
   "ended_at": null,
   "ended_by": null,
   "ended_reason": null,
-  "transfer_initiated_at": "2024-12-19T15:01:00Z",
+  "transfer_initiated_at": "2026-09-30T21:08:12.340917+00:00",
   "transfer_completed_at": null,
   "duration": null,
   "billed_duration": null,
   "recording_url": "https://api.altur.io/api/v1.0/call/cll_gBoLtd02pUI50QwXkFjB/recording",
-  "transcript": [],
+  "transcript": [
+    {
+      "sequence": 0,
+      "sent_by": "assistant",
+      "sent_at": "2026-09-30T21:07:13.402156+00:00",
+      "content": "Hello am I speaking with Sofía?"
+    }
+  ],
   "assistant": {
     "id": "6cy951e6-9877-4d7c-88d7-56b4948d3cce",
     "nickname": "DebtCollectorBot",
@@ -76,7 +83,7 @@ El webhook `transfer_started` se activa cuando Altur registra que inició la tra
 | :---------------------- | :--------- | :----------------------------------------------------------------- |
 | `event_type`            | `string`   | `transfer_started`.                                                |
 | `transfer_initiated_at` | `datetime` | Timestamp ISO de cuando Altur registró el inicio de transferencia. |
-| `transfer_completed_at` | `datetime` | Normalmente `null` para este evento.                               |
+| `transfer_completed_at` | `datetime` | Siempre `null` para este evento.                                   |
 
 Los demás campos coinciden con el payload de llamada de [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end).
 
@@ -90,7 +97,9 @@ Los demás campos coinciden con el payload de llamada de [`on_call_end`](https:/
   valores al momento de enviar el evento.
 </Note>
 
-Los webhooks de transferencia no admiten filtros.
+Los webhooks de transferencia aplican los filtros `status` y `answered_by` de la integración, evaluados contra el estado de la llamada al momento de la transferencia (`status: in-progress`, `answered_by: human`), no contra su estado final. Por ejemplo, un filtro `status: ["ended"]` bloquea todos los webhooks de transferencia de esa integración.
+
+Los timestamps usan el mismo formato que [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end): ISO 8601 con offset `+00:00` y fracciones de segundo opcionales (p. ej. `2026-09-30T21:08:12.340917+00:00`).
 
 ## Respuesta esperada
 

@@ -33,9 +33,9 @@ Here’s an example of the payload sent with the `on_call_end` event:
   "phone_number_from": "+000000000000",
   "phone_number_to": "+000000000000",
   "answered_by": "human",
-  "created_at": "2024-12-19T15:00:10Z",
-  "started_at": "2024-12-19T15:00:10Z",
-  "ended_at": "2024-12-19T15:00:10Z",
+  "created_at": "2026-09-30T21:07:09.184530+00:00",
+  "started_at": "2026-09-30T21:07:12+00:00",
+  "ended_at": "2026-09-30T21:07:57.903114+00:00",
   "ended_by": "user",
   "ended_reason": "user_hangup",
   "transfer_initiated_at": null,
@@ -45,13 +45,15 @@ Here’s an example of the payload sent with the `on_call_end` event:
   "recording_url": "https://api.altur.io/api/v1.0/call/cll_gBoLtd02pUI50QwXkFjB/recording",
   "transcript": [
     {
+      "sequence": 0,
       "sent_by": "assistant",
-      "sent_at": "2024-12-19T15:00:00Z",
+      "sent_at": "2026-09-30T21:07:13.402156+00:00",
       "content": "Hello am I speaking with Sofía?"
     },
     {
+      "sequence": 1,
       "sent_by": "user",
-      "sent_at": "2024-12-19T15:00:10Z",
+      "sent_at": "2026-09-30T21:07:25.522862+00:00",
       "content": "Yes, who is this?"
     }
   ],
@@ -91,6 +93,14 @@ Here’s an example of the payload sent with the `on_call_end` event:
 }
 ```
 
+<Note>
+  Timestamps are ISO 8601 in UTC with a `+00:00` offset, e.g.
+  `2026-09-30T21:07:25.522862+00:00`. The fractional seconds are optional and are
+  sometimes omitted (e.g. `2026-09-30T21:07:12+00:00`), so parse them with an
+  ISO 8601 parser rather than a fixed format string. This applies to every
+  timestamp in the payload, including `transcript[].sent_at`.
+</Note>
+
 ### Root Fields
 
 | Field               | Type       | Description                                                                                         |
@@ -113,7 +123,16 @@ Here’s an example of the payload sent with the `on_call_end` event:
 | `duration`          | `int`      | Call duration in seconds.                                                                           |
 | `billed_duration`   | `int`      | Billed call duration in seconds.                                                                    |
 | `recording_url`     | `string`   | URL to [download](https://docs.altur.io/api-reference/calls/retrieve-recording) the call recording. |
-| `transcript`        | `array`    | Call transcript object.                                                                             |
+| `transcript`        | `array`    | List of [transcript messages](#transcript-item), in order.                                          |
+
+### Transcript Item
+
+| Field      | Type       | Description                                                                 |
+| :--------- | :--------- | :-------------------------------------------------------------------------- |
+| `sequence` | `int`      | Position of the message in the transcript, starting at `0`. Use it to order messages instead of sorting by `sent_at`. |
+| `sent_by`  | `string`   | Who sent the message (`assistant`, `user` or `system`).                     |
+| `sent_at`  | `datetime` | ISO formatted date time of when the message was sent.                       |
+| `content`  | `string`   | Message text.                                                               |
 
 ### Assistant Object
 

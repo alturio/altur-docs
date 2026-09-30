@@ -18,7 +18,7 @@ Los webhooks te permiten recibir notificaciones en tiempo real sobre eventos en 
    Cuando ocurre un evento, Altur envía un POST con los detalles del evento en formato JSON a tu endpoint.
 
 3. **Confirma la Recepción**  
-   Tu endpoint debe responder con un código `200 OK` para confirmar la recepción. Altur espera hasta 5 segundos por la respuesta. Si la solicitud falla, hace timeout o devuelve un estado distinto de 2xx, Altur reintenta con backoff exponencial (hasta 5 intentos en total).
+   Tu endpoint debe responder con un código `200 OK` para confirmar la recepción. Altur espera hasta 5 segundos por la respuesta. Los timeouts, errores de conexión y respuestas `5xx`, `408` y `429` se reintentan con backoff exponencial (hasta 5 intentos en total). Cualquier otra respuesta `4xx` falla de inmediato sin reintentos, y los redirects no se siguen. Consulta la sección Política de Reintentos más abajo.
 
 ## Tipos de Evento
 
@@ -34,8 +34,9 @@ Los webhooks pueden disparar los siguientes tipos de evento:
   Los webhooks de campaña usan un envelope versionado (`event_id`, `event_type`,
   `occurred_at`, `api_version`, `project_id`, `data`). Usa `event_id` para
   procesamiento idempotente. Los eventos de llamada (`on_call_end`,
-  `transfer_started`, `transfer_completed`) son anteriores a este envelope y
-  mantienen su forma plana en el nivel superior.
+  `transfer_started`, `transfer_completed`) son anteriores a este envelope,
+  mantienen su forma plana en el nivel superior y no tienen `event_id`:
+  deduplícalos usando `id` (el ID de la llamada) junto con `event_type`.
 </Note>
 
 ## Asegurando tus Webhooks
@@ -45,33 +46,38 @@ Para garantizar comunicaciones seguras y verificar la autenticidad de las solici
 ### Cómo Funciona
 
 - **Secreto Compartido**: Cada integración de webhook se configura con una llave secreta única codificada en base64.
-- **Generación del HMAC**: Altur genera un hash HMAC SHA-256 usando el secreto compartido (decodificado de base64) y el payload JSON de la solicitud (serializado sin espacios). El hash se codifica en base64 y se incluye en el header `X-Altur-Signature`.
-- **Validación**: Tu endpoint debe validar la firma usando el mismo secreto compartido y el mismo formato de serialización JSON.
+- **Generación del HMAC**: Altur genera un hash HMAC SHA-256 usando el secreto compartido (decodificado de base64) y el payload serializado como JSON compacto (sin espacios después de `:` ni `,`, con los caracteres no ASCII escapados como `\uXXXX`, p. ej. `Sofía` → `Sof\u00eda`). El hash se codifica en base64 y se incluye en el header `X-Altur-Signature`.
+- **Validación**: Tu endpoint debe parsear el body y volver a serializarlo en ese mismo formato compacto antes de calcular el HMAC.
+
+<Warning>
+  El body que envía Altur **no** es exactamente el string que firma: el body
+  incluye espacios después de `:` y `,`. Calcular el HMAC sobre el body crudo
+  fallará. Siempre parsea el JSON y vuelve a serializarlo como se describe arriba.
+</Warning>
 
 ### Función de Validación de Ejemplo
 
 <CodeGroup>
 
 ```python Python
-import json
 import base64
-import hmac
 import hashlib
+import hmac
+import json
 
-def is_valid_signature(secret: str, payload: Union[str, dict], signature: str) -> bool:
+
+def is_valid_signature(secret: str, payload: dict, signature: str) -> bool:
     """
     Valida la firma de un webhook de Altur.
 
     Args:
         secret: Llave secreta compartida codificada en base64
-        payload: Payload de la solicitud (dict o string JSON)
+        payload: Body de la solicitud ya parseado (no el body crudo)
         signature: Firma codificada en base64 del header X-Altur-Signature
     """
-    # Convertir el payload a un formato JSON consistente (compacto, sin espacios)
-    if isinstance(payload, dict):
-        payload_bytes = json.dumps(payload, separators=(',', ':')).encode('utf-8')
-    else:
-        payload_bytes = payload.encode('utf-8')
+    # Volver a serializar en formato compacto. json.dumps escapa los
+    # caracteres no ASCII como \uXXXX por defecto, igual que Altur.
+    payload_bytes = json.dumps(payload, separators=(",", ":")).encode("utf-8")
 
     # Decodificar el secreto base64
     secret_bytes = base64.b64decode(secret)
@@ -92,31 +98,35 @@ function isValidSignature(secret, payload, signature) {
    * Valida la firma de un webhook de Altur.
    *
    * @param {string} secret - Llave secreta compartida codificada en base64
-   * @param {object|string} payload - Payload de la solicitud (objeto o string JSON)
+   * @param {object} payload - Body de la solicitud ya parseado (no el body crudo)
    * @param {string} signature - Firma codificada en base64 del header X-Altur-Signature
    */
 
-  // Convertir el payload a un formato JSON consistente (compacto, sin espacios)
-  const payloadString =
-    typeof payload === "string" ? payload : JSON.stringify(payload);
+  // Volver a serializar en formato compacto y escapar los caracteres no ASCII
+  // como \uXXXX (JSON.stringify no los escapa, Altur sí)
+  const payloadString = JSON.stringify(payload).replace(
+    /[\u0080-\uffff]/g,
+    (c) => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0")
+  );
 
   // Decodificar el secreto base64
   const secretBuffer = Buffer.from(secret, "base64");
 
   // Generar la firma esperada
-  const expectedSignature = crypto
+  const expected = crypto
     .createHmac("sha256", secretBuffer)
     .update(payloadString)
-    .digest("base64");
+    .digest();
+  const received = Buffer.from(signature || "", "base64");
 
-  // Comparar firmas con comparación timing-safe
-  return crypto.timingSafeEqual(
-    Buffer.from(signature, "base64"),
-    Buffer.from(expectedSignature, "base64")
+  // timingSafeEqual lanza un error si las longitudes difieren, así que se comparan primero
+  return (
+    received.length === expected.length &&
+    crypto.timingSafeEqual(received, expected)
   );
 }
 
-// Ejemplo de uso
+// Ejemplo de uso (con express.json())
 const signature = req.headers["x-altur-signature"];
 const isValid = isValidSignature(yourSecret, req.body, signature);
 ```
@@ -127,14 +137,13 @@ function isValidSignature($secret, $payload, $signature) {
      * Valida la firma de un webhook de Altur.
      *
      * @param string $secret Llave secreta compartida codificada en base64
-     * @param array|string $payload Payload de la solicitud (array o string JSON)
+     * @param object $payload Body decodificado con json_decode($raw), SIN `true`
      * @param string $signature Firma codificada en base64 del header X-Altur-Signature
      */
 
-    // Convertir el payload a un formato JSON consistente (compacto, sin espacios)
-    $payloadString = is_string($payload)
-        ? $payload
-        : json_encode($payload, JSON_UNESCAPED_SLASHES);
+    // Volver a serializar en formato compacto. json_encode escapa los
+    // caracteres no ASCII como \uXXXX por defecto, igual que Altur.
+    $payloadString = json_encode($payload, JSON_UNESCAPED_SLASHES);
 
     // Decodificar el secreto base64
     $secretBytes = base64_decode($secret);
@@ -145,22 +154,24 @@ function isValidSignature($secret, $payload, $signature) {
     );
 
     // Comparar firmas con comparación timing-safe
-    return hash_equals($signature, $expectedSignature);
+    return hash_equals($expectedSignature, (string) $signature);
 }
 
 // Ejemplo de uso
-$signature = $_SERVER['HTTP_X_ALTUR_SIGNATURE'];
-$isValid = isValidSignature($yourSecret, json_decode(file_get_contents('php://input'), true), $signature);
+$signature = $_SERVER['HTTP_X_ALTUR_SIGNATURE'] ?? '';
+// Decodifica como objetos: json_decode(..., true) convierte `{}` (p. ej. un
+// extracted_data vacío) en `[]`, que se re-codifica distinto y rompe la firma.
+$payload = json_decode(file_get_contents('php://input'));
+$isValid = isValidSignature($yourSecret, $payload, $signature);
 ```
 
 </CodeGroup>
 
 ### Ejemplo de Uso
 
-```python Ejemplo 1: Usando un dict JSON ya parseado (recomendado)
-import json
+```python
 request_body = request.get_json()  # JSON parseado por tu framework web
-signature = request.headers.get('X-Altur-Signature')
+signature = request.headers.get("X-Altur-Signature", "")
 shared_secret = "tu-secreto-codificado-en-base64"
 
 if is_valid_signature(shared_secret, request_body, signature):
@@ -169,21 +180,10 @@ else:
     print("Webhook inválido!")
 ```
 
-```python Ejemplo 2: Usando un string JSON crudo
-payload = '{"type":"on_call_end","status":"ended"}' # Payload crudo de la solicitud (JSON compacto)
-signature = "firma-del-header" # Header X-Altur-Signature
-shared_secret = "tu-secreto-codificado-en-base64" # Secreto compartido en base64
-
-if is_valid_signature(shared_secret, payload, signature):
-    print("Webhook válido!")
-else:
-    print("Webhook inválido!")
-```
-
 ### Headers Enviados con el Webhook
 
 - `Content-Type`: `application/json`
-- `X-Altur-Signature`: hash HMAC SHA-256 codificado en base64 del payload JSON compacto
+- `X-Altur-Signature`: hash HMAC SHA-256 codificado en base64 del payload JSON compacto (ver arriba; no es el body crudo)
 
 ### Por Qué Importa
 
@@ -194,12 +194,31 @@ Este mecanismo garantiza que:
 
 ## Política de Reintentos
 
-Si tu endpoint no responde con un estado 2xx (o no responde antes de los 5 segundos del request timeout), Altur reintenta la entrega:
+Cualquier respuesta distinta de `2xx` cuenta como fallo. Que Altur reintente o no depende del tipo de fallo:
+
+| Fallo | Comportamiento |
+| :---- | :------------- |
+| Timeout (sin respuesta en 5 segundos) | Se reintenta |
+| Error de conexión (DNS, TLS, conexión rechazada, etc.) | Se reintenta |
+| `5xx` | Se reintenta |
+| `408 Request Timeout`, `429 Too Many Requests` | Se reintenta |
+| Cualquier otro `4xx` (p. ej. `400`, `401`, `403`, `404`) | **Terminal**: falla de inmediato, sin reintentos |
+| Redirect `3xx` | **Terminal**: los redirects no se siguen y cuentan como fallo |
+
+Los reintentos usan:
 
 - **Intentos máximos**: 5 (entrega inicial más 4 reintentos).
 - **Backoff**: 60s después del primer fallo, duplicándose en cada intento (60s, 2m, 4m, 8m).
 
-Si todos los intentos fallan, el evento se marca como fallido y no vuelve a entregarse.
+Si todos los intentos fallan, o el fallo es terminal, el evento se marca como fallido y no vuelve a entregarse.
+
+<Tip>
+  Si tu endpoint no puede procesar un evento temporalmente, responde con `5xx`
+  o `429` para que Altur reintente. Un `4xx` como `400` le indica a Altur que el
+  evento nunca será aceptado. Configura directamente la URL final: un redirect
+  (por ejemplo `http` → `https`, o una barra final faltante) hace que todas las
+  entregas fallen.
+</Tip>
 
 ## Ejemplo de Flujo
 
@@ -217,7 +236,7 @@ Un flujo típico para manejar webhooks:
 
    Usa el header `X-Altur-Signature` para verificar la autenticidad. Esto implica:
 
-   - Recomputar la firma HMAC usando el secreto compartido y el payload.
+   - Recomputar la firma HMAC usando el secreto compartido y el payload parseado, re-serializado como JSON compacto.
    - Compararla con la firma del header.
 
 4. **Responde Rápido**
@@ -260,10 +279,10 @@ Un flujo típico para manejar webhooks:
 
 5. **Sé Idempotente**
 
-   - **Evita Acciones Duplicadas**: Diseña el sistema para que los reintentos no causen operaciones duplicadas (inserts en BD, llamadas a APIs). Usa el `event_id` único de Altur para deduplicar.
+   - **Evita Acciones Duplicadas**: Diseña el sistema para que los reintentos no causen operaciones duplicadas (inserts en BD, llamadas a APIs). En los eventos de campaña, deduplica con `event_id`. Los eventos de llamada (`on_call_end`, `transfer_started`, `transfer_completed`) no tienen `event_id`, así que deduplica con `id` junto con `event_type`.
 
 6. **Comunica los Fallos**
-   - **Devuelve Status Codes Correctos**: Usa `400` para solicitudes inválidas, `500` para errores del servidor, etc.
+   - **Devuelve Status Codes Correctos**: Usa `400` para solicitudes inválidas, `500` para errores del servidor, etc. Recuerda que las respuestas `4xx` distintas de `408` y `429` no se reintentan.
    - **Loguea y Notifica**: Registra los fallos y considera notificar al equipo si los reintentos críticos se agotan.
 
 ## Solución de Problemas con la Validación de Firma
@@ -274,8 +293,11 @@ Si tienes problemas validando la firma, revisa estos puntos comunes:
 
 Usa el mismo formato JSON que Altur:
 
+- **Parsea y vuelve a serializar**: No calcules el HMAC sobre el body crudo. Tiene espacios y no coincidirá.
 - **Formato compacto**: Sin espacios después de comas ni de dos puntos.
-- **Orden consistente**: Usa exactamente el payload recibido.
+- **No ASCII escapado**: Caracteres como `í` o `ñ` deben escaparse como `\uXXXX` (`Sofía` → `Sof\u00eda`). `JSON.stringify` no lo hace; consulta el ejemplo de JavaScript.
+- **Orden consistente**: Conserva las llaves en el orden en que se recibieron.
+- **PHP**: Usa `json_decode($raw)`, no `json_decode($raw, true)`. Los arrays asociativos convierten `{}` en `[]`.
 
 ```python
 # ✅ Correcto - JSON compacto
@@ -283,6 +305,9 @@ json.dumps(data, separators=(',', ':'))
 
 # ❌ Incorrecto - incluye espacios
 json.dumps(data)  # Resultado: {"key": "value"}
+
+# ❌ Incorrecto - no escapa caracteres no ASCII
+json.dumps(data, separators=(',', ':'), ensure_ascii=False)
 ```
 
 ### 2. Formato de la Llave Secreta
@@ -311,7 +336,7 @@ Puedes probar tu validación con este ejemplo:
 # Datos de prueba
 test_payload = {"test": "data"}
 test_secret = "dGVzdC1zZWNyZXQ="  # base64 de "test-secret"
-expected_signature = "ZjM2ZTc4YWJkZDQ1ZGZlYjM4NTIwYWY1ZmY1MzFkMTk4YmM0YzJmMzU0MTJjMmE3MGZjZGY4ZDhkOTYzOWY4OA=="
+expected_signature = "6RQRnEGhLZoG7UMG+fPBzjLuZhjLsG9U8AooC6LceYU="
 
 # Debe devolver True
 result = is_valid_signature(test_secret, test_payload, expected_signature)

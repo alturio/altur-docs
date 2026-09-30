@@ -18,7 +18,7 @@ Webhooks allow you to receive real-time notifications about events in your Altur
    When an event occurs, Altur sends a POST request with the event's details in a structured JSON format to your endpoint.
 
 3. **Acknowledge Delivery**  
-   Your endpoint should respond with a `200 OK` status code to confirm successful receipt. Altur waits up to 5 seconds for a response. If the request fails, times out, or returns a non-2xx status, Altur retries with exponential backoff (up to 5 total attempts).
+   Your endpoint should respond with a `200 OK` status code to confirm successful receipt. Altur waits up to 5 seconds for a response. Timeouts, connection errors, `5xx`, `408` and `429` responses are retried with exponential backoff (up to 5 total attempts). Any other `4xx` response fails immediately without retries, and redirects are not followed. See the [Delivery Retry Policy](#delivery-retry-policy).
 
 ## Event Types
 
@@ -34,8 +34,9 @@ Webhooks can be triggered by the following event types:
   Campaign webhooks use a versioned envelope (`event_id`, `event_type`,
   `occurred_at`, `api_version`, `project_id`, `data`). Use `event_id` for
   idempotent processing on your side. The call events (`on_call_end`,
-  `transfer_started`, `transfer_completed`) predate this envelope and keep their
-  flat top-level shape.
+  `transfer_started`, `transfer_completed`) predate this envelope, keep their
+  flat top-level shape and have no `event_id`: deduplicate them on `id` (the
+  call ID) plus `event_type`.
 </Note>
 
 ## Securing Your Webhooks
@@ -45,33 +46,38 @@ To ensure secure communication and verify the authenticity of webhook requests, 
 ### How It Works
 
 - **Shared Secret**: Each webhook integration is configured with a unique base64-encoded shared secret key.
-- **HMAC Generation**: Altur generates an HMAC SHA-256 hash using the base64-decoded shared secret and the JSON request payload (serialized without spaces). This hash is base64-encoded and included in the `X-Altur-Signature` header.
-- **Validation**: Your endpoint must validate the signature using the same shared secret and JSON serialization format.
+- **HMAC Generation**: Altur generates an HMAC SHA-256 hash using the base64-decoded shared secret and the payload serialized as compact JSON (no spaces after `:` or `,`, non-ASCII characters escaped as `\uXXXX`, e.g. `Sofía` → `Sof\u00eda`). This hash is base64-encoded and included in the `X-Altur-Signature` header.
+- **Validation**: Your endpoint must parse the body and re-serialize it in that same compact form before computing the HMAC.
+
+<Warning>
+  The request body Altur sends is **not** the exact string it signs: the body
+  includes spaces after `:` and `,`. Computing the HMAC over the raw request
+  body will fail. Always parse the JSON and re-serialize it as described above.
+</Warning>
 
 ### Validation Function Example
 
 <CodeGroup>
 
 ```python Python
-import json
 import base64
-import hmac
 import hashlib
+import hmac
+import json
 
-def is_valid_signature(secret: str, payload: Union[str, dict], signature: str) -> bool:
+
+def is_valid_signature(secret: str, payload: dict, signature: str) -> bool:
     """
     Validate Altur webhook signature.
 
     Args:
         secret: Base64-encoded shared secret key
-        payload: Request payload (dict or JSON string)
+        payload: Parsed request body (not the raw body)
         signature: Base64-encoded signature from X-Altur-Signature header
     """
-    # Convert payload to consistent JSON format (compact, no spaces)
-    if isinstance(payload, dict):
-        payload_bytes = json.dumps(payload, separators=(',', ':')).encode('utf-8')
-    else:
-        payload_bytes = payload.encode('utf-8')
+    # Re-serialize in compact form. json.dumps escapes non-ASCII
+    # characters as \uXXXX by default, which matches Altur.
+    payload_bytes = json.dumps(payload, separators=(",", ":")).encode("utf-8")
 
     # Decode the base64 secret
     secret_bytes = base64.b64decode(secret)
@@ -92,31 +98,35 @@ function isValidSignature(secret, payload, signature) {
    * Validate Altur webhook signature.
    *
    * @param {string} secret - Base64-encoded shared secret key
-   * @param {object|string} payload - Request payload (object or JSON string)
+   * @param {object} payload - Parsed request body (not the raw body)
    * @param {string} signature - Base64-encoded signature from X-Altur-Signature header
    */
 
-  // Convert payload to consistent JSON format (compact, no spaces)
-  const payloadString =
-    typeof payload === "string" ? payload : JSON.stringify(payload);
+  // Re-serialize in compact form and escape non-ASCII characters as \uXXXX
+  // (JSON.stringify leaves them as-is, Altur escapes them)
+  const payloadString = JSON.stringify(payload).replace(
+    /[\u0080-\uffff]/g,
+    (c) => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0")
+  );
 
   // Decode base64 secret
   const secretBuffer = Buffer.from(secret, "base64");
 
   // Generate expected signature
-  const expectedSignature = crypto
+  const expected = crypto
     .createHmac("sha256", secretBuffer)
     .update(payloadString)
-    .digest("base64");
+    .digest();
+  const received = Buffer.from(signature || "", "base64");
 
-  // Compare signatures using timing-safe comparison
-  return crypto.timingSafeEqual(
-    Buffer.from(signature, "base64"),
-    Buffer.from(expectedSignature, "base64")
+  // timingSafeEqual throws when lengths differ, so compare lengths first
+  return (
+    received.length === expected.length &&
+    crypto.timingSafeEqual(received, expected)
   );
 }
 
-// Usage example
+// Usage example (with express.json())
 const signature = req.headers["x-altur-signature"];
 const isValid = isValidSignature(yourSecret, req.body, signature);
 ```
@@ -127,14 +137,13 @@ function isValidSignature($secret, $payload, $signature) {
      * Validate Altur webhook signature.
      *
      * @param string $secret Base64-encoded shared secret key
-     * @param array|string $payload Request payload (array or JSON string)
+     * @param object $payload Body decoded with json_decode($raw), WITHOUT `true`
      * @param string $signature Base64-encoded signature from X-Altur-Signature header
      */
 
-    // Convert payload to consistent JSON format (compact, no spaces)
-    $payloadString = is_string($payload)
-        ? $payload
-        : json_encode($payload, JSON_UNESCAPED_SLASHES);
+    // Re-serialize in compact form. json_encode escapes non-ASCII
+    // characters as \uXXXX by default, which matches Altur.
+    $payloadString = json_encode($payload, JSON_UNESCAPED_SLASHES);
 
     // Decode base64 secret
     $secretBytes = base64_decode($secret);
@@ -145,22 +154,24 @@ function isValidSignature($secret, $payload, $signature) {
     );
 
     // Compare signatures using timing-safe comparison
-    return hash_equals($signature, $expectedSignature);
+    return hash_equals($expectedSignature, (string) $signature);
 }
 
 // Usage example
-$signature = $_SERVER['HTTP_X_ALTUR_SIGNATURE'];
-$isValid = isValidSignature($yourSecret, json_decode(file_get_contents('php://input'), true), $signature);
+$signature = $_SERVER['HTTP_X_ALTUR_SIGNATURE'] ?? '';
+// Decode as objects: json_decode(..., true) turns `{}` (e.g. an empty
+// extracted_data) into `[]`, which re-encodes differently and breaks the signature.
+$payload = json_decode(file_get_contents('php://input'));
+$isValid = isValidSignature($yourSecret, $payload, $signature);
 ```
 
 </CodeGroup>
 
 ### Usage Example
 
-```python Example 1: Using parsed JSON dict (recommended)
-import json
+```python
 request_body = request.get_json()  # Parsed JSON from your web framework
-signature = request.headers.get('X-Altur-Signature')
+signature = request.headers.get("X-Altur-Signature", "")
 shared_secret = "your-base64-encoded-shared-secret"
 
 if is_valid_signature(shared_secret, request_body, signature):
@@ -169,21 +180,10 @@ else:
     print("Invalid webhook request!")
 ```
 
-```python Example 2: Using raw JSON string
-payload = '{"type":"on_call_end","status":"ended"}' # Raw request payload (compact JSON)
-signature = "provided-signature-from-header" # X-Altur-Signature header
-shared_secret = "your-base64-encoded-shared-secret" # Base64-encoded shared secret
-
-if is_valid_signature(shared_secret, payload, signature):
-    print("Valid webhook request!")
-else:
-    print("Invalid webhook request!")
-```
-
 ### Headers Sent with Webhook
 
 - `Content-Type`: `application/json`
-- `X-Altur-Signature`: Base64-encoded HMAC SHA-256 hash of the compact JSON payload
+- `X-Altur-Signature`: Base64-encoded HMAC SHA-256 hash of the compact JSON payload (see above; this is not the raw body)
 
 ### Why This Matters
 
@@ -194,12 +194,30 @@ This mechanism ensures:
 
 ## Delivery Retry Policy
 
-If your endpoint does not respond with a 2xx status code (or does not respond within the 5-second request timeout), Altur retries the delivery:
+Any response other than `2xx` counts as a failure. Whether Altur retries depends on the failure:
+
+| Failure | Behavior |
+| :------ | :------- |
+| Timeout (no response within 5 seconds) | Retried |
+| Connection error (DNS, TLS, refused connection, etc.) | Retried |
+| `5xx` | Retried |
+| `408 Request Timeout`, `429 Too Many Requests` | Retried |
+| Any other `4xx` (e.g. `400`, `401`, `403`, `404`) | **Terminal**: fails immediately, no retries |
+| `3xx` redirect | **Terminal**: redirects are not followed and count as a failure |
+
+Retries use:
 
 - **Maximum attempts**: 5 (initial delivery plus 4 retries).
 - **Backoff**: 60s after the first failure, doubling each attempt (60s, 2m, 4m, 8m).
 
-If all attempts fail, the event is marked as failed and will not be delivered again.
+If all attempts fail, or the failure is terminal, the event is marked as failed and will not be delivered again.
+
+<Tip>
+  If your endpoint can't process an event temporarily, respond with `5xx` or
+  `429` so Altur retries. A `4xx` such as `400` tells Altur the event will never
+  be accepted. Configure the final URL directly: a redirect (for example
+  `http` → `https`, or a missing trailing slash) makes every delivery fail.
+</Tip>
 
 ## Example Workflow
 
@@ -217,7 +235,7 @@ Here’s a typical workflow for handling webhooks effectively:
 
    Use the `X-Altur-Signature` header to verify the authenticity of the request. This involves:
 
-   - Recomputing the HMAC signature using the shared secret and payload.
+   - Recomputing the HMAC signature using the shared secret and the parsed payload re-serialized as compact JSON.
    - Comparing it with the signature provided in the header.
 
 4. **Respond Promptly**
@@ -260,10 +278,10 @@ Here’s a typical workflow for handling webhooks effectively:
 
 5. **Ensure Idempotency**
 
-   - **Avoid Duplicate Actions**: Design your system to handle retries without causing duplicate operations (e.g., database inserts or API calls). Use unique event identifiers from Altur for this purpose.
+   - **Avoid Duplicate Actions**: Design your system to handle retries without causing duplicate operations (e.g., database inserts or API calls). For campaign events, deduplicate on `event_id`. Call events (`on_call_end`, `transfer_started`, `transfer_completed`) have no `event_id`, so deduplicate on `id` plus `event_type`.
 
 6. **Communicate Failures**
-   - **Return Meaningful Status Codes**: Respond with appropriate HTTP status codes to help diagnose issues (e.g., `400` for invalid requests or `500` for server errors).
+   - **Return Meaningful Status Codes**: Respond with appropriate HTTP status codes to help diagnose issues (e.g., `400` for invalid requests or `500` for server errors). Remember that `4xx` responses other than `408` and `429` are not retried.
    - **Log and Notify**: Log failures and consider notifying your team if critical retries are exhausted.
 
 ## Troubleshooting Signature Validation
@@ -274,8 +292,11 @@ If you're having trouble with signature validation, check these common issues:
 
 Ensure you're using the same JSON serialization format as Altur:
 
-- **Compact format**: No spaces after colons or commas
-- **Consistent ordering**: Use the exact payload received
+- **Parse, then re-serialize**: Don't compute the HMAC over the raw body. It contains spaces and won't match.
+- **Compact format**: No spaces after colons or commas.
+- **Escaped non-ASCII**: Characters like `í` or `ñ` must be escaped as `\uXXXX` (`Sofía` → `Sof\u00eda`). `JSON.stringify` doesn't do this; see the JavaScript example.
+- **Consistent ordering**: Keep keys in the order they were received.
+- **PHP**: Use `json_decode($raw)`, not `json_decode($raw, true)`. Associative arrays turn `{}` into `[]`.
 
 ```python
 # ✅ Correct - compact JSON
@@ -283,6 +304,9 @@ json.dumps(data, separators=(',', ':'))
 
 # ❌ Wrong - includes spaces
 json.dumps(data)  # Results in: {"key": "value"}
+
+# ❌ Wrong - non-ASCII not escaped
+json.dumps(data, separators=(',', ':'), ensure_ascii=False)
 ```
 
 ### 2. Secret Key Format
@@ -311,7 +335,7 @@ You can test your signature validation with this example:
 # Test data
 test_payload = {"test": "data"}
 test_secret = "dGVzdC1zZWNyZXQ="  # base64 for "test-secret"
-expected_signature = "ZjM2ZTc4YWJkZDQ1ZGZlYjM4NTIwYWY1ZmY1MzFkMTk4YmM0YzJmMzU0MTJjMmE3MGZjZGY4ZDhkOTYzOWY4OA=="
+expected_signature = "6RQRnEGhLZoG7UMG+fPBzjLuZhjLsG9U8AooC6LceYU="
 
 # This should return True
 result = is_valid_signature(test_secret, test_payload, expected_signature)

@@ -31,17 +31,24 @@ The `transfer_completed` webhook is triggered when Altur records that the transf
   "phone_number_from": "+000000000000",
   "phone_number_to": "+000000000000",
   "answered_by": "human",
-  "created_at": "2024-12-19T15:00:10Z",
-  "started_at": "2024-12-19T15:00:12Z",
+  "created_at": "2026-09-30T21:07:09.184530+00:00",
+  "started_at": "2026-09-30T21:07:12+00:00",
   "ended_at": null,
   "ended_by": null,
   "ended_reason": null,
-  "transfer_initiated_at": "2024-12-19T15:01:00Z",
-  "transfer_completed_at": "2024-12-19T15:01:08Z",
+  "transfer_initiated_at": "2026-09-30T21:08:12.340917+00:00",
+  "transfer_completed_at": "2026-09-30T21:08:20.771205+00:00",
   "duration": null,
   "billed_duration": null,
   "recording_url": "https://api.altur.io/api/v1.0/call/cll_gBoLtd02pUI50QwXkFjB/recording",
-  "transcript": [],
+  "transcript": [
+    {
+      "sequence": 0,
+      "sent_by": "assistant",
+      "sent_at": "2026-09-30T21:07:13.402156+00:00",
+      "content": "Hello am I speaking with Sofía?"
+    }
+  ],
   "assistant": {
     "id": "6cy951e6-9877-4d7c-88d7-56b4948d3cce",
     "nickname": "DebtCollectorBot",
@@ -90,7 +97,9 @@ All other fields match the [`on_call_end`](https://docs.altur.io/api-reference/w
   when the event is sent.
 </Note>
 
-Transfer webhooks do not support filters.
+Transfer webhooks apply the integration's `status` and `answered_by` filters, evaluated against the call state at the moment of the transfer (`status: in-progress`, `answered_by: human`), not the final call state. For example, a filter of `status: ["ended"]` blocks every transfer webhook for that integration.
+
+Timestamps use the same format as [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end): ISO 8601 with a `+00:00` offset and optional fractional seconds (e.g. `2026-09-30T21:08:12.340917+00:00`).
 
 ## Response Expectations
 
