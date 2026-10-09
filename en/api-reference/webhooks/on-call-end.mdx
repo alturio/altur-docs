@@ -57,6 +57,11 @@ Here’s an example of the payload sent with the `on_call_end` event:
       "content": "Yes, who is this?"
     }
   ],
+  "extracted_data": {
+    "Payment Amount": "1200",
+    "Payment Date": "2024-12-26",
+    "Payment Medium": "app"
+  },
   "assistant": {
     "id": "6cy951e6-9877-4d7c-88d7-56b4948d3cce",
     "nickname": "DebtCollectorBot",
@@ -124,6 +129,7 @@ Here’s an example of the payload sent with the `on_call_end` event:
 | `billed_duration`   | `int`      | Billed call duration in seconds.                                                                    |
 | `recording_url`     | `string`   | URL to [download](https://docs.altur.io/api-reference/calls/retrieve-recording) the call recording. |
 | `transcript`        | `array`    | List of [transcript messages](#transcript-item), in order.                                          |
+| `extracted_data`    | `object`   | Key-value pairs of the data extracted in this call. Sent for every call, with or without a campaign; `{}` when nothing was extracted. |
 
 ### Transcript Item
 

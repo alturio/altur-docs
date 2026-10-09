@@ -49,6 +49,7 @@ The `transfer_completed` webhook is triggered when Altur records that the transf
       "content": "Hello am I speaking with Sofía?"
     }
   ],
+  "extracted_data": {},
   "assistant": {
     "id": "6cy951e6-9877-4d7c-88d7-56b4948d3cce",
     "nickname": "DebtCollectorBot",
@@ -84,6 +85,7 @@ The `transfer_completed` webhook is triggered when Altur records that the transf
 | `event_type`            | `string`   | `transfer_completed`.                                           |
 | `transfer_initiated_at` | `datetime` | ISO timestamp when Altur recorded the transfer handoff starting. |
 | `transfer_completed_at` | `datetime` | ISO timestamp when Altur recorded the transfer leg connecting.   |
+| `extracted_data`        | `object`   | Key-value pairs of the data extracted in this call. Usually `{}`, because extraction runs when the call ends; use `on_call_end` for it. |
 
 All other fields match the [`on_call_end`](https://docs.altur.io/api-reference/webhooks/on-call-end) call payload.
 
