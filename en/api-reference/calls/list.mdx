@@ -1,0 +1,10 @@
+---
+title: 'List Calls'
+openapi: 'GET /calls'
+---
+
+Use this endpoint to retrieve inbound or outbound calls for the project associated with the API key. Request one direction and a window of up to one day, then follow `pagination.next_cursor` with the same filters until `has_next` is false.
+
+<Info>
+  **Rate Limit:** 1 request per second. Responses contain at most 100 calls.
+</Info>

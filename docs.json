@@ -86,6 +86,7 @@
                     "icon": "phone",
                     "pages": [
                       "en/api-reference/calls/start",
+                      "en/api-reference/calls/list",
                       "en/api-reference/calls/retrieve",
                       "en/api-reference/calls/retrieve-recording"
                     ]
@@ -205,6 +206,7 @@
                     "icon": "phone",
                     "pages": [
                       "es/api-reference/calls/start",
+                      "es/api-reference/calls/list",
                       "es/api-reference/calls/retrieve",
                       "es/api-reference/calls/retrieve-recording"
                     ]

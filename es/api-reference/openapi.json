@@ -1344,6 +1344,97 @@
         }
       }
     },
+    "/calls": {
+      "get": {
+        "description": "Lista llamadas entrantes o salientes del proyecto asociado a la clave de API. Las solicitudes se limitan a una ventana de un día y paginación por cursor.",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Dirección de las llamadas a obtener",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["inbound", "outbound"]
+            }
+          },
+          {
+            "name": "createdAfter",
+            "in": "query",
+            "description": "Inicio inclusivo de la ventana de creación (ISO 8601)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "createdBefore",
+            "in": "query",
+            "description": "Fin inclusivo de la ventana de creación (ISO 8601). La ventana no puede exceder un día.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Cursor opaco de la página anterior; reutiliza los mismos filtros.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Llamadas por página",
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta de llamadas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CallsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parámetros de consulta inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Límite de velocidad excedido"
+          }
+        }
+      }
+    },
     "/call": {
       "post": {
         "description": "Starts a Call",
@@ -1758,6 +1849,53 @@
             "type": "object",
             "$ref": "#/components/schemas/CursorPagination"
           }
+        }
+      },
+      "CallsResponse": {
+        "type": "object",
+        "properties": {
+          "calls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CallListItem"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/CallsPagination"
+          }
+        }
+      },
+      "CallsPagination": {
+        "type": "object",
+        "properties": {
+          "has_next": {
+            "type": "boolean"
+          },
+          "next_cursor": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CallListItem": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "agent_id": {"type": "string"},
+          "thread_id": {"type": "string"},
+          "type": {"type": "string", "enum": ["inbound", "outbound"]},
+          "status": {"type": "string"},
+          "answered_by": {"type": "string"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "started_at": {"type": "string", "format": "date-time", "nullable": true},
+          "ended_at": {"type": "string", "format": "date-time", "nullable": true},
+          "ended_by": {"type": "string"},
+          "ended_reason": {"type": "string"},
+          "duration": {"type": "integer"},
+          "billed_duration": {"type": "integer"},
+          "phone_number": {"type": "string"},
+          "extracted_data": {"type": "object"},
+          "recording_url": {"type": "string"}
         }
       },
       "CampaignCallsResponse": {
