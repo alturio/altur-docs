@@ -1891,9 +1891,9 @@
           "ended_at": {"type": "string", "format": "date-time", "nullable": true},
           "ended_by": {"type": "string"},
           "ended_reason": {"type": "string"},
-          "duration": {"type": "integer"},
-          "billed_duration": {"type": "integer"},
-          "phone_number": {"type": "string"},
+          "duration": {"description": "Call duration in seconds", "type": "integer"},
+          "billed_duration": {"description": "Billed call duration in seconds", "type": "integer"},
+          "phone_number": {"description": "The end user's phone number: inbound caller or outbound recipient", "type": "string"},
           "extracted_data": {"type": "object"},
           "recording_url": {"type": "string"}
         }

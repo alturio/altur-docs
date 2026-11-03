@@ -1891,9 +1891,9 @@
           "ended_at": {"type": "string", "format": "date-time", "nullable": true},
           "ended_by": {"type": "string"},
           "ended_reason": {"type": "string"},
-          "duration": {"type": "integer"},
-          "billed_duration": {"type": "integer"},
-          "phone_number": {"type": "string"},
+          "duration": {"description": "Duración de la llamada en segundos", "type": "integer"},
+          "billed_duration": {"description": "Duración facturada de la llamada en segundos", "type": "integer"},
+          "phone_number": {"description": "Número telefónico de la persona: quien llama en llamadas entrantes o destinatario en llamadas salientes", "type": "string"},
           "extracted_data": {"type": "object"},
           "recording_url": {"type": "string"}
         }
