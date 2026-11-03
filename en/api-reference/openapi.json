@@ -1344,6 +1344,97 @@
         }
       }
     },
+    "/calls": {
+      "get": {
+        "description": "Lists inbound or outbound calls for the API key's project. Requests are limited to a one-day window and cursor pagination.",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Call direction to retrieve",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["inbound", "outbound"]
+            }
+          },
+          {
+            "name": "createdAfter",
+            "in": "query",
+            "description": "Start of the inclusive creation-time window (ISO 8601)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "createdBefore",
+            "in": "query",
+            "description": "End of the inclusive creation-time window (ISO 8601). The window cannot exceed one day.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Opaque cursor returned by the previous page; reuse the same filters.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Calls per page",
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Calls response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CallsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        }
+      }
+    },
     "/call": {
       "post": {
         "description": "Starts a Call",
@@ -1758,6 +1849,53 @@
             "type": "object",
             "$ref": "#/components/schemas/CursorPagination"
           }
+        }
+      },
+      "CallsResponse": {
+        "type": "object",
+        "properties": {
+          "calls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CallListItem"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/CallsPagination"
+          }
+        }
+      },
+      "CallsPagination": {
+        "type": "object",
+        "properties": {
+          "has_next": {
+            "type": "boolean"
+          },
+          "next_cursor": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CallListItem": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "agent_id": {"type": "string"},
+          "thread_id": {"type": "string"},
+          "type": {"type": "string", "enum": ["inbound", "outbound"]},
+          "status": {"type": "string"},
+          "answered_by": {"type": "string"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "started_at": {"type": "string", "format": "date-time", "nullable": true},
+          "ended_at": {"type": "string", "format": "date-time", "nullable": true},
+          "ended_by": {"type": "string"},
+          "ended_reason": {"type": "string"},
+          "duration": {"type": "integer"},
+          "billed_duration": {"type": "integer"},
+          "phone_number": {"type": "string"},
+          "extracted_data": {"type": "object"},
+          "recording_url": {"type": "string"}
         }
       },
       "CampaignCallsResponse": {

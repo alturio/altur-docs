@@ -1,0 +1,10 @@
+---
+title: 'Listar llamadas'
+openapi: 'GET /calls'
+---
+
+Usa este endpoint para obtener llamadas entrantes o salientes del proyecto asociado con la clave de API. Solicita una dirección y una ventana de hasta un día; después sigue `pagination.next_cursor` con los mismos filtros hasta que `has_next` sea falso.
+
+<Info>
+  **Límite de velocidad:** 1 solicitud por segundo. Las respuestas contienen un máximo de 100 llamadas.
+</Info>
