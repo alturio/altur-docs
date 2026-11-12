@@ -1894,8 +1894,8 @@
           "duration": {"description": "Duración de la llamada en segundos", "type": "integer"},
           "billed_duration": {"description": "Duración facturada de la llamada en segundos", "type": "integer"},
           "phone_number": {"description": "Número telefónico de la persona: quien llama en llamadas entrantes o destinatario en llamadas salientes", "type": "string"},
-          "extracted_data": {"type": "object"},
-          "recording_url": {"type": "string"}
+          "extracted_data": {"description": "Datos extraídos de esta llamada, como nombre del campo y su valor. Solo las respuestas de esta llamada.", "type": "object", "example": {"promesa_pago": "true", "monto_prometido": "1000"}},
+          "recording_url": {"description": "URL para obtener la grabación de la llamada. null en llamadas fallidas y en llamadas sin audio.", "type": "string", "nullable": true, "example": "/api/v1.0/call/call_abc123def456/recording"}
         }
       },
       "CampaignCallsResponse": {
