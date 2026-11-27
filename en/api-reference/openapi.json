@@ -1882,6 +1882,11 @@
         "properties": {
           "id": {"type": "string"},
           "agent_id": {"type": "string"},
+          "agent_nickname": {
+            "description": "Nickname of the agent that made or received the call. Unlike the agent name, it tells the agents of a project apart.",
+            "type": "string",
+            "example": "Collections - Pay today"
+          },
           "thread_id": {"type": "string"},
           "type": {"type": "string", "enum": ["inbound", "outbound"]},
           "status": {"type": "string"},

@@ -1882,6 +1882,11 @@
         "properties": {
           "id": {"type": "string"},
           "agent_id": {"type": "string"},
+          "agent_nickname": {
+            "description": "Apodo del agente que hizo o recibió la llamada. A diferencia del nombre del agente, distingue a los agentes de un proyecto.",
+            "type": "string",
+            "example": "Cobranza - Paga hoy"
+          },
           "thread_id": {"type": "string"},
           "type": {"type": "string", "enum": ["inbound", "outbound"]},
           "status": {"type": "string"},
